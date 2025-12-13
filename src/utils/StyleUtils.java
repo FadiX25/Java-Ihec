@@ -45,6 +45,29 @@ public class StyleUtils {
     
     /** Text Muted - Secondary/hint text */
     public static final Color TEXT_MUTED = Color.decode("#6C757D");
+    
+    // ==================== ADMIN THEME COLORS ====================
+    
+    /** Admin Accent - Orange/Amber for admin-specific elements */
+    public static final Color ADMIN_ACCENT = Color.decode("#F59E0B");
+    
+    /** Admin Accent Light - Lighter shade for hover/backgrounds */
+    public static final Color ADMIN_ACCENT_LIGHT = Color.decode("#FEF3C7");
+    
+    /** Warning Yellow - For caution messages */
+    public static final Color WARNING_YELLOW = Color.decode("#FFC107");
+    
+    /** Info Blue - For informational elements */
+    public static final Color INFO_BLUE = Color.decode("#17A2B8");
+    
+    /** Table Row Alternate - Subtle gray for alternating rows */
+    public static final Color TABLE_ROW_ALT = Color.decode("#F8F9FA");
+    
+    /** Border Light - Light border color */
+    public static final Color BORDER_LIGHT = Color.decode("#DEE2E6");
+    
+    /** Shadow Color - For card shadows (with alpha) */
+    public static final Color SHADOW_COLOR = new Color(0, 0, 0, 20);
 
     // ==================== FONTS ====================
     
@@ -62,6 +85,15 @@ public class StyleUtils {
     
     /** Button font */
     public static final Font FONT_BUTTON = new Font("Segoe UI", Font.BOLD, 14);
+    
+    /** Small font - For labels and hints */
+    public static final Font FONT_SMALL = new Font("Segoe UI", Font.PLAIN, 12);
+    
+    /** Large number font - For statistics */
+    public static final Font FONT_STAT_NUMBER = new Font("Segoe UI", Font.BOLD, 32);
+    
+    /** Table header font */
+    public static final Font FONT_TABLE_HEADER = new Font("Segoe UI", Font.BOLD, 13);
 
     // ==================== DIMENSIONS ====================
     
