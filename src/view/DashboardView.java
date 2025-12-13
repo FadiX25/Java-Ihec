@@ -11,10 +11,11 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 
 /**
- * DashboardView - Modern dashboard with hero banner, stats, and course cards.
+ * DashboardView - Modern dashboard optimized for space with rounded corners.
  */
 public class DashboardView extends JPanel {
 
@@ -24,13 +25,9 @@ public class DashboardView extends JPanel {
     private CsvDataManager dataManager;
     private User currentUser;
 
-    // UI Components that need updating
+    // UI Components
     private JLabel xpLabel;
     private JPanel coursesPanel;
-    private JLabel statsCoursLabel;
-    private JLabel statsCertLabel;
-    private JLabel statsGoalsLabel;
-    private JLabel statsDaysLabel;
 
     // ==================== CONSTRUCTOR ====================
 
@@ -47,56 +44,46 @@ public class DashboardView extends JPanel {
         setLayout(new BorderLayout());
         setBackground(StyleUtils.BACKGROUND_GRAY);
 
-        // Navigation bar at top
         add(createNavBar(), BorderLayout.NORTH);
-
-        // Main content area
         add(createContentArea(), BorderLayout.CENTER);
     }
 
     /**
-     * Create the top navigation bar.
+     * Create navigation bar.
      */
     private JPanel createNavBar() {
         JPanel navBar = new JPanel(new BorderLayout());
         navBar.setBackground(Color.WHITE);
-        navBar.setPreferredSize(new Dimension(0, 70));
-        navBar.setBorder(new EmptyBorder(15, 25, 15, 25));
+        navBar.setPreferredSize(new Dimension(0, 65));
+        navBar.setBorder(new EmptyBorder(12, 30, 12, 30));
 
-        // Left side: App logo
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        // Left: Logo
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         leftPanel.setOpaque(false);
 
-        // Logo icon
         JLabel logoIcon = new JLabel("📚");
-        logoIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 24));
+        logoIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 22));
 
         JLabel titleLabel = new JLabel("Ihec-LearnHub");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 17));
         titleLabel.setForeground(StyleUtils.TEXT_DARK);
 
         leftPanel.add(logoIcon);
         leftPanel.add(titleLabel);
         navBar.add(leftPanel, BorderLayout.WEST);
 
-        // Right side: XP and logout
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
+        // Right: XP and logout
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         rightPanel.setOpaque(false);
 
-        // XP display with icon
-        JPanel xpPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        xpPanel.setOpaque(false);
-
         xpLabel = new JLabel("0 XP");
-        xpLabel.setFont(StyleUtils.FONT_BODY);
-        xpLabel.setForeground(StyleUtils.TEXT_DARK);
-        xpPanel.add(xpLabel);
-        rightPanel.add(xpPanel);
+        xpLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        xpLabel.setForeground(StyleUtils.PRIMARY_BLUE);
+        rightPanel.add(xpLabel);
 
-        // Logout button
         JButton logoutBtn = createModernButton("Déconnexion",
                 StyleUtils.PRIMARY_BLUE, Color.WHITE);
-        logoutBtn.setPreferredSize(new Dimension(120, 38));
+        logoutBtn.setPreferredSize(new Dimension(110, 36));
         logoutBtn.addActionListener(e -> parentApp.logout());
         rightPanel.add(logoutBtn);
 
@@ -106,37 +93,35 @@ public class DashboardView extends JPanel {
     }
 
     /**
-     * Create the main content area.
+     * Create main content area.
      */
     private JPanel createContentArea() {
         JPanel contentArea = new JPanel(new BorderLayout());
         contentArea.setBackground(StyleUtils.BACKGROUND_GRAY);
-        contentArea.setBorder(new EmptyBorder(30, 30, 30, 30));
+        contentArea.setBorder(new EmptyBorder(20, 25, 20, 25));
 
-        // Main scroll panel
         JPanel mainContent = new JPanel();
         mainContent.setLayout(new BoxLayout(mainContent, BoxLayout.Y_AXIS));
         mainContent.setBackground(StyleUtils.BACKGROUND_GRAY);
 
         // Hero Banner
         mainContent.add(createHeroBanner());
-        mainContent.add(Box.createVerticalStrut(30));
+        mainContent.add(Box.createVerticalStrut(20));
 
         // Stats Grid
         mainContent.add(createStatsGrid());
-        mainContent.add(Box.createVerticalStrut(30));
+        mainContent.add(Box.createVerticalStrut(25));
 
         // Section Header
         mainContent.add(createSectionHeader());
-        mainContent.add(Box.createVerticalStrut(20));
+        mainContent.add(Box.createVerticalStrut(15));
 
-        // Courses grid (will be populated when user logs in)
+        // Courses grid
         coursesPanel = new JPanel();
-        coursesPanel.setLayout(new GridLayout(0, 3, 20, 20));  // 3 columns
+        coursesPanel.setLayout(new GridLayout(0, 3, 18, 18));
         coursesPanel.setBackground(StyleUtils.BACKGROUND_GRAY);
         mainContent.add(coursesPanel);
 
-        // Wrap in scroll pane
         JScrollPane scrollPane = new JScrollPane(mainContent);
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -149,7 +134,7 @@ public class DashboardView extends JPanel {
     }
 
     /**
-     * Create the hero banner with gradient background.
+     * Create hero banner with gradient.
      */
     private JPanel createHeroBanner() {
         JPanel hero = new JPanel() {
@@ -160,41 +145,40 @@ public class DashboardView extends JPanel {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Gradient background
                 GradientPaint gradient = new GradientPaint(
                         0, 0, StyleUtils.PRIMARY_BLUE,
                         getWidth(), getHeight(), StyleUtils.PRIMARY_PURPLE
                 );
                 g2d.setPaint(gradient);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+
+                RoundRectangle2D roundedRectangle = new RoundRectangle2D.Float(
+                        0, 0, getWidth(), getHeight(), 20, 20
+                );
+                g2d.fill(roundedRectangle);
             }
         };
 
         hero.setLayout(new BorderLayout());
-        hero.setPreferredSize(new Dimension(0, 220));
-        hero.setMaximumSize(new Dimension(Integer.MAX_VALUE, 220));
-        hero.setBorder(new EmptyBorder(40, 40, 40, 40));
+        hero.setPreferredSize(new Dimension(0, 180));
+        hero.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
+        hero.setBorder(new EmptyBorder(30, 35, 30, 35));
         hero.setOpaque(false);
 
-        // Content
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setOpaque(false);
 
-        // Title
         JLabel title = new JLabel("Bonjour, Étudiant IHEC ! 👋");
-        title.setFont(new Font("Segoe UI", Font.BOLD, 36));
+        title.setFont(new Font("Segoe UI", Font.BOLD, 32));
         title.setForeground(Color.WHITE);
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Subtitle
         JLabel subtitle = new JLabel("Continuez votre apprentissage là où vous vous êtes arrêté");
-        subtitle.setFont(StyleUtils.FONT_BODY);
-        subtitle.setForeground(StyleUtils.withAlpha(Color.WHITE, 240));
+        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        subtitle.setForeground(new Color(255, 255, 255, 240));
         subtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
         buttonPanel.setOpaque(false);
         buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -204,11 +188,10 @@ public class DashboardView extends JPanel {
         buttonPanel.add(exploreBtn);
         buttonPanel.add(progressBtn);
 
-        // Add components
         content.add(title);
-        content.add(Box.createVerticalStrut(10));
+        content.add(Box.createVerticalStrut(8));
         content.add(subtitle);
-        content.add(Box.createVerticalStrut(25));
+        content.add(Box.createVerticalStrut(20));
         content.add(buttonPanel);
 
         hero.add(content, BorderLayout.WEST);
@@ -217,7 +200,7 @@ public class DashboardView extends JPanel {
     }
 
     /**
-     * Create hero button (solid or outline).
+     * Create hero button.
      */
     private JButton createHeroButton(String text, boolean solid) {
         JButton button = new JButton(text) {
@@ -228,18 +211,25 @@ public class DashboardView extends JPanel {
                         RenderingHints.VALUE_ANTIALIAS_ON);
 
                 if (solid) {
-                    // Solid white button
                     g2d.setColor(Color.WHITE);
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                    RoundRectangle2D rect = new RoundRectangle2D.Float(
+                            0, 0, getWidth(), getHeight(), 10, 10
+                    );
+                    g2d.fill(rect);
                 } else {
-                    // Outline button
                     if (getModel().isPressed() || getModel().isRollover()) {
-                        g2d.setColor(StyleUtils.withAlpha(Color.WHITE, 25));
-                        g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                        g2d.setColor(new Color(255, 255, 255, 25));
+                        RoundRectangle2D rect = new RoundRectangle2D.Float(
+                                0, 0, getWidth(), getHeight(), 10, 10
+                        );
+                        g2d.fill(rect);
                     }
                     g2d.setColor(Color.WHITE);
                     g2d.setStroke(new BasicStroke(2));
-                    g2d.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 10, 10);
+                    RoundRectangle2D rect = new RoundRectangle2D.Float(
+                            1, 1, getWidth() - 2, getHeight() - 2, 10, 10
+                    );
+                    g2d.draw(rect);
                 }
                 g2d.dispose();
 
@@ -247,64 +237,66 @@ public class DashboardView extends JPanel {
             }
         };
 
-        button.setFont(StyleUtils.FONT_BUTTON);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.setForeground(solid ? StyleUtils.PRIMARY_BLUE : Color.WHITE);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setOpaque(false);
-        button.setPreferredSize(new Dimension(180, 45));
+        button.setPreferredSize(new Dimension(170, 42));
 
         return button;
     }
 
     /**
-     * Create the stats grid with 4 cards.
+     * Create stats grid.
      */
     private JPanel createStatsGrid() {
-        JPanel statsGrid = new JPanel(new GridLayout(1, 4, 20, 0));
+        JPanel statsGrid = new JPanel(new GridLayout(1, 4, 15, 0));
         statsGrid.setBackground(StyleUtils.BACKGROUND_GRAY);
-        statsGrid.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+        statsGrid.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
 
-        // Stat 1: Cours suivis
-        JPanel stat1 = createStatCard("📚", "Cours suivis", "12",
-                StyleUtils.STAT_BLUE_BG, StyleUtils.STAT_BLUE_TEXT);
-        statsCoursLabel = (JLabel) ((JPanel)stat1.getComponent(1)).getComponent(2);
-
-        // Stat 2: Certifications
-        JPanel stat2 = createStatCard("🏆", "Certifications", "3",
-                StyleUtils.STAT_YELLOW_BG, StyleUtils.STAT_YELLOW_TEXT);
-        statsCertLabel = (JLabel) ((JPanel)stat2.getComponent(1)).getComponent(2);
-
-        // Stat 3: Objectifs
-        JPanel stat3 = createStatCard("🎯", "Objectifs atteints", "8",
-                StyleUtils.STAT_GREEN_BG, StyleUtils.STAT_GREEN_TEXT);
-        statsGoalsLabel = (JLabel) ((JPanel)stat3.getComponent(1)).getComponent(2);
-
-        // Stat 4: Jours consécutifs
-        JPanel stat4 = createStatCard("🔥", "Jours consécutifs", "15",
-                StyleUtils.STAT_ORANGE_BG, StyleUtils.STAT_ORANGE_TEXT);
-        statsDaysLabel = (JLabel) ((JPanel)stat4.getComponent(1)).getComponent(2);
-
-        statsGrid.add(stat1);
-        statsGrid.add(stat2);
-        statsGrid.add(stat3);
-        statsGrid.add(stat4);
+        statsGrid.add(createStatCard("📚", "Cours suivis", "12",
+                StyleUtils.STAT_BLUE_BG, StyleUtils.STAT_BLUE_TEXT));
+        statsGrid.add(createStatCard("🏆", "Certifications", "3",
+                StyleUtils.STAT_YELLOW_BG, StyleUtils.STAT_YELLOW_TEXT));
+        statsGrid.add(createStatCard("🎯", "Objectifs atteints", "8",
+                StyleUtils.STAT_GREEN_BG, StyleUtils.STAT_GREEN_TEXT));
+        statsGrid.add(createStatCard("🔥", "Jours consécutifs", "15",
+                StyleUtils.STAT_ORANGE_BG, StyleUtils.STAT_ORANGE_TEXT));
 
         return statsGrid;
     }
 
     /**
-     * Create a single stat card.
+     * Create stat card.
      */
     private JPanel createStatCard(String icon, String label, String value,
                                   Color bgColor, Color iconColor) {
-        JPanel card = new JPanel(new BorderLayout(15, 0));
-        card.setBackground(StyleUtils.CARD_WHITE);
-        card.setBorder(new EmptyBorder(20, 20, 20, 20));
+        JPanel card = new JPanel(new BorderLayout(12, 0)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Icon panel with rounded background
+                g2d.setColor(getBackground());
+                RoundRectangle2D rect = new RoundRectangle2D.Float(
+                        0, 0, getWidth() - 1, getHeight() - 1, 16, 16
+                );
+                g2d.fill(rect);
+
+                g2d.setColor(new Color(0, 0, 0, 5));
+                g2d.draw(rect);
+            }
+        };
+        card.setBackground(StyleUtils.CARD_WHITE);
+        card.setBorder(new EmptyBorder(18, 18, 18, 18));
+        card.setOpaque(false);
+
+        // Icon panel
         JPanel iconPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -313,33 +305,37 @@ public class DashboardView extends JPanel {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
                 g2d.setColor(getBackground());
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                RoundRectangle2D rect = new RoundRectangle2D.Float(
+                        0, 0, getWidth(), getHeight(), 12, 12
+                );
+                g2d.fill(rect);
             }
         };
-        iconPanel.setPreferredSize(new Dimension(60, 60));
+        iconPanel.setPreferredSize(new Dimension(55, 55));
         iconPanel.setBackground(bgColor);
         iconPanel.setLayout(new GridBagLayout());
+        iconPanel.setOpaque(false);
 
         JLabel iconLabel = new JLabel(icon);
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 28));
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 26));
         iconLabel.setForeground(iconColor);
         iconPanel.add(iconLabel);
 
         // Info panel
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setBackground(StyleUtils.CARD_WHITE);
+        infoPanel.setOpaque(false);
 
         JLabel labelText = new JLabel(label);
-        labelText.setFont(StyleUtils.FONT_SMALL);
+        labelText.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         labelText.setForeground(StyleUtils.TEXT_MUTED);
 
         JLabel valueText = new JLabel(value);
-        valueText.setFont(StyleUtils.FONT_STAT_NUMBER);
+        valueText.setFont(new Font("Segoe UI", Font.BOLD, 28));
         valueText.setForeground(StyleUtils.TEXT_DARK);
 
         infoPanel.add(labelText);
-        infoPanel.add(Box.createVerticalStrut(5));
+        infoPanel.add(Box.createVerticalStrut(4));
         infoPanel.add(valueText);
 
         card.add(iconPanel, BorderLayout.WEST);
@@ -351,11 +347,13 @@ public class DashboardView extends JPanel {
             public void mouseEntered(MouseEvent e) {
                 card.setBackground(StyleUtils.CARD_HOVER);
                 card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                card.repaint();
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 card.setBackground(StyleUtils.CARD_WHITE);
+                card.repaint();
             }
         });
 
@@ -368,26 +366,26 @@ public class DashboardView extends JPanel {
     private JPanel createSectionHeader() {
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(StyleUtils.BACKGROUND_GRAY);
-        header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
+        header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
 
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBackground(StyleUtils.BACKGROUND_GRAY);
 
         JLabel title = new JLabel("Continuer l'apprentissage");
-        title.setFont(StyleUtils.FONT_HEADER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
         title.setForeground(StyleUtils.TEXT_DARK);
 
         JLabel subtitle = new JLabel("Reprenez vos cours en cours");
-        subtitle.setFont(StyleUtils.FONT_BODY);
+        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         subtitle.setForeground(StyleUtils.TEXT_MUTED);
 
         leftPanel.add(title);
-        leftPanel.add(Box.createVerticalStrut(5));
+        leftPanel.add(Box.createVerticalStrut(3));
         leftPanel.add(subtitle);
 
         JLabel viewAll = new JLabel("Voir tout →");
-        viewAll.setFont(StyleUtils.FONT_BUTTON);
+        viewAll.setFont(new Font("Segoe UI", Font.BOLD, 14));
         viewAll.setForeground(StyleUtils.PRIMARY_BLUE);
         viewAll.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -398,14 +396,36 @@ public class DashboardView extends JPanel {
     }
 
     /**
-     * Create a modern course card.
+     * Create course card.
      */
     private JPanel createCourseCard(Lesson lesson, boolean isCompleted) {
-        JPanel card = new JPanel(new BorderLayout());
-        card.setBackground(StyleUtils.CARD_WHITE);
-        card.setBorder(new EmptyBorder(0, 0, 0, 0));
+        // Create wrapper to handle hover state
+        final boolean[] isHovered = {false};
 
-        // Course image with gradient
+        JPanel card = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+
+                g2d.setColor(getBackground());
+                RoundRectangle2D rect = new RoundRectangle2D.Float(
+                        0, 0, getWidth() - 1, getHeight() - 1, 16, 16
+                );
+                g2d.fill(rect);
+
+                // Border
+                g2d.setColor(isHovered[0] ? StyleUtils.PRIMARY_BLUE : StyleUtils.BORDER_LIGHT);
+                g2d.draw(rect);
+            }
+        };
+
+        card.setBackground(StyleUtils.CARD_WHITE);
+        card.setOpaque(false);
+
+        // Image panel
         JPanel imagePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -414,7 +434,6 @@ public class DashboardView extends JPanel {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Different gradients based on lesson
                 GradientPaint gradient = new GradientPaint(
                         0, 0, new Color(67, 67, 67),
                         getWidth(), getHeight(), new Color(0, 0, 0)
@@ -423,87 +442,111 @@ public class DashboardView extends JPanel {
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
         };
-        imagePanel.setPreferredSize(new Dimension(0, 180));
+        imagePanel.setPreferredSize(new Dimension(0, 160));
         imagePanel.setLayout(new BorderLayout());
 
         // Course tag
-        JPanel tagWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        JPanel tagWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12));
         tagWrapper.setOpaque(false);
 
-        JLabel tag = new JLabel("Java");
-        tag.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        JLabel tag = new JLabel("Java") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(getBackground());
+                RoundRectangle2D rect = new RoundRectangle2D.Float(
+                        0, 0, getWidth(), getHeight(), 20, 20
+                );
+                g2d.fill(rect);
+                g2d.dispose();
+                super.paintComponent(g);
+            }
+        };
+        tag.setFont(new Font("Segoe UI", Font.BOLD, 12));
         tag.setForeground(StyleUtils.TEXT_DARK);
         tag.setBackground(Color.WHITE);
-        tag.setOpaque(true);
-        tag.setBorder(new EmptyBorder(6, 15, 6, 15));
+        tag.setOpaque(false);
+        tag.setBorder(new EmptyBorder(5, 14, 5, 14));
 
         tagWrapper.add(tag);
         imagePanel.add(tagWrapper, BorderLayout.NORTH);
 
-        // Content panel
+        // Content
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setBackground(StyleUtils.CARD_WHITE);
-        content.setBorder(new EmptyBorder(20, 20, 20, 20));
+        content.setBorder(new EmptyBorder(18, 18, 18, 18));
+        content.setOpaque(false);
 
-        // Title
         JLabel title = new JLabel(lesson.getTitle());
-        title.setFont(StyleUtils.FONT_CARD_TITLE);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 16));
         title.setForeground(StyleUtils.TEXT_DARK);
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Description
         String desc = lesson.getTheoryText();
-        if (desc.length() > 80) desc = desc.substring(0, 80) + "...";
+        if (desc.length() > 70) desc = desc.substring(0, 70) + "...";
         JLabel description = new JLabel("<html>" + desc + "</html>");
-        description.setFont(StyleUtils.FONT_BODY);
+        description.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         description.setForeground(StyleUtils.TEXT_MUTED);
         description.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Meta info
-        JPanel metaPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
-        metaPanel.setBackground(StyleUtils.CARD_WHITE);
+        JPanel metaPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+        metaPanel.setOpaque(false);
         metaPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel timeLabel = new JLabel("⏱️ 40h");
-        timeLabel.setFont(StyleUtils.FONT_SMALL);
+        timeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         timeLabel.setForeground(StyleUtils.TEXT_MUTED);
 
         JLabel levelLabel = new JLabel("📊 Avancé");
-        levelLabel.setFont(StyleUtils.FONT_SMALL);
+        levelLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         levelLabel.setForeground(StyleUtils.TEXT_MUTED);
 
         metaPanel.add(timeLabel);
         metaPanel.add(levelLabel);
 
-        // Progress
         int progress = isCompleted ? 100 : 0;
         JPanel progressPanel = createProgressSection(progress);
         progressPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Button
         JButton button = createModernButton(
                 isCompleted ? "✓ Cours terminé" : "Continuer le cours",
                 isCompleted ? StyleUtils.SUCCESS_GREEN : StyleUtils.PRIMARY_BLUE,
                 Color.WHITE
         );
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
-        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
+        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
         button.addActionListener(e -> parentApp.openLesson(lesson));
 
-        // Add components
         content.add(title);
-        content.add(Box.createVerticalStrut(10));
+        content.add(Box.createVerticalStrut(8));
         content.add(description);
-        content.add(Box.createVerticalStrut(15));
+        content.add(Box.createVerticalStrut(12));
         content.add(metaPanel);
-        content.add(Box.createVerticalStrut(15));
+        content.add(Box.createVerticalStrut(12));
         content.add(progressPanel);
-        content.add(Box.createVerticalStrut(15));
+        content.add(Box.createVerticalStrut(12));
         content.add(button);
 
         card.add(imagePanel, BorderLayout.NORTH);
         card.add(content, BorderLayout.CENTER);
+
+        // Hover
+        card.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                isHovered[0] = true;
+                card.repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                isHovered[0] = false;
+                card.repaint();
+            }
+        });
 
         return card;
     }
@@ -514,43 +557,62 @@ public class DashboardView extends JPanel {
     private JPanel createProgressSection(int percentage) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(StyleUtils.CARD_WHITE);
+        panel.setOpaque(false);
 
-        // Header
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(StyleUtils.CARD_WHITE);
-        header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
+        header.setOpaque(false);
+        header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 18));
 
         JLabel label = new JLabel("Progression");
-        label.setFont(StyleUtils.FONT_SMALL);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         label.setForeground(StyleUtils.TEXT_MUTED);
 
         JLabel value = new JLabel(percentage + "%");
-        value.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        value.setFont(new Font("Segoe UI", Font.BOLD, 12));
         value.setForeground(StyleUtils.PRIMARY_BLUE);
 
         header.add(label, BorderLayout.WEST);
         header.add(value, BorderLayout.EAST);
 
-        // Progress bar
-        JProgressBar progressBar = new JProgressBar(0, 100);
+        JProgressBar progressBar = new JProgressBar(0, 100) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+
+                g2d.setColor(StyleUtils.PROGRESS_BG);
+                RoundRectangle2D bg = new RoundRectangle2D.Float(
+                        0, 0, getWidth(), getHeight(), 10, 10
+                );
+                g2d.fill(bg);
+
+                if (getValue() > 0) {
+                    g2d.setColor(StyleUtils.PRIMARY_BLUE);
+                    int width = (int)(getWidth() * (getValue() / 100.0));
+                    RoundRectangle2D fill = new RoundRectangle2D.Float(
+                            0, 0, width, getHeight(), 10, 10
+                    );
+                    g2d.fill(fill);
+                }
+            }
+        };
         progressBar.setValue(percentage);
         progressBar.setStringPainted(false);
         progressBar.setPreferredSize(new Dimension(0, 8));
         progressBar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 8));
-        progressBar.setBackground(StyleUtils.PROGRESS_BG);
-        progressBar.setForeground(StyleUtils.PRIMARY_BLUE);
         progressBar.setBorderPainted(false);
+        progressBar.setOpaque(false);
 
         panel.add(header);
-        panel.add(Box.createVerticalStrut(8));
+        panel.add(Box.createVerticalStrut(6));
         panel.add(progressBar);
 
         return panel;
     }
 
     /**
-     * Create a modern button.
+     * Create modern button.
      */
     private JButton createModernButton(String text, Color bgColor, Color textColor) {
         JButton button = new JButton(text) {
@@ -560,22 +622,25 @@ public class DashboardView extends JPanel {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
 
+                Color color = bgColor;
                 if (getModel().isPressed()) {
-                    g2d.setColor(StyleUtils.darken(bgColor, 0.9f));
+                    color = StyleUtils.darken(bgColor, 0.9f);
                 } else if (getModel().isRollover()) {
-                    g2d.setColor(StyleUtils.darken(bgColor, 0.95f));
-                } else {
-                    g2d.setColor(bgColor);
+                    color = StyleUtils.darken(bgColor, 0.95f);
                 }
 
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                g2d.setColor(color);
+                RoundRectangle2D rect = new RoundRectangle2D.Float(
+                        0, 0, getWidth(), getHeight(), 10, 10
+                );
+                g2d.fill(rect);
                 g2d.dispose();
 
                 super.paintComponent(g);
             }
         };
 
-        button.setFont(StyleUtils.FONT_BUTTON);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.setForeground(textColor);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
@@ -588,13 +653,9 @@ public class DashboardView extends JPanel {
 
     // ==================== PUBLIC METHODS ====================
 
-    /**
-     * Refresh the dashboard for the current user.
-     */
     public void refreshForUser(User user) {
         this.currentUser = user;
 
-        // Update XP display
         if (user instanceof Student) {
             Student student = (Student) user;
             xpLabel.setText(student.getXpScore() + " XP");
@@ -602,13 +663,9 @@ public class DashboardView extends JPanel {
             xpLabel.setText("Admin");
         }
 
-        // Load courses
         loadCourses();
     }
 
-    /**
-     * Load courses from CSV.
-     */
     private void loadCourses() {
         coursesPanel.removeAll();
 
