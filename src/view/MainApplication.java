@@ -1,5 +1,6 @@
 package view;
 
+import model.Admin;
 import model.Lesson;
 import model.User;
 import utils.StyleUtils;
@@ -35,6 +36,7 @@ public class MainApplication extends JFrame {
     
     private static final String LOGIN_SCREEN = "LOGIN";
     private static final String DASHBOARD_SCREEN = "DASHBOARD";
+    private static final String ADMIN_DASHBOARD_SCREEN = "ADMIN_DASHBOARD";
     private static final String LEARNING_SCREEN = "LEARNING";
 
     // ==================== LAYOUT & PANELS ====================
@@ -50,6 +52,7 @@ public class MainApplication extends JFrame {
     
     private LoginView loginView;
     private DashboardView dashboardView;
+    private AdminDashboardView adminDashboardView;
     private LearningView learningView;
 
     // ==================== USER STATE ====================
@@ -118,12 +121,14 @@ public class MainApplication extends JFrame {
         // Create each view, passing 'this' so they can communicate back
         loginView = new LoginView(this);
         dashboardView = new DashboardView(this);
+        adminDashboardView = new AdminDashboardView(this);
         learningView = new LearningView(this);
         
         // Add each view as a "card" with a name
         // The name is how we'll switch to that card later
         mainPanel.add(loginView, LOGIN_SCREEN);
         mainPanel.add(dashboardView, DASHBOARD_SCREEN);
+        mainPanel.add(adminDashboardView, ADMIN_DASHBOARD_SCREEN);
         mainPanel.add(learningView, LEARNING_SCREEN);
         
         // Add the main panel to the window
@@ -166,16 +171,37 @@ public class MainApplication extends JFrame {
     /**
      * Called by LoginView when login is successful.
      * 
+     * POLYMORPHISM IN ACTION:
+     * - We check if user is an Admin using 'instanceof'
+     * - Admins go to AdminDashboard
+     * - Students/Guests go to regular Dashboard
+     * 
      * @param user The authenticated user
      */
     public void onLoginSuccess(User user) {
         this.currentUser = user;
         
-        // Show a welcome message (optional)
+        // Show a welcome message
         System.out.println("Welcome, " + user.getUsername() + "!");
         
-        // Navigate to dashboard
-        showDashboard();
+        // Route based on user role (POLYMORPHISM!)
+        if (user instanceof Admin) {
+            // Admin users go to admin dashboard
+            showAdminDashboard();
+        } else {
+            // Students and guests go to regular dashboard
+            showDashboard();
+        }
+    }
+    
+    /**
+     * Show the admin dashboard screen.
+     */
+    public void showAdminDashboard() {
+        if (currentUser instanceof Admin) {
+            adminDashboardView.refreshForAdmin((Admin) currentUser);
+        }
+        cardLayout.show(mainPanel, ADMIN_DASHBOARD_SCREEN);
     }
     
     /**
