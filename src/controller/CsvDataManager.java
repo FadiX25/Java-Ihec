@@ -146,11 +146,90 @@ public class CsvDataManager {
     }
     
     /**
+     * Check if a username is already taken.
+     * 
+     * @param username The username to check
+     * @return true if the username exists, false otherwise
+     */
+    public boolean isUsernameTaken(String username) {
+        List<User> users = loadUsers();
+        
+        for (User user : users) {
+            if (user.getUsername().equalsIgnoreCase(username)) {
+                return true;  // Username already exists!
+            }
+        }
+        
+        return false;  // Username is available
+    }
+    
+    /**
+     * Register a new student user.
+     * 
+     * HOW IT WORKS:
+     * 1. Find the highest existing ID
+     * 2. Create new user with ID + 1
+     * 3. Append to the CSV file
+     * 
+     * @param username The new user's username
+     * @param password The new user's password
+     * @return The created Student object, or null if registration fails
+     */
+    public Student registerUser(String username, String password) {
+        // First, check if username is taken
+        if (isUsernameTaken(username)) {
+            return null;
+        }
+        
+        // Find the next available ID
+        List<User> users = loadUsers();
+        int nextId = 1;
+        for (User user : users) {
+            if (user.getId() >= nextId) {
+                nextId = user.getId() + 1;
+            }
+        }
+        
+        // Create the new student (starts with 0 XP)
+        Student newStudent = new Student(nextId, username, password, 0);
+        
+        // Append to CSV file
+        try (PrintWriter writer = new PrintWriter(new FileWriter(USER_FILE, true))) {
+            // 'true' means append mode - adds to end of file
+            writer.println(nextId + "," + username + "," + password + ",STUDENT,0");
+            System.out.println("Registered new user: " + username + " (ID: " + nextId + ")");
+            return newStudent;
+            
+        } catch (IOException e) {
+            System.err.println("Error registering user: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Create a guest user (not saved to file).
+     * Guest users can browse but their progress won't be saved.
+     * 
+     * @return A temporary Student object for guest access
+     */
+    public Student createGuestUser() {
+        // Guest users have ID = -1 (special marker)
+        // This way we know not to save their progress
+        return new Student(-1, "Guest", "", 0);
+    }
+    
+    /**
      * Save a student's progress (XP and completed lessons) back to CSV.
      * 
      * @param student The student whose progress to save
      */
     public void saveUserProgress(Student student) {
+        // Don't save guest users (they have ID = -1)
+        if (student.getId() < 0) {
+            System.out.println("Guest user - progress not saved.");
+            return;
+        }
+        
         List<User> users = loadUsers();
         
         // Find and update the student in the list
