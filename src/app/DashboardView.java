@@ -1,6 +1,6 @@
-package view;
+package app;
 
-import controller.CsvDataManager;
+import services.CsvDataManager;
 import model.Lesson;
 import model.Student;
 import model.User;

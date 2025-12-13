@@ -1,4 +1,4 @@
-package view;
+package app;
 
 import model.Lesson;
 import model.User;

@@ -1,4 +1,4 @@
-package controller;
+package services;
 
 import model.Admin;
 import model.Lesson;

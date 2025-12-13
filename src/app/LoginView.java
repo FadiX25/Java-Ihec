@@ -1,6 +1,6 @@
-package view;
+package app;
 
-import controller.CsvDataManager;
+import services.CsvDataManager;
 import model.Student;
 import model.User;
 import utils.StyleUtils;
@@ -19,7 +19,7 @@ import java.awt.event.ActionListener;
  * - Sign Up: Register a new student account
  * - Continue as Guest: Browse without saving progress
  * 
- * SWING BASICS:
+// * SWING BASICS:
  * - JPanel: A container that holds other components
  * - JLabel: Displays text
  * - JTextField: Input field for text
