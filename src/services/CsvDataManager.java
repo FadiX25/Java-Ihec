@@ -380,6 +380,74 @@ public class CsvDataManager {
             System.err.println("Error adding lesson: " + e.getMessage());
         }
     }
+    
+    /**
+     * Delete a user by ID.
+     * 
+     * @param userId The ID of the user to delete
+     */
+    public void deleteUser(int userId) {
+        List<User> users = loadUsers();
+        
+        // Remove the user with matching ID
+        users.removeIf(user -> user.getId() == userId);
+        
+        // Rewrite the file without the deleted user
+        try (PrintWriter writer = new PrintWriter(new FileWriter(USER_FILE))) {
+            // Write header
+            writer.println("id,username,password,role,xp_score");
+            
+            // Write each remaining user
+            for (User user : users) {
+                if (user instanceof Student) {
+                    Student s = (Student) user;
+                    writer.println(s.getId() + "," + s.getUsername() + "," + 
+                                 s.getPassword() + ",STUDENT," + s.getXpScore());
+                } else {
+                    writer.println(user.getId() + "," + user.getUsername() + "," + 
+                                 user.getPassword() + ",ADMIN,0");
+                }
+            }
+            
+            System.out.println("User " + userId + " deleted successfully.");
+            
+        } catch (IOException e) {
+            System.err.println("Error deleting user: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Delete a lesson by ID.
+     * 
+     * @param lessonId The ID of the lesson to delete
+     */
+    public void deleteLesson(int lessonId) {
+        List<Lesson> lessons = loadLessons();
+        
+        // Remove the lesson with matching ID
+        lessons.removeIf(lesson -> lesson.getId() == lessonId);
+        
+        // Rewrite the file without the deleted lesson
+        try (PrintWriter writer = new PrintWriter(new FileWriter(LESSON_FILE))) {
+            // Write header
+            writer.println("id,title,youtube_id,date_created,correct_answer_keyword,theory_text");
+            
+            // Write each remaining lesson
+            for (Lesson lesson : lessons) {
+                writer.println(lesson.getId() + "," + 
+                             lesson.getTitle() + "," + 
+                             lesson.getYoutubeId() + "," + 
+                             lesson.getDateCreated() + "," + 
+                             lesson.getCorrectAnswer() + "," + 
+                             "\"" + lesson.getTheoryText() + "\"");
+            }
+            
+            System.out.println("Lesson " + lessonId + " deleted successfully.");
+            
+        } catch (IOException e) {
+            System.err.println("Error deleting lesson: " + e.getMessage());
+        }
+    }
 
     // ==================== HELPER METHODS ====================
     
