@@ -29,7 +29,7 @@ public class DashboardView extends JPanel {
     private JLabel welcomeLabel;
     private JPanel mainContentPanel;
     private JPanel statsPanel;
-    private JPanel coursesGridPanel; // Le panel pour les cours
+    private JPanel coursesGridPanel;
 
     // ==================== CONSTRUCTOR ====================
 
@@ -77,31 +77,16 @@ public class DashboardView extends JPanel {
 
         // Right side: User info and logout
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
-        rightPanel.setOpaque(false);  // Transparent background
+        rightPanel.setOpaque(false);
 
-        // XP display avec badge moderne
-        JPanel xpBadge = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 2));
-        xpBadge.setBackground(new Color(255, 215, 0, 150)); // Or transparent
-        xpBadge.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(255, 215, 0), 1),
-                new EmptyBorder(3, 10, 3, 10)
-        ));
-
-        JLabel xpIcon = new JLabel("⭐");
-        xpIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
-        xpBadge.add(xpIcon);
-
-        xpLabel = new JLabel("0 XP");
-        xpLabel.setFont(StyleUtils.FONT_BODY);
-        xpLabel.setForeground(new Color(139, 69, 19)); // Marron foncé pour contraste
-        xpBadge.add(xpLabel);
-
+        // XP display avec badge amélioré
+        JPanel xpBadge = createXpBadge();
         rightPanel.add(xpBadge);
 
-        // Logout button avec meilleur contraste
+        // Logout button
         JButton logoutBtn = createModernButton("Déconnexion",
-                new Color(255, 107, 107), // Rouge clair
-                new Color(220, 80, 80),   // Rouge foncé (hover)
+                new Color(255, 107, 107),
+                new Color(220, 80, 80),
                 Color.WHITE);
         logoutBtn.addActionListener(e -> parentApp.logout());
         rightPanel.add(logoutBtn);
@@ -112,6 +97,31 @@ public class DashboardView extends JPanel {
     }
 
     /**
+     * Create XP badge with icon.
+     */
+    private JPanel createXpBadge() {
+        JPanel xpBadge = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 5));
+        xpBadge.setBackground(new Color(255, 215, 0, 30)); // Or transparent avec transparence
+        xpBadge.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(255, 215, 0, 100), 2),
+                new EmptyBorder(5, 15, 5, 15)
+        ));
+
+        // XP icon avec emoji
+        JLabel xpIcon = new JLabel("⚡");
+        xpIcon.setFont(new Font("Segoe UI Emoji", Font.BOLD, 18));
+        xpBadge.add(xpIcon);
+
+        // XP value
+        xpLabel = new JLabel("0 XP");
+        xpLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        xpLabel.setForeground(new Color(218, 165, 32)); // Goldenrod
+        xpBadge.add(xpLabel);
+
+        return xpBadge;
+    }
+
+    /**
      * Create the main content area with sidebar and main content.
      */
     private JPanel createMainContentArea() {
@@ -119,8 +129,8 @@ public class DashboardView extends JPanel {
         contentArea.setBackground(StyleUtils.BACKGROUND_GRAY);
         contentArea.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Sidebar with statistics
-        contentArea.add(createStatsSidebar(), BorderLayout.WEST);
+        // Sidebar with statistics (AMÉLIORÉE)
+        contentArea.add(createEnhancedStatsSidebar(), BorderLayout.WEST);
 
         // Main content panel
         mainContentPanel = createMainContent();
@@ -130,96 +140,285 @@ public class DashboardView extends JPanel {
     }
 
     /**
-     * Create the sidebar with statistics (Continuer l'apprentissage).
+     * Create enhanced sidebar with statistics.
      */
-    private JPanel createStatsSidebar() {
+    private JPanel createEnhancedStatsSidebar() {
         statsPanel = new JPanel();
         statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
-        statsPanel.setBackground(StyleUtils.CARD_WHITE);
+        statsPanel.setBackground(new Color(255, 255, 255)); // Blanc pur
         statsPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(StyleUtils.BORDER_LIGHT, 1),
-                new EmptyBorder(20, 20, 20, 20)
+                BorderFactory.createLineBorder(new Color(230, 230, 230), 1),
+                new EmptyBorder(25, 20, 25, 20)
         ));
-        statsPanel.setPreferredSize(new Dimension(300, 0));
+        statsPanel.setPreferredSize(new Dimension(320, 0));
 
-        // Title avec icône
-        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        titlePanel.setBackground(StyleUtils.CARD_WHITE);
+        // Header avec icône et titre amélioré
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBorder(new EmptyBorder(0, 0, 20, 0));
 
-        JLabel iconLabel = new JLabel("📊");
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 20));
-        titlePanel.add(iconLabel);
+        // Icon and title
+        JPanel titleContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+        titleContainer.setBackground(Color.WHITE);
 
-        JLabel title = new JLabel("Continuer l'apprentissage");
-        title.setFont(StyleUtils.FONT_SUBHEADER);
-        title.setForeground(StyleUtils.TEXT_DARK);
-        titlePanel.add(title);
+        JLabel iconLabel = new JLabel("📈");
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 28));
+        titleContainer.add(iconLabel);
 
-        statsPanel.add(titlePanel);
-        statsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        JLabel title = new JLabel("Vos Statistiques");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        title.setForeground(new Color(30, 30, 30));
+        titleContainer.add(title);
 
-        // Divider
+        headerPanel.add(titleContainer, BorderLayout.WEST);
+
+        // Subtitle
+        JLabel subtitle = new JLabel("Suivez votre progression");
+        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        subtitle.setForeground(new Color(120, 120, 120));
+        subtitle.setHorizontalAlignment(SwingConstants.RIGHT);
+        headerPanel.add(subtitle, BorderLayout.EAST);
+
+        statsPanel.add(headerPanel);
+        statsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // Divider élégant
         JSeparator separator = new JSeparator();
-        separator.setForeground(StyleUtils.BORDER_LIGHT);
+        separator.setForeground(new Color(230, 230, 230));
         separator.setAlignmentX(Component.LEFT_ALIGNMENT);
         statsPanel.add(separator);
+        statsPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
-        statsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        // Statistics cards avec couleurs variées
-        String[] stats = {"Cours suivis", "Certifications", "Objectifs atteints", "Jours consécutifs"};
-        String[] values = {"12", "3", "8", "15"};
+        // Statistics cards améliorées avec icônes
+        String[] stats = {"Cours suivis", "Certifications", "Objectifs atteints", "Jours consécutifs", "XP Total", "Niveau actuel"};
+        String[] values = {"12", "3", "8", "15", "450", "Débutant"};
+        String[] icons = {"📚", "🏆", "✅", "🔥", "⭐", "📊"};
         Color[] colors = {
                 new Color(70, 130, 180),    // Bleu acier
                 new Color(60, 179, 113),    // Vert moyen
                 new Color(255, 140, 0),     // Orange foncé
-                new Color(186, 85, 211)     // Violet moyen
+                new Color(186, 85, 211),    // Violet moyen
+                new Color(255, 215, 0),     // Or
+                new Color(30, 144, 255)     // Bleu dodger
         };
 
         for (int i = 0; i < stats.length; i++) {
-            statsPanel.add(createStatCard(stats[i], values[i], colors[i]));
+            statsPanel.add(createEnhancedStatCard(stats[i], values[i], icons[i], colors[i]));
             if (i < stats.length - 1) {
                 statsPanel.add(Box.createRigidArea(new Dimension(0, 15)));
             }
         }
 
+        statsPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+
+        // Progress section
+        JPanel progressSection = createProgressSection();
+        statsPanel.add(progressSection);
+
         statsPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
-        // See all button en BLEU
-        JButton seeAllBtn = createModernButton("📋 Voir tout les statistiques",
-                new Color(0, 123, 255), // BLEU vif
-                new Color(0, 86, 179),  // BLEU foncé (hover)
-                Color.WHITE);
-        seeAllBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
-        seeAllBtn.setMaximumSize(new Dimension(280, 40));
-        statsPanel.add(seeAllBtn);
+        // Quick actions
+        JPanel quickActions = createQuickActions();
+        statsPanel.add(quickActions);
 
         return statsPanel;
     }
 
     /**
-     * Create a single statistic card avec couleur.
+     * Create enhanced statistic card with icon.
      */
-    private JPanel createStatCard(String title, String value, Color color) {
-        JPanel card = new JPanel(new BorderLayout());
-        card.setBackground(StyleUtils.BACKGROUND_GRAY);
+    private JPanel createEnhancedStatCard(String title, String value, String icon, Color color) {
+        JPanel card = new JPanel(new BorderLayout(15, 0));
+        card.setBackground(Color.WHITE);
         card.setBorder(new EmptyBorder(15, 15, 15, 15));
-        card.setMaximumSize(new Dimension(280, 80));
+        card.setMaximumSize(new Dimension(280, 85));
+        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Value (large number) avec couleur spécifique
+        // Left: Icon with colored background
+        JPanel iconPanel = new JPanel(new GridBagLayout());
+        iconPanel.setPreferredSize(new Dimension(50, 50));
+        iconPanel.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
+        iconPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(color.getRed(), color.getGreen(), color.getBlue(), 100), 1),
+                new EmptyBorder(5, 5, 5, 5)
+        ));
+
+        JLabel iconLabel = new JLabel(icon);
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 20));
+        iconLabel.setForeground(color);
+        iconPanel.add(iconLabel);
+
+        card.add(iconPanel, BorderLayout.WEST);
+
+        // Center: Text content
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.setBackground(Color.WHITE);
+
+        // Value (large number)
         JLabel valueLabel = new JLabel(value);
-        valueLabel.setFont(StyleUtils.FONT_STAT_NUMBER);
-        valueLabel.setForeground(color);
-        card.add(valueLabel, BorderLayout.WEST);
+        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        valueLabel.setForeground(new Color(40, 40, 40));
+        valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        textPanel.add(valueLabel);
 
         // Title
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(StyleUtils.FONT_BODY);
-        titleLabel.setForeground(StyleUtils.TEXT_DARK);
-        titleLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        card.add(titleLabel, BorderLayout.CENTER);
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        titleLabel.setForeground(new Color(100, 100, 100));
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        textPanel.add(Box.createRigidArea(new Dimension(0, 3)));
+        textPanel.add(titleLabel);
+
+        card.add(textPanel, BorderLayout.CENTER);
+
+        // Hover effect
+        card.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                card.setBackground(new Color(245, 247, 250));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                card.setBackground(Color.WHITE);
+            }
+        });
 
         return card;
+    }
+
+    /**
+     * Create progress section with bar.
+     */
+    private JPanel createProgressSection() {
+        JPanel section = new JPanel();
+        section.setLayout(new BoxLayout(section, BoxLayout.Y_AXIS));
+        section.setBackground(Color.WHITE);
+        section.setBorder(new EmptyBorder(0, 10, 0, 10));
+        section.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Title
+        JLabel progressTitle = new JLabel("📊 Progression du mois");
+        progressTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        progressTitle.setForeground(new Color(30, 30, 30));
+        progressTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        section.add(progressTitle);
+
+        section.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // Progress bar container
+        JPanel barContainer = new JPanel(new BorderLayout());
+        barContainer.setBackground(Color.WHITE);
+        barContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Progress bar
+        JProgressBar progressBar = new JProgressBar(0, 100);
+        progressBar.setValue(75); // 75% de progression
+        progressBar.setForeground(new Color(0, 123, 255)); // Bleu
+        progressBar.setBackground(new Color(230, 230, 230));
+        progressBar.setBorderPainted(false);
+        progressBar.setStringPainted(true);
+        progressBar.setString("75%");
+        progressBar.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        progressBar.setPreferredSize(new Dimension(280, 25));
+        barContainer.add(progressBar, BorderLayout.CENTER);
+
+        section.add(barContainer);
+
+        // Progress info
+        JPanel infoPanel = new JPanel(new BorderLayout());
+        infoPanel.setBackground(Color.WHITE);
+        infoPanel.setBorder(new EmptyBorder(5, 0, 0, 0));
+        infoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel currentLabel = new JLabel("15/20 cours");
+        currentLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        currentLabel.setForeground(new Color(100, 100, 100));
+
+        JLabel targetLabel = new JLabel("Objectif: 20 cours");
+        targetLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        targetLabel.setForeground(new Color(0, 123, 255));
+        targetLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        infoPanel.add(currentLabel, BorderLayout.WEST);
+        infoPanel.add(targetLabel, BorderLayout.EAST);
+
+        section.add(infoPanel);
+
+        return section;
+    }
+
+    /**
+     * Create quick actions panel.
+     */
+    private JPanel createQuickActions() {
+        JPanel actionsPanel = new JPanel();
+        actionsPanel.setLayout(new BoxLayout(actionsPanel, BoxLayout.Y_AXIS));
+        actionsPanel.setBackground(Color.WHITE);
+        actionsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Title
+        JLabel actionsTitle = new JLabel("⚡ Actions rapides");
+        actionsTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        actionsTitle.setForeground(new Color(30, 30, 30));
+        actionsTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        actionsPanel.add(actionsTitle);
+
+        actionsPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+
+        // Action buttons
+        String[] actions = {"📝 Reprendre le dernier cours", "🎯 Définir un objectif", "📥 Télécharger certificat", "👥 Inviter un ami"};
+        Color[] actionColors = {
+                new Color(0, 123, 255),  // Bleu
+                new Color(40, 167, 69),  // Vert
+                new Color(255, 193, 7),  // Jaune
+                new Color(111, 66, 193)  // Violet
+        };
+
+        for (int i = 0; i < actions.length; i++) {
+            JButton actionBtn = createActionButton(actions[i], actionColors[i]);
+            actionBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+            actionBtn.setMaximumSize(new Dimension(280, 40));
+            actionsPanel.add(actionBtn);
+            if (i < actions.length - 1) {
+                actionsPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+            }
+        }
+
+        return actionsPanel;
+    }
+
+    /**
+     * Create action button.
+     */
+    private JButton createActionButton(String text, Color color) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 10));
+        button.setForeground(color);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(color.getRed(), color.getGreen(), color.getBlue(), 50), 1),
+                new EmptyBorder(10, 15, 10, 15)
+        ));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setHorizontalAlignment(SwingConstants.LEFT);
+
+        // Hover effect
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 10));
+            }
+        });
+
+        return button;
     }
 
     /**
@@ -228,9 +427,12 @@ public class DashboardView extends JPanel {
     private JPanel createMainContent() {
         // Créer un JTabbedPane pour les différentes sections
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setFont(StyleUtils.FONT_SUBHEADER);
+        tabbedPane.setFont(new Font("Segoe UI", Font.BOLD, 14));
         tabbedPane.setBackground(StyleUtils.BACKGROUND_GRAY);
-        tabbedPane.setForeground(StyleUtils.TEXT_DARK);
+        tabbedPane.setForeground(new Color(30, 30, 30));
+
+        // Style des onglets
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
         // Onglet "Parcours de compétences"
         tabbedPane.addTab("🏆 Parcours", createSkillPathsSection());
@@ -240,6 +442,9 @@ public class DashboardView extends JPanel {
 
         // Onglet "Recommandations"
         tabbedPane.addTab("⭐ Recommandations", createRecommendationsSection());
+
+        // Onglet "Historique"
+        tabbedPane.addTab("📅 Historique", createHistorySection());
 
         // Envelopper dans un panel
         JPanel contentPanel = new JPanel(new BorderLayout());
@@ -263,13 +468,13 @@ public class DashboardView extends JPanel {
         header.setBorder(new EmptyBorder(0, 0, 20, 0));
 
         JLabel title = new JLabel("🎯 Parcours de compétences");
-        title.setFont(StyleUtils.FONT_SUBHEADER);
-        title.setForeground(new Color(30, 144, 255)); // Bleu dodger
+        title.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        title.setForeground(new Color(30, 144, 255));
         header.add(title, BorderLayout.WEST);
 
         JLabel subtitle = new JLabel("Suivez un parcours structuré pour maîtriser une compétence");
-        subtitle.setFont(StyleUtils.FONT_SMALL);
-        subtitle.setForeground(StyleUtils.TEXT_MUTED);
+        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        subtitle.setForeground(new Color(100, 100, 100));
         header.add(subtitle, BorderLayout.EAST);
 
         section.add(header, BorderLayout.NORTH);
@@ -278,18 +483,20 @@ public class DashboardView extends JPanel {
         JPanel pathsGrid = new JPanel(new GridLayout(0, 2, 20, 20));
         pathsGrid.setBackground(StyleUtils.BACKGROUND_GRAY);
 
-        // Sample paths (would normally come from database)
-        String[] pathTitles = {"Parcours Data Analyst", "Parcours Machine Learning Engineer", "Parcours Développeur Java"};
+        // Sample paths
+        String[] pathTitles = {"Parcours Data Analyst", "Parcours Machine Learning Engineer", "Parcours Développeur Java", "Parcours DevOps"};
         String[] descriptions = {
                 "Devenez expert en analyse de données et visualisation",
                 "Construisez et déployez des modèles de ML en production",
-                "Maîtrisez Java de A à Z, du débutant à l'expert"
+                "Maîtrisez Java de A à Z, du débutant à l'expert",
+                "Automatisez le déploiement et la gestion des infrastructures"
         };
-        String[] progress = {"4/6", "1/7", "0/8"};
+        String[] progress = {"4/6", "1/7", "0/8", "3/5"};
         Color[] pathColors = {
                 new Color(70, 130, 180),  // Bleu acier
                 new Color(60, 179, 113),  // Vert moyen
-                new Color(255, 140, 0)    // Orange foncé
+                new Color(255, 140, 0),   // Orange foncé
+                new Color(111, 66, 193)   // Violet
         };
 
         for (int i = 0; i < pathTitles.length; i++) {
@@ -299,64 +506,6 @@ public class DashboardView extends JPanel {
         section.add(pathsGrid, BorderLayout.CENTER);
 
         return section;
-    }
-
-    /**
-     * Create a single skill path card avec couleur.
-     */
-    private JPanel createSkillPathCard(String title, String description, String progress, Color color) {
-        JPanel card = new JPanel(new BorderLayout());
-        card.setBackground(Color.WHITE);
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(color.brighter(), 2),
-                new EmptyBorder(20, 20, 20, 20)
-        ));
-        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        // Progress indicator avec badge coloré
-        JPanel progressPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        progressPanel.setBackground(Color.WHITE);
-
-        JLabel progressLabel = new JLabel(progress);
-        progressLabel.setFont(StyleUtils.FONT_SUBHEADER);
-        progressLabel.setForeground(color);
-
-        JLabel progressText = new JLabel(" complété");
-        progressText.setFont(StyleUtils.FONT_SMALL);
-        progressText.setForeground(StyleUtils.TEXT_MUTED);
-
-        progressPanel.add(progressLabel);
-        progressPanel.add(progressText);
-        card.add(progressPanel, BorderLayout.NORTH);
-
-        // Title
-        JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(StyleUtils.FONT_BODY);
-        titleLabel.setForeground(StyleUtils.TEXT_DARK);
-        titleLabel.setBorder(new EmptyBorder(10, 0, 5, 0));
-        card.add(titleLabel, BorderLayout.CENTER);
-
-        // Description
-        JLabel descLabel = new JLabel("<html><p style='width:250px'>" + description + "</p></html>");
-        descLabel.setFont(StyleUtils.FONT_SMALL);
-        descLabel.setForeground(StyleUtils.TEXT_MUTED);
-        descLabel.setBorder(new EmptyBorder(5, 0, 10, 0));
-        card.add(descLabel, BorderLayout.SOUTH);
-
-        // Ajouter un effet de survol
-        card.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                card.setBackground(new Color(240, 248, 255)); // Alice blue
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                card.setBackground(Color.WHITE);
-            }
-        });
-
-        return card;
     }
 
     /**
@@ -380,25 +529,25 @@ public class DashboardView extends JPanel {
         titlePanel.add(titleIcon);
 
         JLabel title = new JLabel("Tous les cours");
-        title.setFont(StyleUtils.FONT_SUBHEADER);
-        title.setForeground(new Color(30, 144, 255)); // Bleu dodger
+        title.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        title.setForeground(new Color(30, 144, 255));
         titlePanel.add(title);
 
         header.add(titlePanel, BorderLayout.WEST);
 
-        // Filter and sort buttons avec couleurs vives
+        // Filter and sort buttons
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         filterPanel.setBackground(StyleUtils.BACKGROUND_GRAY);
 
         JButton filterBtn = createModernButton("🔍 Filtrer",
-                new Color(0, 123, 255), // BLEU vif
-                new Color(0, 86, 179),  // BLEU foncé (hover)
+                new Color(0, 123, 255),
+                new Color(0, 86, 179),
                 Color.WHITE);
         filterBtn.setPreferredSize(new Dimension(100, 35));
 
         JButton sortBtn = createModernButton("↕️ Trier",
-                new Color(0, 123, 255), // BLEU vif
-                new Color(0, 86, 179),  // BLEU foncé (hover)
+                new Color(0, 123, 255),
+                new Color(0, 86, 179),
                 Color.WHITE);
         sortBtn.setPreferredSize(new Dimension(100, 35));
 
@@ -444,15 +593,15 @@ public class DashboardView extends JPanel {
         titlePanel.add(titleIcon);
 
         JLabel title = new JLabel("Recommandé pour vous");
-        title.setFont(StyleUtils.FONT_SUBHEADER);
-        title.setForeground(new Color(255, 105, 180)); // Rose vif
+        title.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        title.setForeground(new Color(255, 105, 180));
         titlePanel.add(title);
 
         header.add(titlePanel, BorderLayout.WEST);
 
         JLabel subtitle = new JLabel("Basé sur vos cours et objectifs");
-        subtitle.setFont(StyleUtils.FONT_SMALL);
-        subtitle.setForeground(StyleUtils.TEXT_MUTED);
+        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        subtitle.setForeground(new Color(100, 100, 100));
         header.add(subtitle, BorderLayout.EAST);
 
         section.add(header, BorderLayout.NORTH);
@@ -462,14 +611,18 @@ public class DashboardView extends JPanel {
         recGrid.setBackground(StyleUtils.BACKGROUND_GRAY);
 
         // Sample recommendations
-        String[] recTitles = {"Architecture Logicielle avec Java", "Big Data avec Hadoop et Spark"};
+        String[] recTitles = {"Architecture Logicielle avec Java", "Big Data avec Hadoop et Spark", "Microservices avec Spring Boot", "Cloud Computing avec AWS"};
         String[] recDescriptions = {
                 "Approfondissez vos connaissances en Java avec les patterns d'architecture",
-                "Complétez vos compétences en Data Science avec le Big Data"
+                "Complétez vos compétences en Data Science avec le Big Data",
+                "Apprenez à construire des applications microservices modernes",
+                "Maîtrisez les services cloud d'Amazon Web Services"
         };
         Color[] recColors = {
                 new Color(135, 206, 250), // Bleu ciel clair
-                new Color(152, 251, 152)  // Vert pâle
+                new Color(152, 251, 152),  // Vert pâle
+                new Color(255, 228, 196),  // Bisque
+                new Color(221, 160, 221)   // Plum
         };
 
         for (int i = 0; i < recTitles.length; i++) {
@@ -482,40 +635,68 @@ public class DashboardView extends JPanel {
     }
 
     /**
-     * Create a single recommendation card.
+     * Create the "Historique" section.
      */
-    private JPanel createRecommendationCard(String title, String description, Color bgColor) {
-        JPanel card = new JPanel(new BorderLayout());
-        card.setBackground(bgColor);
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(bgColor.darker(), 1),
-                new EmptyBorder(20, 20, 20, 20)
-        ));
-        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    private JPanel createHistorySection() {
+        JPanel section = new JPanel(new BorderLayout());
+        section.setBackground(StyleUtils.BACKGROUND_GRAY);
+        section.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Title
-        JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(StyleUtils.FONT_BODY);
-        titleLabel.setForeground(new Color(25, 25, 112)); // Bleu nuit
-        card.add(titleLabel, BorderLayout.NORTH);
+        // Header
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(StyleUtils.BACKGROUND_GRAY);
+        header.setBorder(new EmptyBorder(0, 0, 20, 0));
 
-        // Description
-        JLabel descLabel = new JLabel("<html><p style='width:300px'>" + description + "</p></html>");
-        descLabel.setFont(StyleUtils.FONT_SMALL);
-        descLabel.setForeground(new Color(47, 79, 79)); // Gris ardoise
-        descLabel.setBorder(new EmptyBorder(10, 0, 15, 0));
-        card.add(descLabel, BorderLayout.CENTER);
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        titlePanel.setBackground(StyleUtils.BACKGROUND_GRAY);
 
-        // Learn more button avec contraste
-        JButton learnMoreBtn = createModernButton("✨ En savoir plus →",
-                new Color(0, 123, 255),   // BLEU vif
-                new Color(0, 86, 179),    // BLEU foncé (hover)
-                Color.WHITE);
-        learnMoreBtn.setHorizontalAlignment(SwingConstants.LEFT);
-        card.add(learnMoreBtn, BorderLayout.SOUTH);
+        JLabel titleIcon = new JLabel("📅");
+        titleIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 24));
+        titlePanel.add(titleIcon);
 
-        return card;
+        JLabel title = new JLabel("Votre historique d'apprentissage");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        title.setForeground(new Color(139, 0, 139)); // Magenta foncé
+        titlePanel.add(title);
+
+        header.add(titlePanel, BorderLayout.WEST);
+
+        JLabel subtitle = new JLabel("Retracez votre parcours d'apprentissage");
+        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        subtitle.setForeground(new Color(100, 100, 100));
+        header.add(subtitle, BorderLayout.EAST);
+
+        section.add(header, BorderLayout.NORTH);
+
+        // History content
+        JTextArea historyArea = new JTextArea();
+        historyArea.setText("📊 Historique de vos activités:\n\n" +
+                "• Aujourd'hui: Introduction à Java (30 min)\n" +
+                "• Hier: Variables et types de données (45 min)\n" +
+                "• Il y a 2 jours: Programmation Orientée Objet (60 min)\n" +
+                "• Il y a 3 jours: Structures de contrôle (40 min)\n" +
+                "• Il y a 5 jours: Tableaux et collections (55 min)\n\n" +
+                "⏱️ Temps total d'apprentissage ce mois: 12h 30min\n" +
+                "📈 Progression moyenne: 85%\n" +
+                "🏆 Cours complétés: 8/12");
+        historyArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        historyArea.setBackground(Color.WHITE);
+        historyArea.setForeground(new Color(60, 60, 60));
+        historyArea.setEditable(false);
+        historyArea.setBorder(new EmptyBorder(20, 20, 20, 20));
+        historyArea.setLineWrap(true);
+        historyArea.setWrapStyleWord(true);
+
+        JScrollPane scrollPane = new JScrollPane(historyArea);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+
+        section.add(scrollPane, BorderLayout.CENTER);
+
+        return section;
     }
+
+    // ==================== RESTE DU CODE INCHANGÉ ====================
+    // (Les méthodes suivantes restent identiques à la version précédente)
 
     /**
      * Create a modern button avec couleurs personnalisées.
@@ -548,13 +729,8 @@ public class DashboardView extends JPanel {
         return button;
     }
 
-    // ==================== PUBLIC METHODS ====================
-
     /**
      * Refresh the dashboard for the current user.
-     * Called when user logs in or returns from a lesson.
-     *
-     * @param user The logged-in user
      */
     public void refreshForUser(User user) {
         this.currentUser = user;
@@ -674,15 +850,15 @@ public class DashboardView extends JPanel {
 
             JLabel completedLabel = new JLabel("Terminé");
             completedLabel.setFont(StyleUtils.FONT_SMALL);
-            completedLabel.setForeground(new Color(34, 139, 34)); // Vert forest
+            completedLabel.setForeground(new Color(34, 139, 34));
             completedPanel.add(completedLabel);
 
             bottomPanel.add(completedPanel, BorderLayout.WEST);
         } else {
             // Bouton "Continuer" en VERT
             JButton continueBtn = createModernButton("▶ Continuer",
-                    new Color(40, 167, 69), // VERT vif
-                    new Color(33, 136, 56), // VERT foncé (hover)
+                    new Color(40, 167, 69),
+                    new Color(33, 136, 56),
                     Color.WHITE);
             continueBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
             continueBtn.addActionListener(e -> parentApp.openLesson(lesson));
@@ -699,10 +875,8 @@ public class DashboardView extends JPanel {
 
         String durationText;
         try {
-            // Essayer d'obtenir la durée
             durationText = lesson.getDuration() + "h";
         } catch (Exception e) {
-            // Si la méthode n'existe pas encore, utiliser une valeur par défaut
             durationText = "25h";
         }
         JLabel durationLabel = new JLabel(durationText);
@@ -723,7 +897,7 @@ public class DashboardView extends JPanel {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                card.setBackground(new Color(240, 248, 255)); // Alice blue
+                card.setBackground(new Color(240, 248, 255));
                 card.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(new Color(30, 144, 255), 2),
                         new EmptyBorder(15, 15, 15, 15)
@@ -739,6 +913,100 @@ public class DashboardView extends JPanel {
                 ));
             }
         });
+
+        return card;
+    }
+
+    /**
+     * Create a single skill path card avec couleur.
+     */
+    private JPanel createSkillPathCard(String title, String description, String progress, Color color) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(color.brighter(), 2),
+                new EmptyBorder(20, 20, 20, 20)
+        ));
+        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Progress indicator avec badge coloré
+        JPanel progressPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        progressPanel.setBackground(Color.WHITE);
+
+        JLabel progressLabel = new JLabel(progress);
+        progressLabel.setFont(StyleUtils.FONT_SUBHEADER);
+        progressLabel.setForeground(color);
+
+        JLabel progressText = new JLabel(" complété");
+        progressText.setFont(StyleUtils.FONT_SMALL);
+        progressText.setForeground(StyleUtils.TEXT_MUTED);
+
+        progressPanel.add(progressLabel);
+        progressPanel.add(progressText);
+        card.add(progressPanel, BorderLayout.NORTH);
+
+        // Title
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setFont(StyleUtils.FONT_BODY);
+        titleLabel.setForeground(StyleUtils.TEXT_DARK);
+        titleLabel.setBorder(new EmptyBorder(10, 0, 5, 0));
+        card.add(titleLabel, BorderLayout.CENTER);
+
+        // Description
+        JLabel descLabel = new JLabel("<html><p style='width:250px'>" + description + "</p></html>");
+        descLabel.setFont(StyleUtils.FONT_SMALL);
+        descLabel.setForeground(StyleUtils.TEXT_MUTED);
+        descLabel.setBorder(new EmptyBorder(5, 0, 10, 0));
+        card.add(descLabel, BorderLayout.SOUTH);
+
+        // Ajouter un effet de survol
+        card.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                card.setBackground(new Color(240, 248, 255));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                card.setBackground(Color.WHITE);
+            }
+        });
+
+        return card;
+    }
+
+    /**
+     * Create a single recommendation card.
+     */
+    private JPanel createRecommendationCard(String title, String description, Color bgColor) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(bgColor);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(bgColor.darker(), 1),
+                new EmptyBorder(20, 20, 20, 20)
+        ));
+        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Title
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setFont(StyleUtils.FONT_BODY);
+        titleLabel.setForeground(new Color(25, 25, 112));
+        card.add(titleLabel, BorderLayout.NORTH);
+
+        // Description
+        JLabel descLabel = new JLabel("<html><p style='width:300px'>" + description + "</p></html>");
+        descLabel.setFont(StyleUtils.FONT_SMALL);
+        descLabel.setForeground(new Color(47, 79, 79));
+        descLabel.setBorder(new EmptyBorder(10, 0, 15, 0));
+        card.add(descLabel, BorderLayout.CENTER);
+
+        // Learn more button avec contraste
+        JButton learnMoreBtn = createModernButton("✨ En savoir plus →",
+                new Color(0, 123, 255),
+                new Color(0, 86, 179),
+                Color.WHITE);
+        learnMoreBtn.setHorizontalAlignment(SwingConstants.LEFT);
+        card.add(learnMoreBtn, BorderLayout.SOUTH);
 
         return card;
     }

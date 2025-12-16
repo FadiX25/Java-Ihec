@@ -191,21 +191,21 @@ public class LoginView extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
-        // Sign In button (BLEU)
-        loginButton = createStyledButton("Sign In", new Color(0, 123, 255)); // BLEU
+        // Sign In button - BLEU (using StyleUtils.PRIMARY_BLUE)
+        loginButton = createStyledButton("Sign In", StyleUtils.PRIMARY_BLUE);
         loginButton.addActionListener(e -> handleLogin());
         buttonPanel.add(loginButton);
         buttonPanel.add(Box.createVerticalStrut(8));
 
         // Sign Up button (shown in signup mode, hidden initially) - VERT
-        signupButton = createStyledButton("Create Account", new Color(40, 167, 69)); // VERT
+        signupButton = createStyledButton("Create Account", StyleUtils.SUCCESS_GREEN);
         signupButton.addActionListener(e -> handleSignup());
         signupButton.setVisible(false);
         buttonPanel.add(signupButton);
         buttonPanel.add(Box.createVerticalStrut(8));
 
-        // Continue as Guest button (GRIS)
-        guestButton = createStyledButton("Continue as Guest", new Color(108, 117, 125)); // GRIS
+        // Continue as Guest button - GRIS (using StyleUtils.TEXT_MUTED)
+        guestButton = createStyledButton("Continue as Guest", StyleUtils.TEXT_MUTED);
         guestButton.addActionListener(e -> handleGuestLogin());
         buttonPanel.add(guestButton);
         buttonPanel.add(Box.createVerticalStrut(12));
