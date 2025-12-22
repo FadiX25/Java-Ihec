@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.RoundRectangle2D;
 import java.net.URI;
 
 /**
@@ -93,20 +94,20 @@ public class LearningView extends JPanel {
      * Create the top navigation bar.
      */
     private JPanel createNavBar() {
-        JPanel navBar = new JPanel(new BorderLayout());
-        navBar.setBackground(StyleUtils.PRIMARY_BLUE);
-        navBar.setPreferredSize(new Dimension(0, 70));
-        navBar.setBorder(new EmptyBorder(15, 25, 15, 25));
+        JPanel navBar = StyleUtils.createGradientHeader(75);
+        navBar.setBorder(new EmptyBorder(0, 25, 0, 25));
         
-        // Left side: Back button
-        JButton backButton = new JButton("← Back to Dashboard");
-        backButton.setFont(StyleUtils.FONT_BODY);
-        backButton.setBackground(StyleUtils.CARD_WHITE);
+        // Left side: Back button - modern style
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 17));
+        leftPanel.setOpaque(false);
+        
+        JButton backButton = StyleUtils.createModernButton("← Back", StyleUtils.CARD_WHITE);
         backButton.setForeground(StyleUtils.PRIMARY_BLUE);
-        backButton.setFocusPainted(false);
-        backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        backButton.setPreferredSize(new Dimension(120, 40));
         backButton.addActionListener(e -> parentApp.returnToDashboard());
-        navBar.add(backButton, BorderLayout.WEST);
+        leftPanel.add(backButton);
+        
+        navBar.add(leftPanel, BorderLayout.WEST);
         
         // Center: Lesson title
         lessonTitleLabel = new JLabel("Lesson Title", SwingConstants.CENTER);
@@ -117,7 +118,7 @@ public class LearningView extends JPanel {
         // Right side: spacer (for symmetry)
         JPanel spacer = new JPanel();
         spacer.setOpaque(false);
-        spacer.setPreferredSize(new Dimension(180, 0));
+        spacer.setPreferredSize(new Dimension(120, 0));
         navBar.add(spacer, BorderLayout.EAST);
         
         return navBar;
@@ -158,44 +159,51 @@ public class LearningView extends JPanel {
      * Create the left panel with theory and video button.
      */
     private JPanel createLeftPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(StyleUtils.CARD_WHITE);
-        panel.setBorder(new EmptyBorder(20, 20, 20, 10));
+        // Card-style panel
+        JPanel panel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(StyleUtils.CARD_WHITE);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
+                g2.dispose();
+            }
+        };
+        panel.setOpaque(false);
+        panel.setBorder(new EmptyBorder(24, 24, 24, 12));
         
-        // Header
+        // Header with icon
         JLabel headerLabel = new JLabel("📖 Lesson Theory");
         headerLabel.setFont(StyleUtils.FONT_SUBHEADER);
         headerLabel.setForeground(StyleUtils.TEXT_DARK);
-        headerLabel.setBorder(new EmptyBorder(0, 0, 15, 0));
+        headerLabel.setBorder(new EmptyBorder(0, 0, 18, 0));
         panel.add(headerLabel, BorderLayout.NORTH);
         
-        // Theory text area (scrollable)
+        // Theory text area (scrollable) - modern styling
         theoryTextArea = new JTextArea();
-        theoryTextArea.setFont(StyleUtils.FONT_BODY);
-        theoryTextArea.setLineWrap(true);           // Wrap long lines
-        theoryTextArea.setWrapStyleWord(true);      // Wrap at word boundaries
-        theoryTextArea.setEditable(false);          // Read-only
+        theoryTextArea.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        theoryTextArea.setLineWrap(true);
+        theoryTextArea.setWrapStyleWord(true);
+        theoryTextArea.setEditable(false);
         theoryTextArea.setBackground(StyleUtils.CARD_WHITE);
         theoryTextArea.setForeground(StyleUtils.TEXT_DARK);
-        theoryTextArea.setBorder(new EmptyBorder(10, 10, 10, 10));
+        theoryTextArea.setBorder(new EmptyBorder(12, 12, 12, 12));
+        theoryTextArea.setSelectionColor(StyleUtils.PRIMARY_BLUE);
+        theoryTextArea.setSelectedTextColor(StyleUtils.TEXT_LIGHT);
         
         JScrollPane theoryScroll = new JScrollPane(theoryTextArea);
-        theoryScroll.setBorder(BorderFactory.createLineBorder(StyleUtils.BACKGROUND_GRAY));
+        theoryScroll.setBorder(BorderFactory.createLineBorder(StyleUtils.BORDER_LIGHT, 1));
         theoryScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        theoryScroll.getVerticalScrollBar().setUnitIncrement(16);
         panel.add(theoryScroll, BorderLayout.CENTER);
         
-        // Bottom: Watch Video button
+        // Bottom: Watch Video button - modern style
         JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setBackground(StyleUtils.CARD_WHITE);
-        bottomPanel.setBorder(new EmptyBorder(15, 0, 0, 0));
+        bottomPanel.setOpaque(false);
+        bottomPanel.setBorder(new EmptyBorder(18, 0, 0, 0));
         
-        watchVideoButton = new JButton("▶ Watch Video Tutorial");
-        watchVideoButton.setFont(StyleUtils.FONT_BUTTON);
-        watchVideoButton.setBackground(StyleUtils.PRIMARY_BLUE);
-        watchVideoButton.setForeground(StyleUtils.TEXT_LIGHT);
-        watchVideoButton.setFocusPainted(false);
-        watchVideoButton.setBorderPainted(false);
-        watchVideoButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        watchVideoButton = StyleUtils.createModernButton("▶ Watch Video Tutorial", StyleUtils.PRIMARY_BLUE);
         watchVideoButton.setPreferredSize(new Dimension(0, 50));
         watchVideoButton.addActionListener(e -> openYoutubeVideo());
         bottomPanel.add(watchVideoButton, BorderLayout.CENTER);
@@ -209,14 +217,24 @@ public class LearningView extends JPanel {
      * Create the right panel with code editor and submit button.
      */
     private JPanel createRightPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(StyleUtils.CARD_WHITE);
-        panel.setBorder(new EmptyBorder(20, 10, 20, 20));
+        // Card-style panel
+        JPanel panel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(StyleUtils.CARD_WHITE);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
+                g2.dispose();
+            }
+        };
+        panel.setOpaque(false);
+        panel.setBorder(new EmptyBorder(24, 12, 24, 24));
         
         // Header with instructions
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(StyleUtils.CARD_WHITE);
-        headerPanel.setBorder(new EmptyBorder(0, 0, 15, 0));
+        headerPanel.setOpaque(false);
+        headerPanel.setBorder(new EmptyBorder(0, 0, 18, 0));
         
         JLabel headerLabel = new JLabel("💻 Practice Exercise");
         headerLabel.setFont(StyleUtils.FONT_SUBHEADER);
@@ -226,30 +244,36 @@ public class LearningView extends JPanel {
         JLabel instructionLabel = new JLabel("<html>Write your code below. Your answer should contain the <b>correct keyword</b> from the lesson.</html>");
         instructionLabel.setFont(StyleUtils.FONT_BODY);
         instructionLabel.setForeground(StyleUtils.TEXT_MUTED);
-        instructionLabel.setBorder(new EmptyBorder(5, 0, 0, 0));
+        instructionLabel.setBorder(new EmptyBorder(8, 0, 0, 0));
         headerPanel.add(instructionLabel, BorderLayout.CENTER);
         
         panel.add(headerPanel, BorderLayout.NORTH);
         
-        // Code editor (dark theme)
+        // Code editor (modern dark theme)
         codeEditorArea = new JTextArea();
-        codeEditorArea.setFont(StyleUtils.FONT_CODE);
+        codeEditorArea.setFont(new Font("Consolas", Font.PLAIN, 15));
         codeEditorArea.setBackground(StyleUtils.EDITOR_DARK);
-        codeEditorArea.setForeground(StyleUtils.TEXT_LIGHT);
-        codeEditorArea.setCaretColor(StyleUtils.TEXT_LIGHT);  // Cursor color
+        codeEditorArea.setForeground(new Color(166, 227, 161)); // Soft green for code
+        codeEditorArea.setCaretColor(StyleUtils.TEXT_LIGHT);
+        codeEditorArea.setSelectionColor(new Color(69, 133, 136));
+        codeEditorArea.setSelectedTextColor(StyleUtils.TEXT_LIGHT);
         codeEditorArea.setLineWrap(true);
         codeEditorArea.setWrapStyleWord(true);
-        codeEditorArea.setBorder(new EmptyBorder(15, 15, 15, 15));
+        codeEditorArea.setBorder(new EmptyBorder(20, 20, 20, 20));
         codeEditorArea.setText("// Write your Java code here...\n\n");
         
         JScrollPane codeScroll = new JScrollPane(codeEditorArea);
-        codeScroll.setBorder(BorderFactory.createLineBorder(StyleUtils.EDITOR_DARK, 2));
+        codeScroll.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(StyleUtils.EDITOR_DARK, 2),
+            BorderFactory.createEmptyBorder(0, 0, 0, 0)
+        ));
+        codeScroll.getVerticalScrollBar().setUnitIncrement(16);
         panel.add(codeScroll, BorderLayout.CENTER);
         
         // Bottom panel: Feedback + Submit button
-        JPanel bottomPanel = new JPanel(new BorderLayout(0, 10));
-        bottomPanel.setBackground(StyleUtils.CARD_WHITE);
-        bottomPanel.setBorder(new EmptyBorder(15, 0, 0, 0));
+        JPanel bottomPanel = new JPanel(new BorderLayout(0, 12));
+        bottomPanel.setOpaque(false);
+        bottomPanel.setBorder(new EmptyBorder(18, 0, 0, 0));
         
         // Feedback label (shows success/error messages)
         feedbackLabel = new JLabel(" ");
@@ -257,14 +281,8 @@ public class LearningView extends JPanel {
         feedbackLabel.setHorizontalAlignment(SwingConstants.CENTER);
         bottomPanel.add(feedbackLabel, BorderLayout.NORTH);
         
-        // Submit button
-        submitButton = new JButton("✓ Submit Answer");
-        submitButton.setFont(StyleUtils.FONT_BUTTON);
-        submitButton.setBackground(StyleUtils.SUCCESS_GREEN);
-        submitButton.setForeground(StyleUtils.TEXT_LIGHT);
-        submitButton.setFocusPainted(false);
-        submitButton.setBorderPainted(false);
-        submitButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        // Submit button - modern style
+        submitButton = StyleUtils.createModernButton("✓ Submit Answer", StyleUtils.SUCCESS_GREEN);
         submitButton.setPreferredSize(new Dimension(0, 50));
         submitButton.addActionListener(e -> checkAnswer());
         bottomPanel.add(submitButton, BorderLayout.CENTER);

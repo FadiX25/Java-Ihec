@@ -82,11 +82,14 @@ public class MainApplication extends JFrame {
      * Configure the main window properties.
      */
     private void setupWindow() {
+        // Enable anti-aliasing for smoother text and graphics
+        StyleUtils.setupAntiAliasing();
+        
         // Window title (shown in title bar)
         setTitle("IHEC-JLearn - Learn Java Programming");
         
         // Window size
-        setSize(1200, 800);
+        setSize(1280, 850);
         
         // Center on screen
         setLocationRelativeTo(null);
@@ -96,13 +99,23 @@ public class MainApplication extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // Minimum size (can't resize smaller than this)
-        setMinimumSize(new Dimension(800, 600));
+        setMinimumSize(new Dimension(900, 650));
         
-        // Use the system look and feel for a native appearance
+        // Use modern look and feel with custom UI settings
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            
+            // Modern UI defaults
+            UIManager.put("Button.arc", 10);
+            UIManager.put("Component.arc", 10);
+            UIManager.put("ProgressBar.arc", 10);
+            UIManager.put("TextComponent.arc", 8);
+            UIManager.put("ScrollBar.width", 10);
+            UIManager.put("ScrollBar.thumbArc", 10);
+            UIManager.put("TabbedPane.selectedBackground", StyleUtils.CARD_WHITE);
+            UIManager.put("TabbedPane.focusColor", StyleUtils.PRIMARY_BLUE);
+            
         } catch (Exception e) {
-            // If it fails, just use the default look
             System.out.println("Could not set system look and feel: " + e.getMessage());
         }
     }

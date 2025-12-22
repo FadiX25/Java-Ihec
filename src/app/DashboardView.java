@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 
 /**
@@ -63,34 +64,37 @@ public class DashboardView extends JPanel {
      * Create the top navigation bar.
      */
     private JPanel createNavBar() {
-        JPanel navBar = new JPanel(new BorderLayout());
-        navBar.setBackground(StyleUtils.PRIMARY_BLUE);
-        navBar.setPreferredSize(new Dimension(0, 70));
-        navBar.setBorder(new EmptyBorder(15, 25, 15, 25));
+        JPanel navBar = StyleUtils.createGradientHeader(75);
+        navBar.setBorder(new EmptyBorder(0, 30, 0, 30));
         
         // Left side: App title
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 20));
+        leftPanel.setOpaque(false);
+        
         JLabel titleLabel = new JLabel("IHEC-JLearn");
         titleLabel.setFont(StyleUtils.FONT_SUBHEADER);
         titleLabel.setForeground(StyleUtils.TEXT_LIGHT);
-        navBar.add(titleLabel, BorderLayout.WEST);
+        leftPanel.add(titleLabel);
+        
+        navBar.add(leftPanel, BorderLayout.WEST);
         
         // Right side: User info and logout
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
-        rightPanel.setOpaque(false);  // Transparent background
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 15));
+        rightPanel.setOpaque(false);
         
-        // XP display
-        xpLabel = new JLabel("XP: 0");
-        xpLabel.setFont(StyleUtils.FONT_BODY);
+        // XP display with badge style
+        xpLabel = new JLabel("⭐ XP: 0");
+        xpLabel.setFont(StyleUtils.FONT_BUTTON);
         xpLabel.setForeground(StyleUtils.TEXT_LIGHT);
+        xpLabel.setBackground(new Color(255, 255, 255, 40));
+        xpLabel.setOpaque(true);
+        xpLabel.setBorder(new EmptyBorder(8, 16, 8, 16));
         rightPanel.add(xpLabel);
         
-        // Logout button
-        JButton logoutBtn = new JButton("Logout");
-        logoutBtn.setFont(StyleUtils.FONT_BODY);
-        logoutBtn.setBackground(StyleUtils.CARD_WHITE);
+        // Logout button - modern style
+        JButton logoutBtn = StyleUtils.createModernButton("Logout", StyleUtils.CARD_WHITE);
         logoutBtn.setForeground(StyleUtils.PRIMARY_BLUE);
-        logoutBtn.setFocusPainted(false);
-        logoutBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        logoutBtn.setPreferredSize(new Dimension(100, 40));
         logoutBtn.addActionListener(e -> parentApp.logout());
         rightPanel.add(logoutBtn);
         
@@ -105,24 +109,34 @@ public class DashboardView extends JPanel {
     private JPanel createContentArea() {
         JPanel contentArea = new JPanel(new BorderLayout());
         contentArea.setBackground(StyleUtils.BACKGROUND_GRAY);
-        contentArea.setBorder(new EmptyBorder(30, 30, 30, 30));
+        contentArea.setBorder(new EmptyBorder(35, 35, 35, 35));
         
-        // Welcome message
-        JLabel welcomeLabel = new JLabel("My Courses");
+        // Header with welcome message
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setOpaque(false);
+        headerPanel.setBorder(new EmptyBorder(0, 0, 25, 0));
+        
+        JLabel welcomeLabel = new JLabel("📚 My Courses");
         welcomeLabel.setFont(StyleUtils.FONT_HEADER);
         welcomeLabel.setForeground(StyleUtils.TEXT_DARK);
-        welcomeLabel.setBorder(new EmptyBorder(0, 0, 20, 0));
-        contentArea.add(welcomeLabel, BorderLayout.NORTH);
+        headerPanel.add(welcomeLabel, BorderLayout.WEST);
+        
+        JLabel subtitleLabel = new JLabel("Select a course to start learning");
+        subtitleLabel.setFont(StyleUtils.FONT_BODY);
+        subtitleLabel.setForeground(StyleUtils.TEXT_MUTED);
+        headerPanel.add(subtitleLabel, BorderLayout.SOUTH);
+        
+        contentArea.add(headerPanel, BorderLayout.NORTH);
         
         // Courses grid (will be populated when user logs in)
         coursesPanel = new JPanel();
-        coursesPanel.setLayout(new GridLayout(0, 2, 20, 20));  // 2 columns, auto rows
+        coursesPanel.setLayout(new GridLayout(0, 2, 25, 25));  // 2 columns, more spacing
         coursesPanel.setBackground(StyleUtils.BACKGROUND_GRAY);
         
         // Wrap in scroll pane for many courses
         JScrollPane scrollPane = new JScrollPane(coursesPanel);
         scrollPane.setBorder(null);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         scrollPane.setBackground(StyleUtils.BACKGROUND_GRAY);
         scrollPane.getViewport().setBackground(StyleUtils.BACKGROUND_GRAY);
         
@@ -138,45 +152,82 @@ public class DashboardView extends JPanel {
      * @param isCompleted Whether the student completed this lesson
      */
     private JPanel createCourseCard(Lesson lesson, boolean isCompleted) {
-        JPanel card = new JPanel(new BorderLayout());
+        // Modern card with shadow effect
+        JPanel card = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Draw shadow
+                g2.setColor(new Color(15, 23, 42, 15));
+                g2.fillRoundRect(3, 3, getWidth() - 3, getHeight() - 3, 16, 16);
+                
+                // Draw card background
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth() - 3, getHeight() - 3, 16, 16);
+                
+                g2.dispose();
+            }
+        };
+        card.setOpaque(false);
         card.setBackground(StyleUtils.CARD_WHITE);
-        card.setBorder(new EmptyBorder(20, 20, 20, 20));
-        card.setPreferredSize(new Dimension(300, 180));
+        card.setBorder(new EmptyBorder(24, 24, 24, 24));
+        card.setPreferredSize(new Dimension(320, 200));
         card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        // Top section with icon and title
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        
+        // Status icon
+        JLabel statusIcon = new JLabel(isCompleted ? "✅" : "📖");
+        statusIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 28));
+        topPanel.add(statusIcon, BorderLayout.WEST);
         
         // Course title
         JLabel titleLabel = new JLabel(lesson.getTitle());
         titleLabel.setFont(StyleUtils.FONT_SUBHEADER);
         titleLabel.setForeground(StyleUtils.TEXT_DARK);
-        card.add(titleLabel, BorderLayout.NORTH);
+        titleLabel.setBorder(new EmptyBorder(0, 12, 0, 0));
+        topPanel.add(titleLabel, BorderLayout.CENTER);
+        
+        card.add(topPanel, BorderLayout.NORTH);
         
         // Course description (truncated theory)
         String theoryPreview = lesson.getTheoryText();
-        if (theoryPreview.length() > 100) {
-            theoryPreview = theoryPreview.substring(0, 100) + "...";
+        if (theoryPreview.length() > 80) {
+            theoryPreview = theoryPreview.substring(0, 80) + "...";
         }
-        JLabel descLabel = new JLabel("<html><p style='width:250px'>" + theoryPreview + "</p></html>");
+        JLabel descLabel = new JLabel("<html><p style='width:250px; margin-top:10px;'>" + theoryPreview + "</p></html>");
         descLabel.setFont(StyleUtils.FONT_BODY);
         descLabel.setForeground(StyleUtils.TEXT_MUTED);
-        descLabel.setBorder(new EmptyBorder(10, 0, 10, 0));
+        descLabel.setBorder(new EmptyBorder(12, 0, 12, 0));
         card.add(descLabel, BorderLayout.CENTER);
         
-        // Bottom: Progress bar and status
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setBackground(StyleUtils.CARD_WHITE);
+        // Bottom: Modern progress bar and status
+        JPanel bottomPanel = new JPanel(new BorderLayout(0, 8));
+        bottomPanel.setOpaque(false);
         
-        JProgressBar progressBar = new JProgressBar(0, 100);
+        // Status label
+        JLabel statusLabel = new JLabel(isCompleted ? "Completed" : "Not Started");
+        statusLabel.setFont(StyleUtils.FONT_SMALL);
+        statusLabel.setForeground(isCompleted ? StyleUtils.SUCCESS_GREEN : StyleUtils.TEXT_MUTED);
+        bottomPanel.add(statusLabel, BorderLayout.NORTH);
+        
+        // Modern progress bar
+        JProgressBar progressBar = StyleUtils.createModernProgressBar();
         progressBar.setValue(isCompleted ? 100 : 0);
-        progressBar.setStringPainted(true);
-        progressBar.setString(isCompleted ? "Completed" : "Not Started");
         progressBar.setForeground(isCompleted ? StyleUtils.SUCCESS_GREEN : StyleUtils.PRIMARY_BLUE);
-        progressBar.setBackground(StyleUtils.BACKGROUND_GRAY);
-        
+        progressBar.setPreferredSize(new Dimension(0, 6));
         bottomPanel.add(progressBar, BorderLayout.CENTER);
+        
         card.add(bottomPanel, BorderLayout.SOUTH);
         
         // Click handler - open the lesson
         card.addMouseListener(new MouseAdapter() {
+            private Color originalBg = StyleUtils.CARD_WHITE;
+            
             @Override
             public void mouseClicked(MouseEvent e) {
                 parentApp.openLesson(lesson);
@@ -185,11 +236,13 @@ public class DashboardView extends JPanel {
             @Override
             public void mouseEntered(MouseEvent e) {
                 card.setBackground(StyleUtils.BACKGROUND_GRAY);
+                card.repaint();
             }
             
             @Override
             public void mouseExited(MouseEvent e) {
-                card.setBackground(StyleUtils.CARD_WHITE);
+                card.setBackground(originalBg);
+                card.repaint();
             }
         });
         
