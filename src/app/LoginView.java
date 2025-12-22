@@ -93,32 +93,10 @@ public class LoginView extends JPanel {
     }
     
     /**
-     * Create the header panel with the app title.
+     * Create the header panel with the app title and logo.
      */
     private JPanel createHeader() {
-        JPanel header = StyleUtils.createGradientHeader(90);
-        header.setBorder(new EmptyBorder(0, 0, 0, 0));
-        header.setLayout(new GridBagLayout());
-        
-        JPanel titlePanel = new JPanel();
-        titlePanel.setOpaque(false);
-        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
-        
-        JLabel title = new JLabel("IHEC-JLearn");
-        title.setFont(StyleUtils.FONT_HEADER);
-        title.setForeground(StyleUtils.TEXT_LIGHT);
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        titlePanel.add(title);
-        
-        JLabel subtitle = new JLabel("Master Java Programming");
-        subtitle.setFont(StyleUtils.FONT_SMALL);
-        subtitle.setForeground(new Color(255, 255, 255, 200));
-        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        titlePanel.add(Box.createVerticalStrut(5));
-        titlePanel.add(subtitle);
-        
-        header.add(titlePanel);
-        return header;
+        return StyleUtils.createBrandedHeader(100, true);
     }
     
     /**

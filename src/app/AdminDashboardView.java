@@ -94,37 +94,35 @@ public class AdminDashboardView extends JPanel {
      * Create the top navigation bar with modern styling.
      */
     private JPanel createNavBar() {
-        JPanel navBar = new JPanel(new BorderLayout());
-        navBar.setBackground(StyleUtils.PRIMARY_BLUE);
-        navBar.setPreferredSize(new Dimension(0, 65));
+        JPanel navBar = StyleUtils.createGradientHeader(80);
         navBar.setBorder(new EmptyBorder(0, 30, 0, 30));
         
         // Left side: App title + Admin badge
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 18));
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 18));
         leftPanel.setOpaque(false);
         
-        // App icon/emoji
-        JLabel iconLabel = new JLabel("🎓 ");
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 22));
-        leftPanel.add(iconLabel);
-        
-        JLabel titleLabel = new JLabel("IHEC-JLearn");
+        JLabel titleLabel = new JLabel(StyleUtils.APP_NAME);
         titleLabel.setFont(StyleUtils.FONT_SUBHEADER);
         titleLabel.setForeground(StyleUtils.TEXT_LIGHT);
         leftPanel.add(titleLabel);
         
-        // Admin badge with accent color
-        JLabel adminBadge = new JLabel("  ADMIN  ");
-        adminBadge.setFont(StyleUtils.FONT_SMALL);
+        // Admin badge with accent color and rounded corners
+        JLabel adminBadge = new JLabel("ADMIN") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(StyleUtils.ADMIN_ACCENT);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                g2d.dispose();
+                super.paintComponent(g);
+            }
+        };
+        adminBadge.setFont(StyleUtils.FONT_SMALL.deriveFont(Font.BOLD));
         adminBadge.setForeground(StyleUtils.TEXT_DARK);
-        adminBadge.setBackground(StyleUtils.ADMIN_ACCENT);
-        adminBadge.setOpaque(true);
-        adminBadge.setBorder(new EmptyBorder(4, 8, 4, 8));
-        
-        JPanel badgeWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 20));
-        badgeWrapper.setOpaque(false);
-        badgeWrapper.add(adminBadge);
-        leftPanel.add(badgeWrapper);
+        adminBadge.setOpaque(false);
+        adminBadge.setBorder(new EmptyBorder(4, 10, 4, 10));
+        leftPanel.add(adminBadge);
         
         navBar.add(leftPanel, BorderLayout.WEST);
         

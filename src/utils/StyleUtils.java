@@ -3,12 +3,16 @@ package utils;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.plaf.basic.BasicProgressBarUI;
 
 /**
- * StyleUtils - Modern UI Design System for IHEC-JLearn
+ * StyleUtils - Modern UI Design System for IHEC E-Learn
  * 
  * DESIGN PHILOSOPHY:
  * - Clean, minimalist aesthetic with purposeful use of color
@@ -18,89 +22,111 @@ import javax.swing.plaf.basic.BasicProgressBarUI;
  */
 public class StyleUtils {
 
-    // ==================== MODERN COLOR PALETTE ====================
+    // ==================== APPLICATION BRANDING ====================
     
-    /** Primary Blue - Vibrant, modern blue for primary actions */
-    public static final Color PRIMARY_BLUE = Color.decode("#4F46E5");
+    /** Application Name */
+    public static final String APP_NAME = "IHEC E-Learn";
+    
+    /** Application Tagline */
+    public static final String APP_TAGLINE = "Master Java Programming";
+    
+    /** Application Logo Path */
+    private static final String APP_LOGO_PATH = "images/Application Logo.png";
+    
+    /** College Logo Path */
+    private static final String COLLEGE_LOGO_PATH = "images/College Logo.svg";
+    
+    /** Cached logo images */
+    private static ImageIcon cachedAppLogo = null;
+    private static ImageIcon cachedAppLogoSmall = null;
+    private static ImageIcon cachedAppLogoMedium = null;
+
+    // ==================== BLUE & WHITE COLOR PALETTE ====================
+    
+    /** Primary Blue - Clean, professional blue for primary actions */
+    public static final Color PRIMARY_BLUE = Color.decode("#2563EB");
     
     /** Primary Blue Hover - Slightly darker for hover states */
-    public static final Color PRIMARY_BLUE_HOVER = Color.decode("#4338CA");
+    public static final Color PRIMARY_BLUE_HOVER = Color.decode("#1D4ED8");
     
-    /** Primary Blue Light - For subtle backgrounds */
-    public static final Color PRIMARY_BLUE_LIGHT = Color.decode("#EEF2FF");
+    /** Primary Blue Dark - Deep blue for emphasis */
+    public static final Color PRIMARY_BLUE_DARK = Color.decode("#1E40AF");
     
-    /** Background Gray - Soft, warm gray for backgrounds */
+    /** Primary Blue Light - Soft blue tint for backgrounds */
+    public static final Color PRIMARY_BLUE_LIGHT = Color.decode("#EFF6FF");
+    
+    /** Background White - Clean white base */
     public static final Color BACKGROUND_GRAY = Color.decode("#F8FAFC");
     
-    /** Card White - Pure white for cards with subtle warmth */
+    /** Card White - Pure white for cards and panels */
     public static final Color CARD_WHITE = Color.decode("#FFFFFF");
     
     /** Editor Background - Modern dark theme for code */
-    public static final Color EDITOR_DARK = Color.decode("#1E1E2E");
+    public static final Color EDITOR_DARK = Color.decode("#1E293B");
     
     /** Editor Dark Lighter - For line numbers, gutters */
-    public static final Color EDITOR_DARK_LIGHT = Color.decode("#313244");
+    public static final Color EDITOR_DARK_LIGHT = Color.decode("#334155");
     
-    /** Success Green - Fresh, vibrant green */
-    public static final Color SUCCESS_GREEN = Color.decode("#10B981");
+    /** Success Blue - Using blue tones for success states */
+    public static final Color SUCCESS_GREEN = Color.decode("#0EA5E9");
     
-    /** Success Green Hover */
-    public static final Color SUCCESS_GREEN_HOVER = Color.decode("#059669");
+    /** Success Blue Hover */
+    public static final Color SUCCESS_GREEN_HOVER = Color.decode("#0284C7");
     
-    /** Success Green Light - For success backgrounds */
-    public static final Color SUCCESS_GREEN_LIGHT = Color.decode("#D1FAE5");
+    /** Success Blue Light - Soft blue background for success */
+    public static final Color SUCCESS_GREEN_LIGHT = Color.decode("#E0F2FE");
     
-    /** Error Red - Modern, accessible red */
-    public static final Color ERROR_RED = Color.decode("#EF4444");
+    /** Error Red - Clean red for errors (keeping for contrast) */
+    public static final Color ERROR_RED = Color.decode("#DC2626");
     
-    /** Error Red Light - For error backgrounds */
-    public static final Color ERROR_RED_LIGHT = Color.decode("#FEE2E2");
+    /** Error Red Light - Soft red background */
+    public static final Color ERROR_RED_LIGHT = Color.decode("#FEE2E2");;
     
-    /** Text Dark - Rich, readable dark text */
-    public static final Color TEXT_DARK = Color.decode("#1E293B");
+    /** Text Dark - Rich, readable dark blue-gray text */
+    public static final Color TEXT_DARK = Color.decode("#1E3A5F");
     
     /** Text Light - Pure white for dark backgrounds */
     public static final Color TEXT_LIGHT = Color.decode("#FFFFFF");
     
-    /** Text Muted - Subtle gray for secondary text */
+    /** Text Muted - Subtle blue-gray for secondary text */
     public static final Color TEXT_MUTED = Color.decode("#64748B");
     
-    /** Text Placeholder - Even lighter for placeholders */
+    /** Text Placeholder - Light blue-gray for placeholders */
     public static final Color TEXT_PLACEHOLDER = Color.decode("#94A3B8");
     
     // ==================== ADMIN THEME COLORS ====================
     
-    /** Admin Accent - Modern amber/orange */
-    public static final Color ADMIN_ACCENT = Color.decode("#F59E0B");
+    /** Admin Accent - Blue accent for admin features */
+    public static final Color ADMIN_ACCENT = Color.decode("#60A5FA");
     
-    /** Admin Accent Light - Subtle amber background */
-    public static final Color ADMIN_ACCENT_LIGHT = Color.decode("#FEF3C7");
+    /** Admin Accent Light - Soft blue background for admin */
+    public static final Color ADMIN_ACCENT_LIGHT = Color.decode("#DBEAFE");
     
-    /** Warning Yellow - Bright attention yellow */
-    public static final Color WARNING_YELLOW = Color.decode("#FBBF24");
+    /** Warning Yellow - Amber for warnings (keeping for visibility) */
+    public static final Color WARNING_YELLOW = Color.decode("#F59E0B");
     
-    /** Info Blue - Informational cyan-blue */
-    public static final Color INFO_BLUE = Color.decode("#0EA5E9");
+    /** Info Blue - Lighter informational blue */
+    public static final Color INFO_BLUE = Color.decode("#38BDF8");
     
-    /** Table Row Alternate - Very subtle stripe */
-    public static final Color TABLE_ROW_ALT = Color.decode("#F8FAFC");
+    /** Table Row Alternate - Very subtle blue stripe */
+    public static final Color TABLE_ROW_ALT = Color.decode("#F0F9FF");
     
-    /** Border Light - Subtle, modern border */
-    public static final Color BORDER_LIGHT = Color.decode("#E2E8F0");
+    /** Border Light - Subtle blue-tinted border */
+    public static final Color BORDER_LIGHT = Color.decode("#CBD5E1");
     
-    /** Border Focus - Focus ring color */
-    public static final Color BORDER_FOCUS = Color.decode("#818CF8");
+    /** Border Focus - Blue focus ring */
+    public static final Color BORDER_FOCUS = Color.decode("#3B82F6");
     
-    /** Shadow Color - Soft shadow with transparency */
-    public static final Color SHADOW_COLOR = new Color(15, 23, 42, 25);
+    /** Shadow Color - Soft blue shadow */
+    public static final Color SHADOW_COLOR = new Color(30, 58, 95, 20);
     
     // ==================== GRADIENT COLORS ====================
     
-    /** Gradient Start - For header gradients */
-    public static final Color GRADIENT_START = Color.decode("#4F46E5");
+    /** Gradient Start - Blue gradient start */
+    public static final Color GRADIENT_START = Color.decode("#2563EB");
     
-    /** Gradient End - For header gradients */
-    public static final Color GRADIENT_END = Color.decode("#7C3AED");
+    /** Gradient End - Blue gradient end */
+    public static final Color GRADIENT_END = Color.decode("#1E40AF");
     
     // ==================== MODERN FONTS ====================
     
@@ -508,12 +534,367 @@ public class StyleUtils {
         );
     }
     
+    // ==================== ANIMATION UTILITIES ====================
+    
+    /**
+     * Create a fade-in animation for a component.
+     * @param component The component to animate
+     * @param duration Duration in milliseconds
+     */
+    public static void fadeIn(JComponent component, int duration) {
+        Timer timer = new Timer(16, null);
+        final long startTime = System.currentTimeMillis();
+        final float initialAlpha = 0f;
+        final float targetAlpha = 1f;
+        
+        component.putClientProperty("fadeAlpha", initialAlpha);
+        
+        timer.addActionListener(e -> {
+            long elapsed = System.currentTimeMillis() - startTime;
+            float progress = Math.min(1f, (float) elapsed / duration);
+            
+            // Ease-out curve for smooth deceleration
+            float easedProgress = 1f - (1f - progress) * (1f - progress);
+            float alpha = initialAlpha + (targetAlpha - initialAlpha) * easedProgress;
+            
+            component.putClientProperty("fadeAlpha", alpha);
+            component.repaint();
+            
+            if (progress >= 1f) {
+                timer.stop();
+            }
+        });
+        timer.start();
+    }
+    
+    /**
+     * Create an elevated card panel with shadow and hover lift effect.
+     * @return A JPanel with modern elevation styling
+     */
+    public static JPanel createElevatedCard() {
+        return new JPanel() {
+            private boolean isHovered = false;
+            private int shadowOffset = 4;
+            
+            {
+                setOpaque(false);
+                setBorder(new EmptyBorder(PADDING, PADDING, PADDING, PADDING));
+                
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        isHovered = true;
+                        shadowOffset = 8;
+                        repaint();
+                    }
+                    
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        isHovered = false;
+                        shadowOffset = 4;
+                        repaint();
+                    }
+                });
+            }
+            
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                int offset = shadowOffset;
+                
+                // Draw layered shadows for depth
+                for (int i = offset; i > 0; i--) {
+                    float alpha = 0.03f * (offset - i + 1);
+                    g2.setColor(new Color(30, 58, 95, (int)(alpha * 255)));
+                    g2.fillRoundRect(i, i, getWidth() - i, getHeight() - i, 
+                            BORDER_RADIUS, BORDER_RADIUS);
+                }
+                
+                // Draw card background
+                g2.setColor(CARD_WHITE);
+                g2.fillRoundRect(0, 0, getWidth() - offset, getHeight() - offset, 
+                        BORDER_RADIUS, BORDER_RADIUS);
+                
+                // Subtle border
+                g2.setColor(isHovered ? BORDER_FOCUS : BORDER_LIGHT);
+                g2.setStroke(new BasicStroke(1));
+                g2.drawRoundRect(0, 0, getWidth() - offset - 1, getHeight() - offset - 1, 
+                        BORDER_RADIUS, BORDER_RADIUS);
+                
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+    }
+    
+    /**
+     * Create a modern tooltip manager with styled tooltips.
+     */
+    public static void setupModernTooltips() {
+        UIManager.put("ToolTip.background", CARD_WHITE);
+        UIManager.put("ToolTip.foreground", TEXT_DARK);
+        UIManager.put("ToolTip.border", new CompoundBorder(
+            new LineBorder(BORDER_LIGHT, 1, true),
+            new EmptyBorder(8, 12, 8, 12)
+        ));
+        UIManager.put("ToolTip.font", FONT_SMALL);
+    }
+    
+    /**
+     * Create a pulsing highlight effect for drawing attention.
+     * @param component The component to highlight
+     */
+    public static void pulseHighlight(JComponent component) {
+        Timer timer = new Timer(50, null);
+        final long startTime = System.currentTimeMillis();
+        final int duration = 600;
+        
+        timer.addActionListener(e -> {
+            long elapsed = System.currentTimeMillis() - startTime;
+            float progress = (float) elapsed / duration;
+            
+            if (progress >= 1f) {
+                timer.stop();
+                component.setBorder(null);
+                return;
+            }
+            
+            // Pulse effect using sine wave
+            float intensity = (float) Math.sin(progress * Math.PI);
+            int alpha = (int)(intensity * 100);
+            
+            component.setBorder(BorderFactory.createLineBorder(
+                new Color(BORDER_FOCUS.getRed(), BORDER_FOCUS.getGreen(), 
+                         BORDER_FOCUS.getBlue(), alpha), 2, true));
+            component.repaint();
+        });
+        timer.start();
+    }
+    
     /**
      * Set up anti-aliasing for the entire application.
      */
     public static void setupAntiAliasing() {
         System.setProperty("awt.useSystemAAFontSettings", "on");
         System.setProperty("swing.aatext", "true");
+        
+        // Set up modern tooltips
+        setupModernTooltips();
+    }
+    
+    // ==================== LOGO LOADING METHODS ====================
+    
+    /**
+     * Get the application logo scaled to the specified size.
+     * @param size The desired height in pixels (width scales proportionally)
+     * @return ImageIcon of the logo, or null if loading fails
+     */
+    public static ImageIcon getAppLogo(int size) {
+        try {
+            // Check cache for common sizes
+            if (size == 32 && cachedAppLogoSmall != null) return cachedAppLogoSmall;
+            if (size == 48 && cachedAppLogoMedium != null) return cachedAppLogoMedium;
+            if (size == 64 && cachedAppLogo != null) return cachedAppLogo;
+            
+            // Load the image
+            File logoFile = new File(APP_LOGO_PATH);
+            if (!logoFile.exists()) {
+                System.err.println("Logo file not found: " + APP_LOGO_PATH);
+                return null;
+            }
+            
+            BufferedImage originalImage = ImageIO.read(logoFile);
+            
+            // Calculate proportional width
+            double ratio = (double) originalImage.getWidth() / originalImage.getHeight();
+            int scaledWidth = (int) (size * ratio);
+            
+            // Scale with high quality
+            Image scaledImage = originalImage.getScaledInstance(scaledWidth, size, Image.SCALE_SMOOTH);
+            ImageIcon icon = new ImageIcon(scaledImage);
+            
+            // Cache common sizes
+            if (size == 32) cachedAppLogoSmall = icon;
+            else if (size == 48) cachedAppLogoMedium = icon;
+            else if (size == 64) cachedAppLogo = icon;
+            
+            return icon;
+            
+        } catch (IOException e) {
+            System.err.println("Error loading logo: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Get a JLabel with the application logo.
+     * @param size The desired height in pixels
+     * @return JLabel containing the logo, or a text placeholder if loading fails
+     */
+    public static JLabel createLogoLabel(int size) {
+        ImageIcon logo = getAppLogo(size);
+        if (logo != null) {
+            JLabel label = new JLabel(logo) {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                    super.paintComponent(g2);
+                    g2.dispose();
+                }
+            };
+            label.setOpaque(false);
+            return label;
+        } else {
+            // Fallback to styled text if logo can't be loaded
+            JLabel label = new JLabel("📚") {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                    super.paintComponent(g2);
+                    g2.dispose();
+                }
+            };
+            label.setFont(new Font("Segoe UI Emoji", Font.PLAIN, (int)(size * 0.7)));
+            label.setForeground(TEXT_LIGHT);
+            return label;
+        }
+    }
+    
+    /**
+     * Create a logo label with a subtle glow effect for dark backgrounds.
+     * @param size The desired height in pixels
+     * @return JLabel with enhanced logo display
+     */
+    public static JLabel createGlowingLogoLabel(int size) {
+        ImageIcon logo = getAppLogo(size);
+        if (logo != null) {
+            JLabel label = new JLabel(logo) {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                    
+                    // Draw subtle glow behind logo
+                    int glowSize = 4;
+                    g2.setColor(new Color(255, 255, 255, 30));
+                    g2.fillOval(-glowSize, -glowSize, getWidth() + glowSize * 2, getHeight() + glowSize * 2);
+                    
+                    super.paintComponent(g2);
+                    g2.dispose();
+                }
+            };
+            label.setOpaque(false);
+            label.setBorder(new EmptyBorder(4, 4, 4, 4));
+            return label;
+        } else {
+            return createLogoLabel(size);
+        }
+    }
+    
+    /**
+     * Create a branded header panel with app name.
+     * @param height The height of the header
+     * @param showSubtitle Whether to show the tagline
+     * @return A fully styled header panel
+     */
+    public static JPanel createBrandedHeader(int height, boolean showSubtitle) {
+        JPanel header = createGradientHeader(height);
+        header.setLayout(new GridBagLayout());
+        
+        // Add text panel with proper vertical alignment
+        JPanel textPanel = new JPanel();
+        textPanel.setOpaque(false);
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        
+        // App name with shadow effect
+        JLabel titleLabel = new JLabel(APP_NAME) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+                
+                // Draw text shadow
+                g2.setColor(new Color(0, 0, 0, 50));
+                g2.setFont(getFont());
+                g2.drawString(getText(), 2, getHeight() - 4);
+                
+                // Draw main text
+                g2.setColor(getForeground());
+                g2.drawString(getText(), 0, getHeight() - 6);
+                
+                g2.dispose();
+            }
+        };
+        titleLabel.setFont(FONT_HEADER);
+        titleLabel.setForeground(TEXT_LIGHT);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        textPanel.add(titleLabel);
+        
+        if (showSubtitle) {
+            textPanel.add(Box.createVerticalStrut(4));
+            JLabel subtitleLabel = new JLabel(APP_TAGLINE);
+            subtitleLabel.setFont(new Font("Segoe UI", Font.ITALIC, 13));
+            subtitleLabel.setForeground(new Color(255, 255, 255, 180));
+            subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            textPanel.add(subtitleLabel);
+        }
+        
+        // Center the content in the header
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        header.add(textPanel, gbc);
+        
+        return header;
+    }
+    
+    /**
+     * Create a compact navigation bar with logo for inner pages.
+     * @param height The height of the nav bar
+     * @return A navigation panel with logo on the left
+     */
+    public static JPanel createNavBarWithLogo(int height) {
+        JPanel navBar = createGradientHeader(height);
+        navBar.setBorder(new EmptyBorder(0, 25, 0, 25));
+        
+        // Left side with logo and title - vertically centered
+        JPanel leftPanel = new JPanel() {
+            @Override
+            public Dimension getPreferredSize() {
+                Dimension d = super.getPreferredSize();
+                return new Dimension(d.width, height);
+            }
+        };
+        leftPanel.setOpaque(false);
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.X_AXIS));
+        
+        // Vertical centering spacer
+        leftPanel.add(Box.createVerticalGlue());
+        
+        // Logo - sized to fit nicely in navbar
+        int logoSize = Math.max(32, height - 25);
+        JLabel logoLabel = createLogoLabel(logoSize);
+        leftPanel.add(logoLabel);
+        leftPanel.add(Box.createHorizontalStrut(12));
+        
+        // App name
+        JLabel titleLabel = new JLabel(APP_NAME);
+        titleLabel.setFont(FONT_SUBHEADER);
+        titleLabel.setForeground(TEXT_LIGHT);
+        leftPanel.add(titleLabel);
+        
+        leftPanel.add(Box.createVerticalGlue());
+        
+        navBar.add(leftPanel, BorderLayout.WEST);
+        
+        return navBar;
     }
     
     // ==================== PRIVATE CONSTRUCTOR ====================

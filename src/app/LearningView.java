@@ -94,16 +94,16 @@ public class LearningView extends JPanel {
      * Create the top navigation bar.
      */
     private JPanel createNavBar() {
-        JPanel navBar = StyleUtils.createGradientHeader(75);
+        JPanel navBar = StyleUtils.createGradientHeader(80);
         navBar.setBorder(new EmptyBorder(0, 25, 0, 25));
         
-        // Left side: Back button - modern style
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 17));
+        // Left side: Back button
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 18));
         leftPanel.setOpaque(false);
         
         JButton backButton = StyleUtils.createModernButton("← Back", StyleUtils.CARD_WHITE);
         backButton.setForeground(StyleUtils.PRIMARY_BLUE);
-        backButton.setPreferredSize(new Dimension(120, 40));
+        backButton.setPreferredSize(new Dimension(100, 40));
         backButton.addActionListener(e -> parentApp.returnToDashboard());
         leftPanel.add(backButton);
         
@@ -118,7 +118,7 @@ public class LearningView extends JPanel {
         // Right side: spacer (for symmetry)
         JPanel spacer = new JPanel();
         spacer.setOpaque(false);
-        spacer.setPreferredSize(new Dimension(120, 0));
+        spacer.setPreferredSize(new Dimension(170, 0));
         navBar.add(spacer, BorderLayout.EAST);
         
         return navBar;

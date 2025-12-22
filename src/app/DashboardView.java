@@ -64,14 +64,14 @@ public class DashboardView extends JPanel {
      * Create the top navigation bar.
      */
     private JPanel createNavBar() {
-        JPanel navBar = StyleUtils.createGradientHeader(75);
+        JPanel navBar = StyleUtils.createGradientHeader(80);
         navBar.setBorder(new EmptyBorder(0, 30, 0, 30));
         
         // Left side: App title
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 20));
         leftPanel.setOpaque(false);
         
-        JLabel titleLabel = new JLabel("IHEC-JLearn");
+        JLabel titleLabel = new JLabel(StyleUtils.APP_NAME);
         titleLabel.setFont(StyleUtils.FONT_SUBHEADER);
         titleLabel.setForeground(StyleUtils.TEXT_LIGHT);
         leftPanel.add(titleLabel);

@@ -86,7 +86,7 @@ public class MainApplication extends JFrame {
         StyleUtils.setupAntiAliasing();
         
         // Window title (shown in title bar)
-        setTitle("IHEC-JLearn - Learn Java Programming");
+        setTitle(StyleUtils.APP_NAME + " - Learn Java Programming");
         
         // Window size
         setSize(1280, 850);
@@ -117,6 +117,12 @@ public class MainApplication extends JFrame {
             
         } catch (Exception e) {
             System.out.println("Could not set system look and feel: " + e.getMessage());
+        }
+        
+        // Set application icon
+        ImageIcon appIcon = StyleUtils.getAppLogo(64);
+        if (appIcon != null) {
+            setIconImage(appIcon.getImage());
         }
     }
 
@@ -274,7 +280,7 @@ public class MainApplication extends JFrame {
                 app.setVisible(true);
                 
                 System.out.println("===========================================");
-                System.out.println("   IHEC-JLearn Application Started!");
+                System.out.println("   " + StyleUtils.APP_NAME + " Application Started!");
                 System.out.println("===========================================");
                 System.out.println("Test credentials:");
                 System.out.println("  Student: ahmed / 12345");
