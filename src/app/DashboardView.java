@@ -78,8 +78,8 @@ public class DashboardView extends JPanel {
         
         navBar.add(leftPanel, BorderLayout.WEST);
         
-        // Right side: User info and logout
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 15));
+        // Right side: User info, profile, and logout
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
         rightPanel.setOpaque(false);
         
         // XP display with badge style
@@ -90,6 +90,13 @@ public class DashboardView extends JPanel {
         xpLabel.setOpaque(true);
         xpLabel.setBorder(new EmptyBorder(8, 16, 8, 16));
         rightPanel.add(xpLabel);
+        
+        // Profile button
+        JButton profileBtn = StyleUtils.createModernButton("👤 Profile", StyleUtils.CARD_WHITE);
+        profileBtn.setForeground(StyleUtils.PRIMARY_BLUE);
+        profileBtn.setPreferredSize(new Dimension(110, 40));
+        profileBtn.addActionListener(e -> parentApp.showProfile());
+        rightPanel.add(profileBtn);
         
         // Logout button - modern style
         JButton logoutBtn = StyleUtils.createModernButton("Logout", StyleUtils.CARD_WHITE);
@@ -237,15 +244,46 @@ public class DashboardView extends JPanel {
         
         card.add(middlePanel, BorderLayout.CENTER);
         
-        // Bottom: Modern progress bar and status
+        // Bottom: Progress bar, status, and save button
         JPanel bottomPanel = new JPanel(new BorderLayout(0, 8));
         bottomPanel.setOpaque(false);
+        
+        // Top row: Status and save button
+        JPanel statusRow = new JPanel(new BorderLayout());
+        statusRow.setOpaque(false);
         
         // Status label
         JLabel statusLabel = new JLabel(isCompleted ? "Completed" : "Not Started");
         statusLabel.setFont(StyleUtils.FONT_SMALL);
         statusLabel.setForeground(isCompleted ? StyleUtils.SUCCESS_GREEN : StyleUtils.TEXT_MUTED);
-        bottomPanel.add(statusLabel, BorderLayout.NORTH);
+        statusRow.add(statusLabel, BorderLayout.WEST);
+        
+        // Save/Bookmark button
+        boolean isSaved = currentUser != null && dataManager.isCourseSaved(currentUser.getId(), lesson.getId());
+        JButton saveBtn = new JButton(isSaved ? "★" : "☆");
+        saveBtn.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        saveBtn.setForeground(isSaved ? StyleUtils.WARNING_YELLOW : StyleUtils.TEXT_MUTED);
+        saveBtn.setBackground(StyleUtils.CARD_WHITE);
+        saveBtn.setBorderPainted(false);
+        saveBtn.setFocusPainted(false);
+        saveBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        saveBtn.setToolTipText(isSaved ? "Remove from saved" : "Save for later");
+        saveBtn.addActionListener(e -> {
+            if (currentUser != null) {
+                if (dataManager.isCourseSaved(currentUser.getId(), lesson.getId())) {
+                    dataManager.unsaveCourseForUser(currentUser.getId(), lesson.getId());
+                    saveBtn.setText("☆");
+                    saveBtn.setForeground(StyleUtils.TEXT_MUTED);
+                } else {
+                    dataManager.saveCourseForUser(currentUser.getId(), lesson.getId());
+                    saveBtn.setText("★");
+                    saveBtn.setForeground(StyleUtils.WARNING_YELLOW);
+                }
+            }
+        });
+        statusRow.add(saveBtn, BorderLayout.EAST);
+        
+        bottomPanel.add(statusRow, BorderLayout.NORTH);
         
         // Modern progress bar
         JProgressBar progressBar = StyleUtils.createModernProgressBar();

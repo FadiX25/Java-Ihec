@@ -38,6 +38,7 @@ public class MainApplication extends JFrame {
     private static final String DASHBOARD_SCREEN = "DASHBOARD";
     private static final String ADMIN_DASHBOARD_SCREEN = "ADMIN_DASHBOARD";
     private static final String LEARNING_SCREEN = "LEARNING";
+    private static final String PROFILE_SCREEN = "PROFILE";
 
     // ==================== LAYOUT & PANELS ====================
     
@@ -54,6 +55,7 @@ public class MainApplication extends JFrame {
     private DashboardView dashboardView;
     private AdminDashboardView adminDashboardView;
     private LearningView learningView;
+    private ProfileView profileView;
 
     // ==================== USER STATE ====================
     
@@ -142,6 +144,7 @@ public class MainApplication extends JFrame {
         dashboardView = new DashboardView(this);
         adminDashboardView = new AdminDashboardView(this);
         learningView = new LearningView(this);
+        profileView = new ProfileView(this);
         
         // Add each view as a "card" with a name
         // The name is how we'll switch to that card later
@@ -149,6 +152,7 @@ public class MainApplication extends JFrame {
         mainPanel.add(dashboardView, DASHBOARD_SCREEN);
         mainPanel.add(adminDashboardView, ADMIN_DASHBOARD_SCREEN);
         mainPanel.add(learningView, LEARNING_SCREEN);
+        mainPanel.add(profileView, PROFILE_SCREEN);
         
         // Add the main panel to the window
         add(mainPanel);
@@ -246,6 +250,16 @@ public class MainApplication extends JFrame {
      */
     public void returnToDashboard() {
         showDashboard();
+    }
+    
+    /**
+     * Show the profile screen.
+     */
+    public void showProfile() {
+        if (currentUser != null) {
+            profileView.loadProfile(currentUser);
+        }
+        cardLayout.show(mainPanel, PROFILE_SCREEN);
     }
     
     /**

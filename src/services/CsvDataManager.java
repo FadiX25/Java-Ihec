@@ -1,13 +1,17 @@
 package services;
 
 import model.Admin;
+import model.Certificate;
 import model.Lesson;
+import model.SavedCourse;
 import model.Student;
 import model.User;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * CsvDataManager - Handles all CSV file operations.
@@ -18,8 +22,10 @@ import java.util.List;
  * - CsvDataManager reads/writes to CSV files
  * 
  * FILE STRUCTURE:
- * users.csv   -> id, username, password, role, xp_score
- * lessons.csv -> id, title, youtube_id, date_created, correct_answer_keyword, theory_text
+ * users.csv         -> id, username, password, role, xp_score, first_name, last_name, email, bio
+ * lessons.csv       -> id, category, title, youtube_id, date_created, correct_answer_keyword, theory_text
+ * certificates.csv  -> id, user_id, category, certificate_name, issue_date, lessons_completed
+ * saved_courses.csv -> user_id, lesson_id, save_date
  */
 public class CsvDataManager {
 
@@ -28,6 +34,8 @@ public class CsvDataManager {
     
     private static final String USER_FILE = "users.csv";
     private static final String LESSON_FILE = "lessons.csv";
+    private static final String CERTIFICATE_FILE = "certificates.csv";
+    private static final String SAVED_COURSES_FILE = "saved_courses.csv";
 
     // ==================== USER OPERATIONS ====================
     
@@ -474,13 +482,283 @@ public class CsvDataManager {
      */
     private void createSampleLessonFile() {
         try (PrintWriter writer = new PrintWriter(new FileWriter(LESSON_FILE))) {
-            writer.println("id,title,youtube_id,date_created,correct_answer_keyword,theory_text");
-            writer.println("101,Introduction to Java,Hl-zzrqQoSE,2023-10-01,class,\"Java is an Object-Oriented Programming language. In this lesson, you will learn how to create your first class. A class is a blueprint for creating objects.\"");
-            writer.println("102,Variables and Data Types,eIrMbAQSU34,2023-10-15,int,\"Variables are containers for storing data values. Java has different types: int for integers, double for decimals, String for text, and boolean for true/false.\"");
-            writer.println("103,Object-Oriented Programming,pTB0EiLXUC8,2023-11-01,object,\"OOP is a programming paradigm based on the concept of objects. Objects contain data (fields) and code (methods). The four pillars are: Encapsulation, Inheritance, Polymorphism, and Abstraction.\"");
+            writer.println("id,category,title,youtube_id,date_created,correct_answer_keyword,theory_text");
+            writer.println("101,Java,Introduction to Java,Hl-zzrqQoSE,2023-10-01,class,\"Java is an Object-Oriented Programming language. In this lesson, you will learn how to create your first class. A class is a blueprint for creating objects.\"");
+            writer.println("102,Java,Variables and Data Types,eIrMbAQSU34,2023-10-15,int,\"Variables are containers for storing data values. Java has different types: int for integers, double for decimals, String for text, and boolean for true/false.\"");
+            writer.println("103,Java,Object-Oriented Programming,pTB0EiLXUC8,2023-11-01,object,\"OOP is a programming paradigm based on the concept of objects. Objects contain data (fields) and code (methods). The four pillars are: Encapsulation, Inheritance, Polymorphism, and Abstraction.\"");
             System.out.println("Created sample " + LESSON_FILE);
         } catch (IOException e) {
             System.err.println("Could not create sample lesson file: " + e.getMessage());
+        }
+    }
+    
+    // ==================== CERTIFICATE OPERATIONS ====================
+    
+    /**
+     * Load all certificates from the CSV file.
+     */
+    public List<Certificate> loadCertificates() {
+        List<Certificate> certificates = new ArrayList<>();
+        
+        File file = new File(CERTIFICATE_FILE);
+        if (!file.exists()) {
+            createEmptyCertificateFile();
+            return certificates;
+        }
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(CERTIFICATE_FILE))) {
+            String line;
+            boolean isHeader = true;
+            
+            while ((line = reader.readLine()) != null) {
+                if (isHeader) {
+                    isHeader = false;
+                    continue;
+                }
+                
+                Certificate cert = parseCertificateLine(line);
+                if (cert != null) {
+                    certificates.add(cert);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading certificates: " + e.getMessage());
+        }
+        
+        return certificates;
+    }
+    
+    /**
+     * Get certificates for a specific user.
+     */
+    public List<Certificate> getCertificatesForUser(int userId) {
+        return loadCertificates().stream()
+                .filter(c -> c.getUserId() == userId)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Parse a single certificate line from CSV.
+     */
+    private Certificate parseCertificateLine(String line) {
+        try {
+            String[] parts = line.split(",", 6);
+            if (parts.length < 6) return null;
+            
+            int id = Integer.parseInt(parts[0].trim());
+            int userId = Integer.parseInt(parts[1].trim());
+            String category = parts[2].trim();
+            String certificateName = parts[3].trim();
+            String issueDate = parts[4].trim();
+            int lessonsCompleted = Integer.parseInt(parts[5].trim());
+            
+            return new Certificate(id, userId, category, certificateName, issueDate, lessonsCompleted);
+        } catch (Exception e) {
+            System.err.println("Error parsing certificate line: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Issue a new certificate to a user.
+     */
+    public void issueCertificate(int userId, String category, String certificateName, int lessonsCompleted) {
+        List<Certificate> certificates = loadCertificates();
+        int newId = certificates.stream().mapToInt(Certificate::getId).max().orElse(0) + 1;
+        
+        try (PrintWriter writer = new PrintWriter(new FileWriter(CERTIFICATE_FILE, true))) {
+            writer.println(newId + "," + userId + "," + category + "," + 
+                          certificateName + "," + LocalDate.now() + "," + lessonsCompleted);
+            System.out.println("Certificate issued: " + certificateName);
+        } catch (IOException e) {
+            System.err.println("Error issuing certificate: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Check if user already has a certificate for a category.
+     */
+    public boolean hasCertificateForCategory(int userId, String category) {
+        return getCertificatesForUser(userId).stream()
+                .anyMatch(c -> c.getCategory().equalsIgnoreCase(category));
+    }
+    
+    private void createEmptyCertificateFile() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(CERTIFICATE_FILE))) {
+            writer.println("id,user_id,category,certificate_name,issue_date,lessons_completed");
+        } catch (IOException e) {
+            System.err.println("Could not create certificate file: " + e.getMessage());
+        }
+    }
+    
+    // ==================== SAVED COURSES OPERATIONS ====================
+    
+    /**
+     * Load all saved courses from CSV.
+     */
+    public List<SavedCourse> loadSavedCourses() {
+        List<SavedCourse> savedCourses = new ArrayList<>();
+        
+        File file = new File(SAVED_COURSES_FILE);
+        if (!file.exists()) {
+            createEmptySavedCoursesFile();
+            return savedCourses;
+        }
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(SAVED_COURSES_FILE))) {
+            String line;
+            boolean isHeader = true;
+            
+            while ((line = reader.readLine()) != null) {
+                if (isHeader) {
+                    isHeader = false;
+                    continue;
+                }
+                
+                SavedCourse sc = parseSavedCourseLine(line);
+                if (sc != null) {
+                    savedCourses.add(sc);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading saved courses: " + e.getMessage());
+        }
+        
+        return savedCourses;
+    }
+    
+    /**
+     * Get saved courses for a specific user.
+     */
+    public List<SavedCourse> getSavedCoursesForUser(int userId) {
+        return loadSavedCourses().stream()
+                .filter(sc -> sc.getUserId() == userId)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Parse a saved course line from CSV.
+     */
+    private SavedCourse parseSavedCourseLine(String line) {
+        try {
+            String[] parts = line.split(",");
+            if (parts.length < 3) return null;
+            
+            int userId = Integer.parseInt(parts[0].trim());
+            int lessonId = Integer.parseInt(parts[1].trim());
+            String saveDate = parts[2].trim();
+            
+            return new SavedCourse(userId, lessonId, saveDate);
+        } catch (Exception e) {
+            System.err.println("Error parsing saved course line: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Save a course for a user.
+     */
+    public void saveCourseForUser(int userId, int lessonId) {
+        // Check if already saved
+        List<SavedCourse> savedCourses = getSavedCoursesForUser(userId);
+        boolean alreadySaved = savedCourses.stream()
+                .anyMatch(sc -> sc.getLessonId() == lessonId);
+        
+        if (alreadySaved) {
+            System.out.println("Course already saved.");
+            return;
+        }
+        
+        try (PrintWriter writer = new PrintWriter(new FileWriter(SAVED_COURSES_FILE, true))) {
+            writer.println(userId + "," + lessonId + "," + LocalDate.now());
+            System.out.println("Course saved successfully.");
+        } catch (IOException e) {
+            System.err.println("Error saving course: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Remove a saved course for a user.
+     */
+    public void unsaveCourseForUser(int userId, int lessonId) {
+        List<SavedCourse> allSaved = loadSavedCourses();
+        
+        // Filter out the one to remove
+        allSaved.removeIf(sc -> sc.getUserId() == userId && sc.getLessonId() == lessonId);
+        
+        // Rewrite file
+        try (PrintWriter writer = new PrintWriter(new FileWriter(SAVED_COURSES_FILE))) {
+            writer.println("user_id,lesson_id,save_date");
+            for (SavedCourse sc : allSaved) {
+                writer.println(sc.getUserId() + "," + sc.getLessonId() + "," + sc.getSaveDate());
+            }
+            System.out.println("Course unsaved successfully.");
+        } catch (IOException e) {
+            System.err.println("Error unsaving course: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Check if a course is saved by a user.
+     */
+    public boolean isCourseSaved(int userId, int lessonId) {
+        return getSavedCoursesForUser(userId).stream()
+                .anyMatch(sc -> sc.getLessonId() == lessonId);
+    }
+    
+    private void createEmptySavedCoursesFile() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(SAVED_COURSES_FILE))) {
+            writer.println("user_id,lesson_id,save_date");
+        } catch (IOException e) {
+            System.err.println("Could not create saved courses file: " + e.getMessage());
+        }
+    }
+    
+    // ==================== PROFILE OPERATIONS ====================
+    
+    /**
+     * Update a student's profile information.
+     */
+    public void updateStudentProfile(Student student) {
+        List<User> users = loadUsers();
+        
+        try (PrintWriter writer = new PrintWriter(new FileWriter(USER_FILE))) {
+            writer.println("id,username,password,role,xp_score,first_name,last_name,email,bio");
+            
+            for (User user : users) {
+                if (user.getId() == student.getId()) {
+                    // Write updated student
+                    writer.println(student.getId() + "," +
+                                  student.getUsername() + "," +
+                                  student.getPassword() + "," +
+                                  student.getRole() + "," +
+                                  student.getXpScore() + "," +
+                                  student.getFirstName() + "," +
+                                  student.getLastName() + "," +
+                                  student.getEmail() + "," +
+                                  "\"" + student.getBio() + "\"");
+                } else if (user instanceof Student) {
+                    Student s = (Student) user;
+                    writer.println(s.getId() + "," +
+                                  s.getUsername() + "," +
+                                  s.getPassword() + "," +
+                                  s.getRole() + "," +
+                                  s.getXpScore() + "," +
+                                  s.getFirstName() + "," +
+                                  s.getLastName() + "," +
+                                  s.getEmail() + "," +
+                                  "\"" + s.getBio() + "\"");
+                } else {
+                    // Admin
+                    writer.println(user.getId() + "," +
+                                  user.getUsername() + "," +
+                                  user.getPassword() + "," +
+                                  user.getRole() + ",0,,,,");
+                }
+            }
+            System.out.println("Profile updated successfully.");
+        } catch (IOException e) {
+            System.err.println("Error updating profile: " + e.getMessage());
         }
     }
 }

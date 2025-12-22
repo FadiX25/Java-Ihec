@@ -9,7 +9,7 @@ import java.util.List;
  * INHERITANCE:
  * - 'extends User' means Student IS-A User
  * - Student inherits all fields and methods from User
- * - Student adds its OWN special fields: xpScore, completedLessonIds
+ * - Student adds its OWN special fields: xpScore, completedLessonIds, profile info
  * 
  * POLYMORPHISM:
  * - We OVERRIDE showDashboard() to provide student-specific behavior
@@ -26,6 +26,23 @@ public class Student extends User {
      * Using ArrayList because we'll add to it as they progress.
      */
     private List<Integer> completedLessonIds;
+    
+    // ==================== PROFILE FIELDS ====================
+    
+    /** Student's first name */
+    private String firstName;
+    
+    /** Student's last name */
+    private String lastName;
+    
+    /** Student's email address */
+    private String email;
+    
+    /** Short bio/description */
+    private String bio;
+    
+    /** List of saved/bookmarked lesson IDs */
+    private List<Integer> savedLessonIds;
 
     // ==================== CONSTRUCTOR ====================
     
@@ -45,6 +62,25 @@ public class Student extends User {
         // Now set Student-specific fields
         this.xpScore = xpScore;
         this.completedLessonIds = new ArrayList<>();
+        this.savedLessonIds = new ArrayList<>();
+        
+        // Default profile values
+        this.firstName = "";
+        this.lastName = "";
+        this.email = "";
+        this.bio = "";
+    }
+    
+    /**
+     * Extended constructor with profile information.
+     */
+    public Student(int id, String username, String password, int xpScore,
+                   String firstName, String lastName, String email, String bio) {
+        this(id, username, password, xpScore);
+        this.firstName = firstName != null ? firstName : "";
+        this.lastName = lastName != null ? lastName : "";
+        this.email = email != null ? email : "";
+        this.bio = bio != null ? bio : "";
     }
 
     // ==================== POLYMORPHISM: OVERRIDE showDashboard() ====================
@@ -115,6 +151,78 @@ public class Student extends User {
 
     public void setCompletedLessonIds(List<Integer> completedLessonIds) {
         this.completedLessonIds = completedLessonIds;
+    }
+    
+    // ==================== SAVED COURSES METHODS ====================
+    
+    /**
+     * Save/bookmark a lesson for quick access later.
+     */
+    public void saveLesson(int lessonId) {
+        if (!savedLessonIds.contains(lessonId)) {
+            savedLessonIds.add(lessonId);
+        }
+    }
+    
+    /**
+     * Remove a lesson from saved list.
+     */
+    public void unsaveLesson(int lessonId) {
+        savedLessonIds.remove(Integer.valueOf(lessonId));
+    }
+    
+    /**
+     * Check if a lesson is saved/bookmarked.
+     */
+    public boolean hasLessonSaved(int lessonId) {
+        return savedLessonIds.contains(lessonId);
+    }
+    
+    public List<Integer> getSavedLessonIds() {
+        return savedLessonIds;
+    }
+    
+    public void setSavedLessonIds(List<Integer> savedLessonIds) {
+        this.savedLessonIds = savedLessonIds;
+    }
+    
+    // ==================== PROFILE GETTERS & SETTERS ====================
+    
+    public String getFirstName() {
+        return firstName;
+    }
+    
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+    
+    public String getLastName() {
+        return lastName;
+    }
+    
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    
+    public String getFullName() {
+        String full = (firstName + " " + lastName).trim();
+        return full.isEmpty() ? username : full;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public String getBio() {
+        return bio;
+    }
+    
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     // ==================== OVERRIDE toString() ====================
