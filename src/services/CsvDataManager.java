@@ -306,7 +306,7 @@ public class CsvDataManager {
     /**
      * Parse a single CSV line into a Lesson object.
      * 
-     * CSV Format: id, title, youtube_id, date_created, correct_answer_keyword, theory_text
+     * CSV Format: id, category, title, youtube_id, date_created, correct_answer_keyword, theory_text
      * 
      * @param line The CSV line to parse
      * @return Lesson object, or null if parsing fails
@@ -314,27 +314,28 @@ public class CsvDataManager {
     private Lesson parseLessonLine(String line) {
         try {
             // Split by comma (but be careful - theory_text might contain commas!)
-            // We'll use a limit of 6 to keep the theory text together
-            String[] parts = line.split(",", 6);
+            // We'll use a limit of 7 to keep the theory text together
+            String[] parts = line.split(",", 7);
             
-            if (parts.length < 6) {
+            if (parts.length < 7) {
                 System.err.println("Invalid lesson line (not enough columns): " + line);
                 return null;
             }
             
             int id = Integer.parseInt(parts[0].trim());
-            String title = parts[1].trim();
-            String youtubeId = parts[2].trim();
-            String dateString = parts[3].trim();
-            String correctAnswer = parts[4].trim();
-            String theoryText = parts[5].trim();
+            String category = parts[1].trim();
+            String title = parts[2].trim();
+            String youtubeId = parts[3].trim();
+            String dateString = parts[4].trim();
+            String correctAnswer = parts[5].trim();
+            String theoryText = parts[6].trim();
             
             // Remove surrounding quotes from theory text if present
             if (theoryText.startsWith("\"") && theoryText.endsWith("\"")) {
                 theoryText = theoryText.substring(1, theoryText.length() - 1);
             }
             
-            return new Lesson(id, title, youtubeId, dateString, correctAnswer, theoryText);
+            return new Lesson(id, category, title, youtubeId, dateString, correctAnswer, theoryText);
             
         } catch (Exception e) {
             System.err.println("Error parsing lesson line: " + line);
@@ -370,6 +371,7 @@ public class CsvDataManager {
         try (PrintWriter writer = new PrintWriter(new FileWriter(LESSON_FILE, true))) {
             // Append to file (true = append mode)
             writer.println(lesson.getId() + "," + 
+                         lesson.getCategory() + "," +
                          lesson.getTitle() + "," + 
                          lesson.getYoutubeId() + "," + 
                          lesson.getDateCreated() + "," + 
@@ -430,11 +432,12 @@ public class CsvDataManager {
         // Rewrite the file without the deleted lesson
         try (PrintWriter writer = new PrintWriter(new FileWriter(LESSON_FILE))) {
             // Write header
-            writer.println("id,title,youtube_id,date_created,correct_answer_keyword,theory_text");
+            writer.println("id,category,title,youtube_id,date_created,correct_answer_keyword,theory_text");
             
             // Write each remaining lesson
             for (Lesson lesson : lessons) {
                 writer.println(lesson.getId() + "," + 
+                             lesson.getCategory() + "," +
                              lesson.getTitle() + "," + 
                              lesson.getYoutubeId() + "," + 
                              lesson.getDateCreated() + "," + 

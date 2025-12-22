@@ -116,12 +116,12 @@ public class DashboardView extends JPanel {
         headerPanel.setOpaque(false);
         headerPanel.setBorder(new EmptyBorder(0, 0, 25, 0));
         
-        JLabel welcomeLabel = new JLabel("📚 My Courses");
+        JLabel welcomeLabel = new JLabel("📚 My Learning Path");
         welcomeLabel.setFont(StyleUtils.FONT_HEADER);
         welcomeLabel.setForeground(StyleUtils.TEXT_DARK);
         headerPanel.add(welcomeLabel, BorderLayout.WEST);
         
-        JLabel subtitleLabel = new JLabel("Select a course to start learning");
+        JLabel subtitleLabel = new JLabel("Select a skill to start learning");
         subtitleLabel.setFont(StyleUtils.FONT_BODY);
         subtitleLabel.setForeground(StyleUtils.TEXT_MUTED);
         headerPanel.add(subtitleLabel, BorderLayout.SOUTH);
@@ -173,37 +173,69 @@ public class DashboardView extends JPanel {
         card.setOpaque(false);
         card.setBackground(StyleUtils.CARD_WHITE);
         card.setBorder(new EmptyBorder(24, 24, 24, 24));
-        card.setPreferredSize(new Dimension(320, 200));
+        card.setPreferredSize(new Dimension(320, 220));
         card.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        // Top section with icon and title
+        // Top section with category badge and status
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
         
+        // Category badge (e.g., "Java", "Python")
+        JLabel categoryBadge = new JLabel(lesson.getCategory()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(StyleUtils.PRIMARY_BLUE_LIGHT);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        categoryBadge.setFont(StyleUtils.FONT_SMALL.deriveFont(Font.BOLD));
+        categoryBadge.setForeground(StyleUtils.PRIMARY_BLUE);
+        categoryBadge.setOpaque(false);
+        categoryBadge.setBorder(new EmptyBorder(4, 10, 4, 10));
+        
         // Status icon
         JLabel statusIcon = new JLabel(isCompleted ? "✅" : "📖");
-        statusIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 28));
-        topPanel.add(statusIcon, BorderLayout.WEST);
+        statusIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 24));
         
-        // Course title
-        JLabel titleLabel = new JLabel(lesson.getTitle());
-        titleLabel.setFont(StyleUtils.FONT_SUBHEADER);
-        titleLabel.setForeground(StyleUtils.TEXT_DARK);
-        titleLabel.setBorder(new EmptyBorder(0, 12, 0, 0));
-        topPanel.add(titleLabel, BorderLayout.CENTER);
+        JPanel badgePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        badgePanel.setOpaque(false);
+        badgePanel.add(categoryBadge);
+        badgePanel.add(statusIcon);
+        topPanel.add(badgePanel, BorderLayout.WEST);
         
         card.add(topPanel, BorderLayout.NORTH);
         
-        // Course description (truncated theory)
+        // Middle section with title and description
+        JPanel middlePanel = new JPanel();
+        middlePanel.setOpaque(false);
+        middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.Y_AXIS));
+        middlePanel.setBorder(new EmptyBorder(12, 0, 12, 0));
+        
+        // Lesson title
+        JLabel titleLabel = new JLabel(lesson.getTitle());
+        titleLabel.setFont(StyleUtils.FONT_SUBHEADER);
+        titleLabel.setForeground(StyleUtils.TEXT_DARK);
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        middlePanel.add(titleLabel);
+        
+        middlePanel.add(Box.createVerticalStrut(8));
+        
+        // Lesson description (truncated theory)
         String theoryPreview = lesson.getTheoryText();
         if (theoryPreview.length() > 80) {
             theoryPreview = theoryPreview.substring(0, 80) + "...";
         }
-        JLabel descLabel = new JLabel("<html><p style='width:250px; margin-top:10px;'>" + theoryPreview + "</p></html>");
+        JLabel descLabel = new JLabel("<html><p style='width:250px;'>" + theoryPreview + "</p></html>");
         descLabel.setFont(StyleUtils.FONT_BODY);
         descLabel.setForeground(StyleUtils.TEXT_MUTED);
-        descLabel.setBorder(new EmptyBorder(12, 0, 12, 0));
-        card.add(descLabel, BorderLayout.CENTER);
+        descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        middlePanel.add(descLabel);
+        
+        card.add(middlePanel, BorderLayout.CENTER);
         
         // Bottom: Modern progress bar and status
         JPanel bottomPanel = new JPanel(new BorderLayout(0, 8));

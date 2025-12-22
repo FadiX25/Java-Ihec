@@ -3,41 +3,36 @@ package model;
 import java.time.LocalDate;
 
 /**
- * Lesson - Represents a single learning module.
+ * Lesson - Represents a single learning module/skill.
  * 
  * ENCAPSULATION EXAMPLE:
  * - ALL fields are PRIVATE (cannot be accessed directly from outside)
  * - Access is controlled through public getters and setters
  * - The checkAnswer() method encapsulates the grading logic
  * 
- * CSV COLUMNS: id, title, youtube_id, date_created, correct_answer_keyword, theory_text
+ * CSV COLUMNS: id, category, title, youtube_id, date_created, correct_answer_keyword, theory_text
  */
 public class Lesson {
 
     // ==================== PRIVATE FIELDS (ENCAPSULATION) ====================
     
     private int id;
+    private String category;           // Skill domain (e.g., "Java", "Python", "Web Dev")
     private String title;
     private String youtubeId;          // YouTube video ID (e.g., "Hl-zzrqQoSE")
     private LocalDate dateCreated;     // Using Java's modern date API
     private String correctAnswer;      // The keyword to check in student's code
     private String theoryText;         // The lesson content/theory
 
-    // ==================== CONSTRUCTOR ====================
+    // ==================== CONSTRUCTORS ====================
     
     /**
-     * Full constructor for creating a Lesson.
-     * 
-     * @param id            Unique lesson identifier
-     * @param title         Lesson title displayed to user
-     * @param youtubeId     YouTube video ID for the tutorial
-     * @param dateCreated   When the lesson was created
-     * @param correctAnswer The keyword that must appear in student's answer
-     * @param theoryText    The theory/explanation text
+     * Full constructor for creating a Lesson with category.
      */
-    public Lesson(int id, String title, String youtubeId, 
+    public Lesson(int id, String category, String title, String youtubeId, 
                   LocalDate dateCreated, String correctAnswer, String theoryText) {
         this.id = id;
+        this.category = category;
         this.title = title;
         this.youtubeId = youtubeId;
         this.dateCreated = dateCreated;
@@ -46,20 +41,33 @@ public class Lesson {
     }
     
     /**
-     * Alternative constructor that accepts date as String.
-     * Useful when reading from CSV where dates are stored as text.
-     * 
-     * @param dateString Date in format "yyyy-MM-dd" (e.g., "2023-10-01")
+     * Constructor with date as String and category.
      */
-    public Lesson(int id, String title, String youtubeId, 
+    public Lesson(int id, String category, String title, String youtubeId, 
                   String dateString, String correctAnswer, String theoryText) {
         this.id = id;
+        this.category = category;
         this.title = title;
         this.youtubeId = youtubeId;
-        // LocalDate.parse() converts "2023-10-01" to a LocalDate object
         this.dateCreated = LocalDate.parse(dateString);
         this.correctAnswer = correctAnswer;
         this.theoryText = theoryText;
+    }
+    
+    /**
+     * Legacy constructor without category (defaults to "Java").
+     */
+    public Lesson(int id, String title, String youtubeId, 
+                  LocalDate dateCreated, String correctAnswer, String theoryText) {
+        this(id, "Java", title, youtubeId, dateCreated, correctAnswer, theoryText);
+    }
+    
+    /**
+     * Legacy constructor with date as String without category (defaults to "Java").
+     */
+    public Lesson(int id, String title, String youtubeId, 
+                  String dateString, String correctAnswer, String theoryText) {
+        this(id, "Java", title, youtubeId, dateString, correctAnswer, theoryText);
     }
 
     // ==================== BUSINESS LOGIC ====================
@@ -99,6 +107,14 @@ public class Lesson {
 
     public void setId(int id) {
         this.id = id;
+    }
+    
+    public String getCategory() {
+        return category;
+    }
+    
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getTitle() {
@@ -147,6 +163,7 @@ public class Lesson {
     public String toString() {
         return "Lesson{" +
                 "id=" + id +
+                ", category='" + category + '\'' +
                 ", title='" + title + '\'' +
                 ", dateCreated=" + dateCreated +
                 '}';

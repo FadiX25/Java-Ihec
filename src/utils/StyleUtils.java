@@ -25,10 +25,10 @@ public class StyleUtils {
     // ==================== APPLICATION BRANDING ====================
     
     /** Application Name */
-    public static final String APP_NAME = "IHEC E-Learn";
+    public static final String APP_NAME = "IHEC Skills";
     
     /** Application Tagline */
-    public static final String APP_TAGLINE = "Master Java Programming";
+    public static final String APP_TAGLINE = "Learn. Grow. Succeed.";
     
     /** Application Logo Path */
     private static final String APP_LOGO_PATH = "images/Application Logo.png";

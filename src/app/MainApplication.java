@@ -86,7 +86,7 @@ public class MainApplication extends JFrame {
         StyleUtils.setupAntiAliasing();
         
         // Window title (shown in title bar)
-        setTitle(StyleUtils.APP_NAME + " - Learn Java Programming");
+        setTitle(StyleUtils.APP_NAME + " - Your Learning Platform");
         
         // Window size
         setSize(1280, 850);

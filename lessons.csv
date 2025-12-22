@@ -1,4 +1,4 @@
-id,title,youtube_id,date_created,correct_answer_keyword,theory_text
-101,Introduction to Java,Hl-zzrqQoSE,2023-10-01,class,"Java is an Object-Oriented Programming language. In this lesson, you will learn how to create your first class. A class is a blueprint for creating objects. Every Java program needs at least one class."
-102,Variables and Data Types,eIrMbAQSU34,2023-10-15,int,"Variables are containers for storing data values. Java has different types: int for integers, double for decimals, String for text, and boolean for true/false. Always declare the type before the variable name."
-103,Object-Oriented Programming,pTB0EiLXUC8,2023-11-01,object,"OOP is a programming paradigm based on the concept of objects. Objects contain data (fields) and code (methods). The four pillars are: Encapsulation, Inheritance, Polymorphism, and Abstraction."
+id,category,title,youtube_id,date_created,correct_answer_keyword,theory_text
+101,Java,Introduction to Java,Hl-zzrqQoSE,2023-10-01,class,"Java is an Object-Oriented Programming language. In this lesson, you will learn how to create your first class. A class is a blueprint for creating objects. Every Java program needs at least one class."
+102,Java,Variables and Data Types,eIrMbAQSU34,2023-10-15,int,"Variables are containers for storing data values. Java has different types: int for integers, double for decimals, String for text, and boolean for true/false. Always declare the type before the variable name."
+103,Java,Object-Oriented Programming,pTB0EiLXUC8,2023-11-01,object,"OOP is a programming paradigm based on the concept of objects. Objects contain data (fields) and code (methods). The four pillars are: Encapsulation, Inheritance, Polymorphism, and Abstraction."
