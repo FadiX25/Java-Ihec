@@ -20,6 +20,7 @@ SET SRC_DIR=src
 SET OUT_DIR=out
 SET MAIN_CLASS=app.MainApplication
 SET JAVA_ENCODING=UTF-8
+SET JAVA_VERSION=21
 SET EXTRA_CLASSPATH=
 
 REM ============================================================================
@@ -126,7 +127,7 @@ echo.
 REM Compile each file individually to handle paths with spaces
 SET COMPILE_ERROR=0
 FOR /F "delims=" %%F IN ('type "%TEMP_FILE_LIST%"') DO (
-    javac -encoding %JAVA_ENCODING% -d "%OUT_DIR%" -sourcepath "%SRC_DIR%" -cp "%CLASSPATH%" "%%F"
+    javac --release %JAVA_VERSION% -encoding %JAVA_ENCODING% -d "%OUT_DIR%" -sourcepath "%SRC_DIR%" -cp "%CLASSPATH%" "%%F"
     IF ERRORLEVEL 1 SET COMPILE_ERROR=1
 )
 
