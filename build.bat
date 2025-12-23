@@ -20,7 +20,7 @@ SET SRC_DIR=src
 SET OUT_DIR=out
 SET MAIN_CLASS=app.MainApplication
 SET JAVA_ENCODING=UTF-8
-SET JAVA_VERSION=21
+SET JAVA_VERSION=17
 SET EXTRA_CLASSPATH=
 
 REM ============================================================================

@@ -3,9 +3,14 @@ package utils;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -17,8 +22,17 @@ import javax.swing.plaf.basic.BasicProgressBarUI;
  * DESIGN PHILOSOPHY:
  * - Clean, minimalist aesthetic with purposeful use of color
  * - Smooth animations and micro-interactions
+ * - Glass morphism and depth effects
  * - Consistent spacing and visual hierarchy
  * - Accessibility-friendly contrast ratios
+ * 
+ * NEW FEATURES v2.0:
+ * - Ripple effect animations
+ * - Glass morphism panels
+ * - Toast notifications
+ * - Animated progress rings
+ * - Skeleton loading states
+ * - Enhanced micro-interactions
  */
 public class StyleUtils {
 
@@ -188,11 +202,95 @@ public class StyleUtils {
     
     /** Animation duration in ms */
     public static final int ANIMATION_DURATION = 150;
+    
+    /** Ripple animation duration */
+    public static final int RIPPLE_DURATION = 400;
+    
+    /** Toast display duration */
+    public static final int TOAST_DURATION = 3000;
+
+    // ==================== RIPPLE EFFECT SYSTEM ====================
+    
+    /**
+     * Data class to hold ripple animation state.
+     */
+    private static class RippleEffect {
+        int x, y;
+        long startTime;
+        int maxRadius;
+        
+        RippleEffect(int x, int y, int maxRadius) {
+            this.x = x;
+            this.y = y;
+            this.startTime = System.currentTimeMillis();
+            this.maxRadius = maxRadius;
+        }
+        
+        float getProgress() {
+            return Math.min(1f, (System.currentTimeMillis() - startTime) / (float) RIPPLE_DURATION);
+        }
+        
+        boolean isComplete() {
+            return getProgress() >= 1f;
+        }
+    }
+    
+    /**
+     * Add ripple effect to any component.
+     */
+    public static void addRippleEffect(JComponent component, Color rippleColor) {
+        List<RippleEffect> ripples = new CopyOnWriteArrayList<>();
+        
+        Timer rippleTimer = new Timer(16, e -> {
+            ripples.removeIf(RippleEffect::isComplete);
+            if (ripples.isEmpty()) {
+                ((Timer) e.getSource()).stop();
+            }
+            component.repaint();
+        });
+        
+        component.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int maxRadius = (int) Math.sqrt(component.getWidth() * component.getWidth() + 
+                                                 component.getHeight() * component.getHeight());
+                ripples.add(new RippleEffect(e.getX(), e.getY(), maxRadius));
+                if (!rippleTimer.isRunning()) {
+                    rippleTimer.start();
+                }
+            }
+        });
+        
+        component.putClientProperty("ripples", ripples);
+        component.putClientProperty("rippleColor", rippleColor);
+    }
+    
+    /**
+     * Paint ripple effects for a component.
+     */
+    public static void paintRipples(Graphics2D g2, JComponent component) {
+        @SuppressWarnings("unchecked")
+        List<RippleEffect> ripples = (List<RippleEffect>) component.getClientProperty("ripples");
+        Color rippleColor = (Color) component.getClientProperty("rippleColor");
+        
+        if (ripples == null || rippleColor == null) return;
+        
+        for (RippleEffect ripple : ripples) {
+            float progress = ripple.getProgress();
+            float eased = 1f - (1f - progress) * (1f - progress); // Ease out
+            int radius = (int) (ripple.maxRadius * eased);
+            int alpha = (int) (80 * (1f - progress));
+            
+            g2.setColor(new Color(rippleColor.getRed(), rippleColor.getGreen(), 
+                                   rippleColor.getBlue(), alpha));
+            g2.fillOval(ripple.x - radius, ripple.y - radius, radius * 2, radius * 2);
+        }
+    }
 
     // ==================== COMPONENT FACTORY METHODS ====================
     
     /**
-     * Create a modern styled button with hover effects.
+     * Create a modern styled button with hover effects and ripple animation.
      */
     public static JButton createModernButton(String text, Color bgColor) {
         JButton button = new JButton(text) {
@@ -205,19 +303,41 @@ public class StyleUtils {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
                 // Calculate hover color
-                Color bg = isHovered ? darkenColor(bgColor, 0.1f) : bgColor;
+                Color bg = isHovered ? darkenColor(bgColor, 0.08f) : bgColor;
                 
-                // Draw rounded background
-                g2.setColor(bg);
-                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 
-                        BORDER_RADIUS_SMALL, BORDER_RADIUS_SMALL));
+                // Create clipping shape for ripple
+                Shape clip = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 
+                        BORDER_RADIUS_SMALL, BORDER_RADIUS_SMALL);
+                g2.setClip(clip);
                 
-                // Draw text
-                g2.setColor(getForeground());
+                // Draw rounded background with subtle gradient
+                GradientPaint gradient = new GradientPaint(
+                    0, 0, bg,
+                    0, getHeight(), darkenColor(bg, 0.05f)
+                );
+                g2.setPaint(gradient);
+                g2.fill(clip);
+                
+                // Draw ripples
+                paintRipples(g2, this);
+                
+                // Draw subtle top highlight
+                g2.setColor(new Color(255, 255, 255, isHovered ? 30 : 20));
+                g2.fillRect(0, 0, getWidth(), getHeight() / 3);
+                
+                // Draw text with shadow for depth
+                g2.setClip(null);
                 g2.setFont(getFont());
                 FontMetrics fm = g2.getFontMetrics();
                 int x = (getWidth() - fm.stringWidth(getText())) / 2;
                 int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+                
+                // Text shadow
+                g2.setColor(new Color(0, 0, 0, 30));
+                g2.drawString(getText(), x + 1, y + 1);
+                
+                // Main text
+                g2.setColor(getForeground());
                 g2.drawString(getText(), x, y);
                 
                 g2.dispose();
@@ -239,6 +359,9 @@ public class StyleUtils {
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setPreferredSize(new Dimension(0, BUTTON_HEIGHT));
         
+        // Add ripple effect
+        addRippleEffect(button, new Color(255, 255, 255, 100));
+        
         // Add hover effect
         button.addMouseListener(new MouseAdapter() {
             @Override
@@ -258,11 +381,82 @@ public class StyleUtils {
     }
     
     /**
+     * Create a ghost/outline button style.
+     */
+    public static JButton createGhostButton(String text, Color accentColor) {
+        JButton button = new JButton(text) {
+            private boolean isHovered = false;
+            
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                Shape shape = new RoundRectangle2D.Float(1, 1, getWidth() - 2, getHeight() - 2, 
+                        BORDER_RADIUS_SMALL, BORDER_RADIUS_SMALL);
+                
+                // Fill on hover
+                if (isHovered) {
+                    g2.setColor(new Color(accentColor.getRed(), accentColor.getGreen(), 
+                                          accentColor.getBlue(), 20));
+                    g2.fill(shape);
+                }
+                
+                // Draw border
+                g2.setColor(accentColor);
+                g2.setStroke(new BasicStroke(isHovered ? 2f : 1.5f));
+                g2.draw(shape);
+                
+                // Draw text
+                g2.setFont(getFont());
+                g2.setColor(accentColor);
+                FontMetrics fm = g2.getFontMetrics();
+                int x = (getWidth() - fm.stringWidth(getText())) / 2;
+                int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+                g2.drawString(getText(), x, y);
+                
+                g2.dispose();
+            }
+        };
+        
+        button.setFont(FONT_BUTTON);
+        button.setForeground(accentColor);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setPreferredSize(new Dimension(0, BUTTON_HEIGHT));
+        
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.putClientProperty("hovered", true);
+                button.repaint();
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.putClientProperty("hovered", false);
+                button.repaint();
+            }
+        });
+        
+        return button;
+    }
+    
+    /**
      * Create a modern text field with focus effects.
+     * Fixed dimensions ensure consistent sizing across layouts.
      */
     public static JTextField createModernTextField() {
         JTextField field = new JTextField() {
             private boolean focused = false;
+            
+            {
+                // Ensure consistent dimensions
+                setPreferredSize(new Dimension(200, INPUT_HEIGHT));
+                setMinimumSize(new Dimension(100, INPUT_HEIGHT));
+            }
             
             @Override
             protected void paintComponent(Graphics g) {
@@ -283,7 +477,8 @@ public class StyleUtils {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
-                if (focused) {
+                // Use isFocusOwner() for reliable focus state
+                if (isFocusOwner()) {
                     g2.setColor(BORDER_FOCUS);
                     g2.setStroke(new BasicStroke(2));
                 } else {
@@ -294,6 +489,12 @@ public class StyleUtils {
                 g2.draw(new RoundRectangle2D.Float(1, 1, getWidth() - 2, getHeight() - 2, 
                         BORDER_RADIUS_SMALL, BORDER_RADIUS_SMALL));
                 g2.dispose();
+            }
+            
+            @Override
+            public Dimension getPreferredSize() {
+                Dimension d = super.getPreferredSize();
+                return new Dimension(d.width, INPUT_HEIGHT);
             }
         };
         
@@ -307,13 +508,11 @@ public class StyleUtils {
         field.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                field.putClientProperty("focused", true);
                 field.repaint();
             }
             
             @Override
             public void focusLost(FocusEvent e) {
-                field.putClientProperty("focused", false);
                 field.repaint();
             }
         });
@@ -323,9 +522,16 @@ public class StyleUtils {
     
     /**
      * Create a modern password field with focus effects.
+     * Fixed dimensions ensure consistent sizing across layouts.
      */
     public static JPasswordField createModernPasswordField() {
         JPasswordField field = new JPasswordField() {
+            {
+                // Ensure consistent dimensions
+                setPreferredSize(new Dimension(200, INPUT_HEIGHT));
+                setMinimumSize(new Dimension(100, INPUT_HEIGHT));
+            }
+            
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -356,6 +562,12 @@ public class StyleUtils {
                 g2.draw(new RoundRectangle2D.Float(1, 1, getWidth() - 2, getHeight() - 2, 
                         BORDER_RADIUS_SMALL, BORDER_RADIUS_SMALL));
                 g2.dispose();
+            }
+            
+            @Override
+            public Dimension getPreferredSize() {
+                Dimension d = super.getPreferredSize();
+                return new Dimension(d.width, INPUT_HEIGHT);
             }
         };
         
@@ -397,6 +609,339 @@ public class StyleUtils {
         panel.setBorder(new EmptyBorder(PADDING, PADDING, PADDING + 4, PADDING + 4));
         
         return panel;
+    }
+    
+    // ==================== GLASS MORPHISM COMPONENTS ====================
+    
+    /**
+     * Create a glass morphism panel with blur effect simulation.
+     */
+    public static JPanel createGlassPanel(float opacity) {
+        return new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Glass background with transparency
+                g2.setColor(new Color(255, 255, 255, (int)(255 * opacity)));
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 
+                        BORDER_RADIUS_LARGE, BORDER_RADIUS_LARGE));
+                
+                // Subtle gradient overlay for glass effect
+                GradientPaint glassGradient = new GradientPaint(
+                    0, 0, new Color(255, 255, 255, 40),
+                    0, getHeight(), new Color(255, 255, 255, 10)
+                );
+                g2.setPaint(glassGradient);
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight() / 2, 
+                        BORDER_RADIUS_LARGE, BORDER_RADIUS_LARGE));
+                
+                // Border glow
+                g2.setColor(new Color(255, 255, 255, 60));
+                g2.setStroke(new BasicStroke(1));
+                g2.draw(new RoundRectangle2D.Float(0.5f, 0.5f, getWidth() - 1, getHeight() - 1, 
+                        BORDER_RADIUS_LARGE, BORDER_RADIUS_LARGE));
+                
+                g2.dispose();
+            }
+        };
+    }
+    
+    // ==================== TOAST NOTIFICATION SYSTEM ====================
+    
+    /**
+     * Toast notification types
+     */
+    public enum ToastType {
+        SUCCESS(SUCCESS_GREEN, "✓"),
+        ERROR(ERROR_RED, "✕"),
+        INFO(INFO_BLUE, "ℹ"),
+        WARNING(WARNING_YELLOW, "⚠");
+        
+        final Color color;
+        final String icon;
+        
+        ToastType(Color color, String icon) {
+            this.color = color;
+            this.icon = icon;
+        }
+    }
+    
+    /**
+     * Show a toast notification at the top of the window.
+     */
+    public static void showToast(JFrame frame, String message, ToastType type) {
+        JPanel toast = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0)) {
+            private float opacity = 0f;
+            
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Draw shadow
+                g2.setColor(new Color(0, 0, 0, (int)(30 * opacity)));
+                g2.fill(new RoundRectangle2D.Float(2, 2, getWidth() - 4, getHeight() - 4, 12, 12));
+                
+                // Draw background
+                Color bgColor = new Color(
+                    CARD_WHITE.getRed(), CARD_WHITE.getGreen(), CARD_WHITE.getBlue(),
+                    (int)(255 * opacity)
+                );
+                g2.setColor(bgColor);
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth() - 4, getHeight() - 4, 12, 12));
+                
+                // Draw left accent
+                g2.setColor(new Color(type.color.getRed(), type.color.getGreen(), 
+                                      type.color.getBlue(), (int)(255 * opacity)));
+                g2.fillRoundRect(0, 0, 4, getHeight() - 4, 4, 4);
+                
+                g2.dispose();
+            }
+            
+            public void setOpacity(float opacity) {
+                this.opacity = opacity;
+                repaint();
+            }
+        };
+        
+        toast.setOpaque(false);
+        toast.setBorder(new EmptyBorder(12, 16, 12, 24));
+        
+        // Icon
+        JLabel iconLabel = new JLabel(type.icon);
+        iconLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        iconLabel.setForeground(type.color);
+        toast.add(iconLabel);
+        
+        // Message
+        JLabel msgLabel = new JLabel(message);
+        msgLabel.setFont(FONT_BODY);
+        msgLabel.setForeground(TEXT_DARK);
+        toast.add(msgLabel);
+        
+        // Close button
+        JLabel closeBtn = new JLabel("×");
+        closeBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        closeBtn.setForeground(TEXT_MUTED);
+        closeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        toast.add(Box.createHorizontalStrut(20));
+        toast.add(closeBtn);
+        
+        // Position toast
+        JLayeredPane layeredPane = frame.getLayeredPane();
+        toast.setSize(toast.getPreferredSize());
+        int x = (frame.getWidth() - toast.getWidth()) / 2;
+        toast.setLocation(x, -toast.getHeight());
+        layeredPane.add(toast, JLayeredPane.POPUP_LAYER);
+        
+        // Animate in
+        Timer slideIn = new Timer(16, null);
+        final int targetY = 20;
+        slideIn.addActionListener(e -> {
+            int y = toast.getY();
+            if (y < targetY) {
+                int newY = Math.min(targetY, y + 8);
+                toast.setLocation(toast.getX(), newY);
+                float progress = (float)(newY + toast.getHeight()) / (targetY + toast.getHeight());
+                ((JPanel)toast).putClientProperty("opacity", progress);
+                toast.repaint();
+            } else {
+                slideIn.stop();
+            }
+        });
+        slideIn.start();
+        
+        // Auto dismiss
+        Timer dismiss = new Timer(TOAST_DURATION, e -> {
+            Timer slideOut = new Timer(16, null);
+            slideOut.addActionListener(ev -> {
+                int y = toast.getY();
+                if (y > -toast.getHeight()) {
+                    toast.setLocation(toast.getX(), y - 8);
+                    toast.repaint();
+                } else {
+                    slideOut.stop();
+                    layeredPane.remove(toast);
+                    layeredPane.repaint();
+                }
+            });
+            slideOut.start();
+        });
+        dismiss.setRepeats(false);
+        dismiss.start();
+        
+        // Close button action
+        closeBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dismiss.stop();
+                layeredPane.remove(toast);
+                layeredPane.repaint();
+            }
+        });
+    }
+    
+    // ==================== ANIMATED PROGRESS RING ====================
+    
+    /**
+     * Create an animated circular progress indicator.
+     */
+    public static JPanel createProgressRing(int size, int percentage, Color color) {
+        return new JPanel() {
+            private int currentValue = 0;
+            private Timer animator;
+            
+            {
+                setPreferredSize(new Dimension(size, size));
+                setOpaque(false);
+                
+                // Animate to target percentage
+                animator = new Timer(20, e -> {
+                    if (currentValue < percentage) {
+                        currentValue = Math.min(currentValue + 2, percentage);
+                        repaint();
+                    } else {
+                        animator.stop();
+                    }
+                });
+                animator.start();
+            }
+            
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                int stroke = size / 8;
+                int diameter = size - stroke - 4;
+                int x = (getWidth() - diameter) / 2;
+                int y = (getHeight() - diameter) / 2;
+                
+                // Background ring
+                g2.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 40));
+                g2.setStroke(new BasicStroke(stroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2.drawOval(x, y, diameter, diameter);
+                
+                // Progress arc
+                g2.setColor(color);
+                int angle = (int) (360 * (currentValue / 100.0));
+                g2.drawArc(x, y, diameter, diameter, 90, -angle);
+                
+                // Percentage text
+                g2.setFont(new Font("Segoe UI", Font.BOLD, size / 4));
+                g2.setColor(TEXT_DARK);
+                String text = currentValue + "%";
+                FontMetrics fm = g2.getFontMetrics();
+                int textX = (getWidth() - fm.stringWidth(text)) / 2;
+                int textY = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+                g2.drawString(text, textX, textY);
+                
+                g2.dispose();
+            }
+        };
+    }
+    
+    // ==================== SKELETON LOADING COMPONENTS ====================
+    
+    /**
+     * Create a skeleton loading placeholder.
+     */
+    public static JPanel createSkeletonLoader(int width, int height, int borderRadius) {
+        return new JPanel() {
+            private float shimmerPosition = -1f;
+            private Timer shimmerTimer;
+            
+            {
+                setPreferredSize(new Dimension(width, height));
+                setOpaque(false);
+                
+                shimmerTimer = new Timer(30, e -> {
+                    shimmerPosition += 0.05f;
+                    if (shimmerPosition > 2f) shimmerPosition = -1f;
+                    repaint();
+                });
+                shimmerTimer.start();
+            }
+            
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Base skeleton color
+                g2.setColor(new Color(226, 232, 240));
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 
+                        borderRadius, borderRadius));
+                
+                // Shimmer effect
+                int shimmerWidth = getWidth() / 3;
+                int shimmerX = (int) (shimmerPosition * getWidth());
+                
+                GradientPaint shimmer = new GradientPaint(
+                    shimmerX, 0, new Color(255, 255, 255, 0),
+                    shimmerX + shimmerWidth / 2, 0, new Color(255, 255, 255, 80),
+                    true
+                );
+                g2.setPaint(shimmer);
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 
+                        borderRadius, borderRadius));
+                
+                g2.dispose();
+            }
+            
+            @Override
+            public void removeNotify() {
+                super.removeNotify();
+                if (shimmerTimer != null) shimmerTimer.stop();
+            }
+        };
+    }
+    
+    /**
+     * Create a skeleton card for loading states.
+     */
+    public static JPanel createSkeletonCard(int width, int height) {
+        JPanel card = new JPanel();
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setOpaque(false);
+        card.setPreferredSize(new Dimension(width, height));
+        card.setBorder(new EmptyBorder(20, 20, 20, 20));
+        
+        // Header skeleton
+        card.add(createSkeletonLoader(width - 40, 20, 4));
+        card.add(Box.createVerticalStrut(12));
+        
+        // Content skeletons
+        card.add(createSkeletonLoader((int)((width - 40) * 0.8), 16, 4));
+        card.add(Box.createVerticalStrut(8));
+        card.add(createSkeletonLoader((int)((width - 40) * 0.6), 16, 4));
+        card.add(Box.createVerticalGlue());
+        
+        // Button skeleton
+        card.add(createSkeletonLoader(width - 40, 40, 8));
+        
+        return new JPanel() {
+            {
+                setLayout(new BorderLayout());
+                setOpaque(false);
+                add(card, BorderLayout.CENTER);
+            }
+            
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                g2.setColor(CARD_WHITE);
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 
+                        BORDER_RADIUS, BORDER_RADIUS));
+                
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
     }
     
     /**
