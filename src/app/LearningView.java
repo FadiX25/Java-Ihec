@@ -249,39 +249,74 @@ public class LearningView extends JPanel {
         
         panel.add(headerPanel, BorderLayout.NORTH);
         
-        // Code editor (modern dark theme)
-        codeEditorArea = new JTextArea();
+        // Code editor with enhanced styling
+        codeEditorArea = new JTextArea() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, 
+                                    RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+                super.paintComponent(g2);
+                g2.dispose();
+            }
+        };
         codeEditorArea.setFont(new Font("Consolas", Font.PLAIN, 15));
         codeEditorArea.setBackground(StyleUtils.EDITOR_DARK);
-        codeEditorArea.setForeground(new Color(166, 227, 161)); // Soft green for code
+        codeEditorArea.setForeground(new Color(166, 227, 161));
         codeEditorArea.setCaretColor(StyleUtils.TEXT_LIGHT);
         codeEditorArea.setSelectionColor(new Color(69, 133, 136));
         codeEditorArea.setSelectedTextColor(StyleUtils.TEXT_LIGHT);
         codeEditorArea.setLineWrap(true);
         codeEditorArea.setWrapStyleWord(true);
         codeEditorArea.setBorder(new EmptyBorder(20, 20, 20, 20));
-        codeEditorArea.setText("// Write your Java code here...\n\n");
+        codeEditorArea.setText("// Write your code here...\n\n");
         
-        JScrollPane codeScroll = new JScrollPane(codeEditorArea);
-        codeScroll.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(StyleUtils.EDITOR_DARK, 2),
-            BorderFactory.createEmptyBorder(0, 0, 0, 0)
-        ));
+        // Styled scroll pane with rounded corners
+        JScrollPane codeScroll = new JScrollPane(codeEditorArea) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(StyleUtils.EDITOR_DARK);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        codeScroll.setOpaque(false);
+        codeScroll.setBorder(null);
         codeScroll.getVerticalScrollBar().setUnitIncrement(16);
-        panel.add(codeScroll, BorderLayout.CENTER);
         
-        // Bottom panel: Feedback + Submit button
+        // Wrap in panel for rounded effect
+        JPanel editorWrapper = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(StyleUtils.EDITOR_DARK);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                g2.dispose();
+            }
+        };
+        editorWrapper.setOpaque(false);
+        editorWrapper.add(codeScroll, BorderLayout.CENTER);
+        panel.add(editorWrapper, BorderLayout.CENTER);
+        
+        // Bottom panel with enhanced feedback
         JPanel bottomPanel = new JPanel(new BorderLayout(0, 12));
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(new EmptyBorder(18, 0, 0, 0));
         
-        // Feedback label (shows success/error messages)
+        // Feedback panel with icon support
+        JPanel feedbackPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        feedbackPanel.setOpaque(false);
         feedbackLabel = new JLabel(" ");
-        feedbackLabel.setFont(StyleUtils.FONT_BODY);
+        feedbackLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         feedbackLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        bottomPanel.add(feedbackLabel, BorderLayout.NORTH);
+        feedbackPanel.add(feedbackLabel);
+        bottomPanel.add(feedbackPanel, BorderLayout.NORTH);
         
-        // Submit button - modern style
+        // Submit button with icon
         submitButton = StyleUtils.createModernButton("✓ Submit Answer", StyleUtils.SUCCESS_GREEN);
         submitButton.setPreferredSize(new Dimension(0, 50));
         submitButton.addActionListener(e -> checkAnswer());
@@ -294,12 +329,6 @@ public class LearningView extends JPanel {
 
     // ==================== PUBLIC METHODS ====================
     
-    /**
-     * Load a lesson into the view.
-     * Called by MainApplication when opening a lesson.
-     * 
-     * @param lesson The lesson to display
-     */
     public void loadLesson(Lesson lesson) {
         this.currentLesson = lesson;
         
@@ -307,92 +336,54 @@ public class LearningView extends JPanel {
         lessonTitleLabel.setText(lesson.getTitle());
         theoryTextArea.setText(lesson.getTheoryText());
         
-        // Reset the code editor
-        codeEditorArea.setText("// Write your Java code here...\n" +
+        // Reset the code editor with styled placeholder
+        codeEditorArea.setText("// Write your code here...\n" +
                               "// Hint: Your answer should include the correct keyword.\n\n");
         
-        // Clear any previous feedback
+        // Clear feedback
         feedbackLabel.setText(" ");
         feedbackLabel.setForeground(StyleUtils.TEXT_DARK);
         
-        // Re-enable submit button (in case it was disabled)
+        // Re-enable submit button
         submitButton.setEnabled(true);
         submitButton.setBackground(StyleUtils.SUCCESS_GREEN);
+        submitButton.setText("✓ Submit Answer");
         
-        // Scroll theory to top
+        // Scroll to top
         theoryTextArea.setCaretPosition(0);
     }
 
     // ==================== EVENT HANDLERS ====================
     
-    /**
-     * Open the YouTube video in the system browser.
-     * 
-     * HOW IT WORKS:
-     * 1. Desktop.getDesktop() gets the system desktop interface
-     * 2. browse(URI) opens the default browser with that URL
-     * 3. We use try-catch because this can fail (no browser, etc.)
-     */
     private void openYoutubeVideo() {
-        if (currentLesson == null) {
-            return;
-        }
+        if (currentLesson == null) return;
         
         try {
-            // Get the YouTube URL from the lesson
             String url = currentLesson.getYoutubeUrl();
             
-            // Check if Desktop is supported on this system
             if (Desktop.isDesktopSupported()) {
                 Desktop desktop = Desktop.getDesktop();
-                
-                // Check if browsing is supported
                 if (desktop.isSupported(Desktop.Action.BROWSE)) {
                     desktop.browse(new URI(url));
-                    System.out.println("Opening video: " + url);
-                } else {
-                    showVideoError("Browser not supported on this system.");
+                    
+                    // Show toast
+                    SwingUtilities.invokeLater(() -> {
+                        StyleUtils.showToast((JFrame) SwingUtilities.getWindowAncestor(this), 
+                            "Opening video in browser...", StyleUtils.ToastType.INFO);
+                    });
                 }
-            } else {
-                showVideoError("Desktop not supported on this system.");
             }
-            
         } catch (Exception e) {
             System.err.println("Error opening video: " + e.getMessage());
-            showVideoError("Could not open video: " + e.getMessage());
+            StyleUtils.showToast((JFrame) SwingUtilities.getWindowAncestor(this), 
+                "Could not open video", StyleUtils.ToastType.ERROR);
         }
     }
     
-    /**
-     * Show an error message for video issues.
-     */
-    private void showVideoError(String message) {
-        JOptionPane.showMessageDialog(
-            this,
-            message + "\n\nYou can manually open: " + currentLesson.getYoutubeUrl(),
-            "Video Error",
-            JOptionPane.WARNING_MESSAGE
-        );
-    }
-    
-    /**
-     * Check if the student's answer is correct.
-     * 
-     * GRADING LOGIC:
-     * 1. Get the text from the code editor
-     * 2. Call lesson.checkAnswer() which compares with the correct keyword
-     * 3. If correct: award XP and mark lesson complete
-     * 4. Show appropriate feedback message
-     */
     private void checkAnswer() {
-        if (currentLesson == null) {
-            return;
-        }
+        if (currentLesson == null) return;
         
-        // Get user's answer
         String userAnswer = codeEditorArea.getText();
-        
-        // Check if it's correct
         boolean isCorrect = currentLesson.checkAnswer(userAnswer);
         
         if (isCorrect) {
@@ -402,75 +393,68 @@ public class LearningView extends JPanel {
         }
     }
     
-    /**
-     * Handle a correct answer.
-     */
     private void handleCorrectAnswer() {
-        // Show success feedback
-        feedbackLabel.setText("✓ Correct! Well done! +" + XP_REWARD + " XP");
+        feedbackLabel.setText("🎉 Correct! Well done! +" + XP_REWARD + " XP");
         feedbackLabel.setForeground(StyleUtils.SUCCESS_GREEN);
         
-        // Get current user
         User user = parentApp.getCurrentUser();
         
-        // Award XP if the user is a student
         if (user instanceof Student) {
             Student student = (Student) user;
             
-            // Only award XP if this lesson wasn't already completed
             if (!student.hasCompletedLesson(currentLesson.getId())) {
                 student.addXp(XP_REWARD);
                 student.completeLesson(currentLesson.getId());
-                
-                // Save progress to CSV
                 dataManager.saveUserProgress(student);
-                
-                System.out.println("Student " + student.getUsername() + 
-                                 " completed lesson " + currentLesson.getId() + 
-                                 " - Total XP: " + student.getXpScore());
             } else {
-                // Already completed - update message
-                feedbackLabel.setText("✓ Correct! (Already completed - no extra XP)");
+                feedbackLabel.setText("✓ Correct! (Already completed)");
             }
         }
         
-        // Disable submit button to prevent re-submission
         submitButton.setEnabled(false);
         submitButton.setBackground(StyleUtils.TEXT_MUTED);
         submitButton.setText("✓ Lesson Complete");
         
-        // Show success dialog
-        JOptionPane.showMessageDialog(
-            this,
-            "Congratulations! You've completed this lesson.\n" +
-            "Click OK to return to the dashboard.",
-            "Lesson Complete!",
-            JOptionPane.INFORMATION_MESSAGE
-        );
+        // Show success toast
+        SwingUtilities.invokeLater(() -> {
+            StyleUtils.showToast((JFrame) SwingUtilities.getWindowAncestor(this), 
+                "Lesson completed! +" + XP_REWARD + " XP earned!", StyleUtils.ToastType.SUCCESS);
+        });
         
-        // Return to dashboard
-        parentApp.returnToDashboard();
+        // Delayed return to dashboard
+        Timer returnTimer = new Timer(1500, e -> parentApp.returnToDashboard());
+        returnTimer.setRepeats(false);
+        returnTimer.start();
     }
     
-    /**
-     * Handle a wrong answer.
-     */
     private void handleWrongAnswer() {
-        // Show error feedback
-        feedbackLabel.setText("✗ Not quite right. Check your code and try again!");
+        feedbackLabel.setText("❌ Not quite right. Check your code and try again!");
         feedbackLabel.setForeground(StyleUtils.ERROR_RED);
         
-        // Briefly flash the submit button red
+        // Shake the submit button
+        Point original = submitButton.getLocation();
+        Timer shakeTimer = new Timer(30, null);
+        final int[] step = {0};
+        final int[] offsets = {5, -5, 4, -4, 3, -3, 0};
+        
         submitButton.setBackground(StyleUtils.ERROR_RED);
         
-        // Reset button color after a short delay
-        Timer timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        shakeTimer.addActionListener(e -> {
+            if (step[0] < offsets.length) {
+                submitButton.setLocation(original.x + offsets[step[0]], original.y);
+                step[0]++;
+            } else {
+                submitButton.setLocation(original);
                 submitButton.setBackground(StyleUtils.SUCCESS_GREEN);
+                shakeTimer.stop();
             }
         });
-        timer.setRepeats(false);  // Only run once
-        timer.start();
+        shakeTimer.start();
+        
+        // Show toast
+        SwingUtilities.invokeLater(() -> {
+            StyleUtils.showToast((JFrame) SwingUtilities.getWindowAncestor(this), 
+                "Try again! Check your answer.", StyleUtils.ToastType.WARNING);
+        });
     }
 }

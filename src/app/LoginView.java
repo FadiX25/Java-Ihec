@@ -13,19 +13,14 @@ import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * LoginView - The login screen of the application.
+ * LoginView - Modern, polished login screen with animations.
  * 
  * FEATURES:
  * - Sign In: Login with existing credentials
  * - Sign Up: Register a new student account
  * - Continue as Guest: Browse without saving progress
- * 
-// * SWING BASICS:
- * - JPanel: A container that holds other components
- * - JLabel: Displays text
- * - JTextField: Input field for text
- * - JPasswordField: Input field that hides characters
- * - JButton: A clickable button
+ * - Animated transitions and micro-interactions
+ * - Toast notifications for feedback
  */
 public class LoginView extends JPanel {
 
@@ -33,16 +28,18 @@ public class LoginView extends JPanel {
     
     private JTextField usernameField;
     private JPasswordField passwordField;
-    private JPasswordField confirmPasswordField;  // For signup mode
+    private JPasswordField confirmPasswordField;
     private JButton loginButton;
     private JButton signupButton;
     private JButton guestButton;
-    private JButton switchModeButton;  // Toggle between login/signup
+    private JButton switchModeButton;
     private JLabel errorLabel;
     private JLabel cardTitleLabel;
+    private JLabel cardSubtitleLabel;
     private JLabel confirmPasswordLabel;
+    private JPanel cardPanel;
     
-    // Reference to parent application (for switching views)
+    // Reference to parent application
     private MainApplication parentApp;
     
     // Data manager for authentication
@@ -53,177 +50,258 @@ public class LoginView extends JPanel {
 
     // ==================== CONSTRUCTOR ====================
     
-    /**
-     * Create the login view.
-     * 
-     * @param parentApp Reference to the main application window
-     */
     public LoginView(MainApplication parentApp) {
         this.parentApp = parentApp;
         this.dataManager = new CsvDataManager();
         
-        // Initialize the UI
         initializeUI();
     }
 
     // ==================== UI INITIALIZATION ====================
     
-    /**
-     * Set up the login form UI.
-     */
     private void initializeUI() {
-        // Set panel layout and background
         setLayout(new BorderLayout());
         setBackground(StyleUtils.BACKGROUND_GRAY);
         
         // Create the center login card
         JPanel loginCard = createLoginCard();
         
-        // Add the card to the center of this panel
-        // We use a wrapper panel to center it properly
-        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        // Center wrapper with animated background
+        JPanel centerWrapper = new JPanel(new GridBagLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Subtle decorative circles in background
+                g2.setColor(new Color(37, 99, 235, 8));
+                g2.fillOval(-100, -100, 400, 400);
+                g2.fillOval(getWidth() - 200, getHeight() - 300, 500, 500);
+                
+                g2.setColor(new Color(37, 99, 235, 5));
+                g2.fillOval(getWidth() / 2 - 150, -200, 300, 300);
+                
+                g2.dispose();
+            }
+        };
         centerWrapper.setBackground(StyleUtils.BACKGROUND_GRAY);
         centerWrapper.add(loginCard);
         
         add(centerWrapper, BorderLayout.CENTER);
         
-        // Add a header at the top
+        // Header at top
         JPanel headerPanel = createHeader();
         add(headerPanel, BorderLayout.NORTH);
+        
+        // Footer
+        add(createFooter(), BorderLayout.SOUTH);
     }
     
-    /**
-     * Create the header panel with the app title and logo.
-     */
     private JPanel createHeader() {
         return StyleUtils.createBrandedHeader(100, true);
     }
     
-    /**
-     * Create the white login card with form fields.
-     */
+    private JPanel createFooter() {
+        JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        footer.setOpaque(false);
+        footer.setBorder(new EmptyBorder(10, 0, 20, 0));
+        
+        JLabel footerText = new JLabel("© 2024 IHEC Skills • Learn. Grow. Succeed.");
+        footerText.setFont(StyleUtils.FONT_SMALL);
+        footerText.setForeground(StyleUtils.TEXT_MUTED);
+        footer.add(footerText);
+        
+        return footer;
+    }
+    
     private JPanel createLoginCard() {
-        // Main card panel with modern shadow effect
-        JPanel card = new JPanel() {
+        // Main card with glass morphism effect
+        cardPanel = new JPanel() {
+            private float glowIntensity = 0f;
+            
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
-                // Draw shadow
-                g2.setColor(new Color(15, 23, 42, 20));
-                g2.fillRoundRect(4, 4, getWidth() - 4, getHeight() - 4, 20, 20);
+                // Outer glow
+                for (int i = 12; i > 0; i--) {
+                    float alpha = 0.01f * (12 - i);
+                    g2.setColor(new Color(37, 99, 235, (int)(alpha * 255)));
+                    g2.fill(new RoundRectangle2D.Float(
+                        -i, -i, getWidth() + i * 2, getHeight() + i * 2, 24 + i, 24 + i));
+                }
                 
-                // Draw card background
-                g2.setColor(StyleUtils.CARD_WHITE);
-                g2.fillRoundRect(0, 0, getWidth() - 4, getHeight() - 4, 20, 20);
+                // Card shadow
+                g2.setColor(new Color(15, 23, 42, 25));
+                g2.fill(new RoundRectangle2D.Float(6, 6, getWidth() - 6, getHeight() - 6, 24, 24));
+                
+                // Card background with subtle gradient
+                GradientPaint gradient = new GradientPaint(
+                    0, 0, StyleUtils.CARD_WHITE,
+                    0, getHeight(), new Color(248, 250, 252)
+                );
+                g2.setPaint(gradient);
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth() - 6, getHeight() - 6, 24, 24));
+                
+                // Top accent line
+                GradientPaint accentGradient = new GradientPaint(
+                    0, 0, StyleUtils.PRIMARY_BLUE,
+                    getWidth(), 0, new Color(96, 165, 250)
+                );
+                g2.setPaint(accentGradient);
+                g2.fillRoundRect(0, 0, getWidth() - 6, 4, 4, 4);
                 
                 g2.dispose();
             }
         };
-        card.setOpaque(false);
-        card.setPreferredSize(new Dimension(420, 520));
-        card.setLayout(new BorderLayout());
-        card.setBorder(new EmptyBorder(30, 45, 30, 45));
+        cardPanel.setOpaque(false);
+        cardPanel.setPreferredSize(new Dimension(440, 560));
+        cardPanel.setLayout(new BorderLayout());
+        cardPanel.setBorder(new EmptyBorder(40, 50, 35, 50));
         
-        // Card title (changes based on mode)
+        // Header section
+        JPanel headerSection = new JPanel();
+        headerSection.setOpaque(false);
+        headerSection.setLayout(new BoxLayout(headerSection, BoxLayout.Y_AXIS));
+        
+        // Welcome icon
+        JLabel welcomeIcon = new JLabel("👋");
+        welcomeIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 36));
+        welcomeIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
+        headerSection.add(welcomeIcon);
+        headerSection.add(Box.createVerticalStrut(12));
+        
         cardTitleLabel = new JLabel("Welcome Back!", SwingConstants.CENTER);
-        cardTitleLabel.setFont(StyleUtils.FONT_SUBHEADER);
+        cardTitleLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
         cardTitleLabel.setForeground(StyleUtils.TEXT_DARK);
-        cardTitleLabel.setBorder(new EmptyBorder(0, 0, 20, 0));
-        card.add(cardTitleLabel, BorderLayout.NORTH);
+        cardTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        headerSection.add(cardTitleLabel);
         
-        // Form panel (center) - using BoxLayout for flexible sizing
+        cardSubtitleLabel = new JLabel("Sign in to continue learning", SwingConstants.CENTER);
+        cardSubtitleLabel.setFont(StyleUtils.FONT_BODY);
+        cardSubtitleLabel.setForeground(StyleUtils.TEXT_MUTED);
+        cardSubtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cardSubtitleLabel.setBorder(new EmptyBorder(6, 0, 20, 0));
+        headerSection.add(cardSubtitleLabel);
+        
+        cardPanel.add(headerSection, BorderLayout.NORTH);
+        
+        // Form section
         JPanel formPanel = new JPanel();
         formPanel.setOpaque(false);
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         
-        // Username field
-        JLabel usernameLabel = new JLabel("Username");
-        usernameLabel.setFont(StyleUtils.FONT_BODY);
-        usernameLabel.setForeground(StyleUtils.TEXT_DARK);
-        usernameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        formPanel.add(usernameLabel);
+        // Username field with icon
+        formPanel.add(createFieldLabel("Username", "👤"));
         formPanel.add(Box.createVerticalStrut(8));
         
         usernameField = StyleUtils.createModernTextField();
-        usernameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, StyleUtils.INPUT_HEIGHT));
+        usernameField.setPreferredSize(new Dimension(350, 42));
+        usernameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+        usernameField.setMinimumSize(new Dimension(200, 42));
         usernameField.setAlignmentX(Component.LEFT_ALIGNMENT);
         formPanel.add(usernameField);
-        formPanel.add(Box.createVerticalStrut(16));
-        formPanel.add(Box.createVerticalStrut(16));
+        formPanel.add(Box.createVerticalStrut(10));
         
         // Password field
-        JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setFont(StyleUtils.FONT_BODY);
-        passwordLabel.setForeground(StyleUtils.TEXT_DARK);
-        passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        formPanel.add(passwordLabel);
-        formPanel.add(Box.createVerticalStrut(8));
+        formPanel.add(createFieldLabel("Password", "🔒"));
+        formPanel.add(Box.createVerticalStrut(6));
         
         passwordField = StyleUtils.createModernPasswordField();
-        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, StyleUtils.INPUT_HEIGHT));
+        passwordField.setPreferredSize(new Dimension(350, 42));
+        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+        passwordField.setMinimumSize(new Dimension(200, 42));
         passwordField.setAlignmentX(Component.LEFT_ALIGNMENT);
         formPanel.add(passwordField);
-        formPanel.add(Box.createVerticalStrut(16));
+        formPanel.add(Box.createVerticalStrut(10));
         
-        // Confirm Password field (only visible in signup mode)
-        confirmPasswordLabel = new JLabel("Confirm Password");
-        confirmPasswordLabel.setFont(StyleUtils.FONT_BODY);
-        confirmPasswordLabel.setForeground(StyleUtils.TEXT_DARK);
-        confirmPasswordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        confirmPasswordLabel.setVisible(false);  // Hidden by default
+        // Confirm Password (signup only)
+        confirmPasswordLabel = createFieldLabel("Confirm Password", "🔒");
+        confirmPasswordLabel.setVisible(false);
         formPanel.add(confirmPasswordLabel);
-        formPanel.add(Box.createVerticalStrut(8));
+        formPanel.add(Box.createVerticalStrut(6));
         
         confirmPasswordField = StyleUtils.createModernPasswordField();
-        confirmPasswordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, StyleUtils.INPUT_HEIGHT));
+        confirmPasswordField.setPreferredSize(new Dimension(350, 42));
+        confirmPasswordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+        confirmPasswordField.setMinimumSize(new Dimension(200, 42));
         confirmPasswordField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        confirmPasswordField.setVisible(false);  // Hidden by default
+        confirmPasswordField.setVisible(false);
         formPanel.add(confirmPasswordField);
-        formPanel.add(Box.createVerticalStrut(12));
+        formPanel.add(Box.createVerticalStrut(8));
         
-        // Error label
+        // Error label with icon
         errorLabel = new JLabel(" ");
-        errorLabel.setFont(StyleUtils.FONT_BODY);
+        errorLabel.setFont(StyleUtils.FONT_SMALL);
         errorLabel.setForeground(StyleUtils.ERROR_RED);
         errorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         formPanel.add(errorLabel);
         
-        card.add(formPanel, BorderLayout.CENTER);
+        cardPanel.add(formPanel, BorderLayout.CENTER);
         
-        // Button panel (bottom)
+        // Button section
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-        buttonPanel.setBorder(new EmptyBorder(15, 0, 0, 0));
+        buttonPanel.setBorder(new EmptyBorder(25, 0, 0, 0));
         
-        // Sign In button (primary action) - Modern styled
+        // Sign In button - smaller height
         loginButton = StyleUtils.createModernButton("Sign In", StyleUtils.PRIMARY_BLUE);
         loginButton.addActionListener(e -> handleLogin());
-        loginButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, StyleUtils.BUTTON_HEIGHT));
+        loginButton.setPreferredSize(new Dimension(200, 40));
+        loginButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonPanel.add(loginButton);
         buttonPanel.add(Box.createVerticalStrut(10));
         
-        // Sign Up button (shown in signup mode, hidden initially)
+        // Sign Up button (hidden initially) - smaller height
         signupButton = StyleUtils.createModernButton("Create Account", StyleUtils.SUCCESS_GREEN);
         signupButton.addActionListener(e -> handleSignup());
-        signupButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, StyleUtils.BUTTON_HEIGHT));
+        signupButton.setPreferredSize(new Dimension(200, 40));
+        signupButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         signupButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         signupButton.setVisible(false);
         buttonPanel.add(signupButton);
         buttonPanel.add(Box.createVerticalStrut(10));
         
-        // Continue as Guest button - subtle style
-        guestButton = StyleUtils.createModernButton("Continue as Guest", StyleUtils.TEXT_MUTED);
+        // Guest button - ghost style, smaller height
+        guestButton = StyleUtils.createGhostButton("Continue as Guest", StyleUtils.TEXT_MUTED);
         guestButton.addActionListener(e -> handleGuestLogin());
-        guestButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, StyleUtils.BUTTON_HEIGHT));
+        guestButton.setPreferredSize(new Dimension(200, 38));
+        guestButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
         guestButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonPanel.add(guestButton);
+        buttonPanel.add(Box.createVerticalStrut(20));
+        
+        // Divider
+        JPanel divider = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setColor(StyleUtils.BORDER_LIGHT);
+                int y = getHeight() / 2;
+                g2.drawLine(0, y, getWidth() / 3 - 20, y);
+                g2.drawLine(getWidth() * 2 / 3 + 20, y, getWidth(), y);
+                g2.dispose();
+            }
+        };
+        divider.setOpaque(false);
+        divider.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
+        divider.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JLabel orLabel = new JLabel("or", SwingConstants.CENTER);
+        orLabel.setFont(StyleUtils.FONT_SMALL);
+        orLabel.setForeground(StyleUtils.TEXT_MUTED);
+        divider.setLayout(new GridBagLayout());
+        divider.add(orLabel);
+        
+        buttonPanel.add(divider);
         buttonPanel.add(Box.createVerticalStrut(16));
         
-        // Switch mode link ("Don't have an account? Sign up")
+        // Switch mode link
         switchModeButton = new JButton("Don't have an account? Sign up");
         switchModeButton.setFont(StyleUtils.FONT_BODY);
         switchModeButton.setForeground(StyleUtils.PRIMARY_BLUE);
@@ -235,7 +313,6 @@ public class LoginView extends JPanel {
         switchModeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         switchModeButton.addActionListener(e -> toggleMode());
         
-        // Hover underline effect
         switchModeButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 switchModeButton.setText("<html><u>" + switchModeButton.getText().replaceAll("<[^>]*>", "") + "</u></html>");
@@ -251,7 +328,7 @@ public class LoginView extends JPanel {
         
         buttonPanel.add(switchModeButton);
         
-        // Allow Enter key to submit
+        // Enter key handlers
         passwordField.addActionListener(e -> {
             if (isSignupMode) {
                 confirmPasswordField.requestFocus();
@@ -260,30 +337,23 @@ public class LoginView extends JPanel {
             }
         });
         confirmPasswordField.addActionListener(e -> handleSignup());
+        usernameField.addActionListener(e -> passwordField.requestFocus());
         
-        card.add(buttonPanel, BorderLayout.SOUTH);
+        cardPanel.add(buttonPanel, BorderLayout.SOUTH);
         
-        return card;
+        return cardPanel;
+    }
+    
+    private JLabel createFieldLabel(String text, String icon) {
+        JLabel label = new JLabel(icon + "  " + text);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        label.setForeground(StyleUtils.TEXT_DARK);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return label;
     }
     
     /**
-     * Helper method to create a styled button.
-     */
-    private JButton createStyledButton(String text, Color bgColor) {
-        JButton button = new JButton(text);
-        button.setFont(StyleUtils.FONT_BUTTON);
-        button.setBackground(bgColor);
-        button.setForeground(StyleUtils.TEXT_LIGHT);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        return button;
-    }
-    
-    /**
-     * Toggle between Login and Signup modes.
+     * Toggle between Login and Signup modes with animation.
      */
     private void toggleMode() {
         isSignupMode = !isSignupMode;
@@ -291,176 +361,207 @@ public class LoginView extends JPanel {
         clearFields();
         
         if (isSignupMode) {
-            // Switch to Signup mode
             cardTitleLabel.setText("Create Account");
+            cardSubtitleLabel.setText("Join us and start learning today");
             confirmPasswordLabel.setVisible(true);
             confirmPasswordField.setVisible(true);
             loginButton.setVisible(false);
             signupButton.setVisible(true);
             guestButton.setVisible(false);
             switchModeButton.setText("Already have an account? Sign in");
+            
+            // Update card size for extra field
+            cardPanel.setPreferredSize(new Dimension(440, 620));
         } else {
-            // Switch to Login mode
             cardTitleLabel.setText("Welcome Back!");
+            cardSubtitleLabel.setText("Sign in to continue learning");
             confirmPasswordLabel.setVisible(false);
             confirmPasswordField.setVisible(false);
             loginButton.setVisible(true);
             signupButton.setVisible(false);
             guestButton.setVisible(true);
             switchModeButton.setText("Don't have an account? Sign up");
+            
+            // Reset card size
+            cardPanel.setPreferredSize(new Dimension(440, 560));
         }
         
-        // Refresh the layout
         revalidate();
         repaint();
     }
 
     // ==================== EVENT HANDLERS ====================
     
-    /**
-     * Handle the login button click.
-     */
     private void handleLogin() {
-        // Get input values
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword());
         
-        // Validate input
         if (username.isEmpty() || password.isEmpty()) {
             showError("Please enter both username and password.");
+            shakeComponent(usernameField.getText().isEmpty() ? usernameField : passwordField);
             return;
         }
         
-        // Attempt authentication
-        User user = dataManager.authenticate(username, password);
+        // Show loading state
+        loginButton.setText("Signing in...");
+        loginButton.setEnabled(false);
         
-        if (user != null) {
-            // Success! Clear error and switch to dashboard
-            clearError();
-            clearFields();
-            parentApp.onLoginSuccess(user);
-        } else {
-            // Failed - show error
-            showError("Invalid username or password.");
-            passwordField.setText("");
-        }
+        // Simulate brief delay for UX
+        Timer loginTimer = new Timer(400, e -> {
+            User user = dataManager.authenticate(username, password);
+            
+            if (user != null) {
+                clearError();
+                clearFields();
+                loginButton.setText("Sign In");
+                loginButton.setEnabled(true);
+                
+                // Show success toast
+                SwingUtilities.invokeLater(() -> {
+                    StyleUtils.showToast((JFrame) SwingUtilities.getWindowAncestor(this), 
+                        "Welcome back, " + user.getUsername() + "!", StyleUtils.ToastType.SUCCESS);
+                });
+                
+                parentApp.onLoginSuccess(user);
+            } else {
+                showError("Invalid username or password.");
+                passwordField.setText("");
+                loginButton.setText("Sign In →");
+                loginButton.setEnabled(true);
+                shakeComponent(cardPanel);
+            }
+        });
+        loginTimer.setRepeats(false);
+        loginTimer.start();
     }
     
-    /**
-     * Handle the signup button click.
-     * Creates a new student account.
-     */
     private void handleSignup() {
-        // Get input values
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword());
         String confirmPassword = new String(confirmPasswordField.getPassword());
         
-        // Validate input
         if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             showError("Please fill in all fields.");
             return;
         }
         
-        // Check username length (reasonable limits)
         if (username.length() < 3) {
             showError("Username must be at least 3 characters.");
+            shakeComponent(usernameField);
             return;
         }
         
         if (username.length() > 20) {
             showError("Username must be 20 characters or less.");
+            shakeComponent(usernameField);
             return;
         }
         
-        // Check password length
         if (password.length() < 4) {
             showError("Password must be at least 4 characters.");
+            shakeComponent(passwordField);
             return;
         }
         
-        // Check passwords match
         if (!password.equals(confirmPassword)) {
             showError("Passwords do not match.");
             confirmPasswordField.setText("");
+            shakeComponent(confirmPasswordField);
             return;
         }
         
-        // Check if username is taken
         if (dataManager.isUsernameTaken(username)) {
             showError("Username is already taken.");
+            shakeComponent(usernameField);
             return;
         }
         
-        // Attempt registration
-        Student newUser = dataManager.registerUser(username, password);
+        // Show loading state
+        signupButton.setText("Creating account...");
+        signupButton.setEnabled(false);
         
-        if (newUser != null) {
-            // Success! Show message and log them in
-            clearError();
-            clearFields();
+        Timer signupTimer = new Timer(500, e -> {
+            Student newUser = dataManager.registerUser(username, password);
             
-            JOptionPane.showMessageDialog(
-                this,
-                "Account created successfully!\nWelcome, " + username + "!",
-                "Registration Complete",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-            
-            // Switch back to login mode for cleaner UX
-            toggleMode();
-            
-            // Automatically log them in
-            parentApp.onLoginSuccess(newUser);
-        } else {
-            showError("Registration failed. Please try again.");
-        }
+            if (newUser != null) {
+                clearError();
+                clearFields();
+                signupButton.setText("Create Account");
+                signupButton.setEnabled(true);
+                
+                // Show success toast
+                SwingUtilities.invokeLater(() -> {
+                    StyleUtils.showToast((JFrame) SwingUtilities.getWindowAncestor(this), 
+                        "Account created successfully! Welcome, " + username + "!", 
+                        StyleUtils.ToastType.SUCCESS);
+                });
+                
+                toggleMode();
+                parentApp.onLoginSuccess(newUser);
+            } else {
+                showError("Registration failed. Please try again.");
+                signupButton.setText("Create Account");
+                signupButton.setEnabled(true);
+            }
+        });
+        signupTimer.setRepeats(false);
+        signupTimer.start();
     }
     
-    /**
-     * Handle the "Continue as Guest" button click.
-     * Creates a temporary guest user who can browse but not save progress.
-     */
     private void handleGuestLogin() {
-        // Create guest user
-        Student guestUser = dataManager.createGuestUser();
+        guestButton.setText("Loading...");
+        guestButton.setEnabled(false);
         
-        // Clear fields and show info message
-        clearFields();
-        clearError();
-        
-        // Notify user about guest limitations
-        JOptionPane.showMessageDialog(
-            this,
-            "You're browsing as a guest.\n\n" +
-            "• You can view all lessons\n" +
-            "• Your progress will NOT be saved\n" +
-            "• Create an account to track XP!",
-            "Guest Mode",
-            JOptionPane.INFORMATION_MESSAGE
-        );
-        
-        // Log in as guest
-        parentApp.onLoginSuccess(guestUser);
+        Timer guestTimer = new Timer(300, e -> {
+            Student guestUser = dataManager.createGuestUser();
+            clearFields();
+            clearError();
+            
+            guestButton.setText("Continue as Guest");
+            guestButton.setEnabled(true);
+            
+            // Show info toast
+            SwingUtilities.invokeLater(() -> {
+                StyleUtils.showToast((JFrame) SwingUtilities.getWindowAncestor(this), 
+                    "Browsing as guest. Progress won't be saved.", StyleUtils.ToastType.INFO);
+            });
+            
+            parentApp.onLoginSuccess(guestUser);
+        });
+        guestTimer.setRepeats(false);
+        guestTimer.start();
     }
     
     /**
-     * Display an error message.
+     * Shake animation for error feedback.
      */
+    private void shakeComponent(JComponent component) {
+        Point original = component.getLocation();
+        Timer shakeTimer = new Timer(30, null);
+        final int[] step = {0};
+        final int[] offsets = {10, -10, 8, -8, 5, -5, 2, -2, 0};
+        
+        shakeTimer.addActionListener(e -> {
+            if (step[0] < offsets.length) {
+                component.setLocation(original.x + offsets[step[0]], original.y);
+                step[0]++;
+            } else {
+                component.setLocation(original);
+                shakeTimer.stop();
+            }
+        });
+        shakeTimer.start();
+    }
+    
     private void showError(String message) {
         errorLabel.setText(message);
+        errorLabel.setForeground(StyleUtils.ERROR_RED);
     }
     
-    /**
-     * Clear the error message.
-     */
     private void clearError() {
         errorLabel.setText(" ");
     }
     
-    /**
-     * Clear input fields.
-     */
     private void clearFields() {
         usernameField.setText("");
         passwordField.setText("");
