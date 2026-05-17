@@ -37,7 +37,7 @@ function loadUserProfile(user) {
 
 async function loadLessons() {
     try {
-        const response = await fetch('/api/lessons');
+        const response = await authenticatedFetch('/api/lessons');
         if (!response.ok) throw new Error('Failed to fetch lessons');
         
         const lessons = await response.json();
@@ -144,7 +144,7 @@ function filterByCategory(lessons, category, element) {
 // Search functionality
 document.getElementById('searchInput').addEventListener('input', async (e) => {
     const query = e.target.value.toLowerCase();
-    const response = await fetch('/api/lessons');
+    const response = await authenticatedFetch('/api/lessons');
     const lessons = await response.json();
     
     if (query === '') {

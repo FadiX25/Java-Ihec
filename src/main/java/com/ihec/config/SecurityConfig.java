@@ -38,8 +38,9 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/", "/index.html", "/login.html", "/register.html", "/learning.html", "/dashboard.html", "/admin-dashboard.html", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
             )
             .cors();
