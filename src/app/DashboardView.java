@@ -1,6 +1,8 @@
 package app;
 
 import services.CsvDataManager;
+import services.DataManager;
+import services.FirebaseDataManager;
 import model.Lesson;
 import model.Student;
 import model.User;
@@ -33,7 +35,7 @@ public class DashboardView extends JPanel {
     // ==================== REFERENCES ====================
     
     private MainApplication parentApp;
-    private CsvDataManager dataManager;
+    private DataManager dataManager;
     private User currentUser;
     
     // UI Components that need updating
@@ -46,8 +48,15 @@ public class DashboardView extends JPanel {
     
     public DashboardView(MainApplication parentApp) {
         this.parentApp = parentApp;
-        this.dataManager = new CsvDataManager();
-        
+        DataManager dm;
+        try {
+            dm = new FirebaseDataManager();
+        } catch (Exception e) {
+            System.err.println("Firebase init failed: " + e.getMessage());
+            dm = new CsvDataManager();
+        }
+        this.dataManager = dm;
+
         initializeUI();
     }
 

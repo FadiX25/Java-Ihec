@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * certificates.csv  -> id, user_id, category, certificate_name, issue_date, lessons_completed
  * saved_courses.csv -> user_id, lesson_id, save_date
  */
-public class CsvDataManager {
+public class CsvDataManager implements DataManager {
 
     // ==================== FILE PATHS ====================
     // These are relative to the project root

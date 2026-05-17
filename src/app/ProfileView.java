@@ -6,6 +6,8 @@ import model.SavedCourse;
 import model.Student;
 import model.User;
 import services.CsvDataManager;
+import services.DataManager;
+import services.FirebaseDataManager;
 import utils.StyleUtils;
 
 import javax.swing.*;
@@ -38,7 +40,7 @@ public class ProfileView extends JPanel {
     // ==================== REFERENCES ====================
     
     private MainApplication parentApp;
-    private CsvDataManager dataManager;
+    private DataManager dataManager;
     private Student currentStudent;
     
     // ==================== UI COMPONENTS ====================
@@ -60,8 +62,15 @@ public class ProfileView extends JPanel {
     
     public ProfileView(MainApplication parentApp) {
         this.parentApp = parentApp;
-        this.dataManager = new CsvDataManager();
-        
+        DataManager dm;
+        try {
+            dm = new FirebaseDataManager();
+        } catch (Exception e) {
+            System.err.println("Firebase init failed: " + e.getMessage());
+            dm = new CsvDataManager();
+        }
+        this.dataManager = dm;
+
         initializeUI();
     }
 

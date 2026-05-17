@@ -1,6 +1,8 @@
 package app;
 
 import services.CsvDataManager;
+import services.DataManager;
+import services.FirebaseDataManager;
 import model.Admin;
 import model.Lesson;
 import model.Student;
@@ -27,7 +29,7 @@ import java.util.List;
  * 2. Consistent Spacing - 20px padding, 15px gaps
  * 3. Subtle Shadows - Depth without clutter
  * 4. Color Coding - Green=Add, Red=Delete, Blue=Info
- * 
+ *
  * LAYOUT:
  * ┌─────────────────────────────────────────────────────┐
  * │  🎓 IHEC-JLearn   [ADMIN]              👤 [Logout]  │
@@ -51,8 +53,8 @@ public class AdminDashboardView extends JPanel {
     // ==================== REFERENCES ====================
     
     private MainApplication parentApp;
-    private CsvDataManager dataManager;
-    
+    private DataManager dataManager;
+
     // ==================== UI COMPONENTS ====================
     
     // Tables for displaying data
@@ -72,8 +74,15 @@ public class AdminDashboardView extends JPanel {
     
     public AdminDashboardView(MainApplication parentApp) {
         this.parentApp = parentApp;
-        this.dataManager = new CsvDataManager();
-        
+        DataManager dm;
+        try {
+            dm = new FirebaseDataManager();
+        } catch (Exception e) {
+            System.err.println("Firebase init failed: " + e.getMessage());
+            dm = new CsvDataManager();
+        }
+        this.dataManager = dm;
+
         initializeUI();
     }
 

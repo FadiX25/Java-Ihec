@@ -1,6 +1,8 @@
 package app;
 
 import services.CsvDataManager;
+import services.DataManager;
+import services.FirebaseDataManager;
 import model.Student;
 import model.User;
 import utils.StyleUtils;
@@ -43,8 +45,8 @@ public class LoginView extends JPanel {
     private MainApplication parentApp;
     
     // Data manager for authentication
-    private CsvDataManager dataManager;
-    
+    private DataManager dataManager;
+
     // Track current mode: LOGIN or SIGNUP
     private boolean isSignupMode = false;
 
@@ -52,8 +54,15 @@ public class LoginView extends JPanel {
     
     public LoginView(MainApplication parentApp) {
         this.parentApp = parentApp;
-        this.dataManager = new CsvDataManager();
-        
+        DataManager dm;
+        try {
+            dm = new FirebaseDataManager();
+        } catch (Exception e) {
+            System.err.println("Firebase init failed: " + e.getMessage());
+            dm = new CsvDataManager();
+        }
+        this.dataManager = dm;
+
         initializeUI();
     }
 
