@@ -2,3 +2,4 @@ target/
 *.json
 .idea/
 *.class
+node_modules/
