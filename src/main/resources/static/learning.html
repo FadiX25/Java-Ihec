@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IHEC-JLearn - Learning</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/learning.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">IHEC-JLearn</div>
+            <div class="nav-links">
+                <a href="/dashboard.html">Back to Dashboard</a>
+                <a href="#" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="learning-container">
+        <div class="theory-panel">
+            <div class="lesson-header">
+                <h1 id="lessonTitle">Lesson Title</h1>
+                <div class="lesson-meta">
+                    <span class="category" id="lessonCategory">Category</span>
+                    <span class="difficulty" id="lessonDifficulty">Beginner</span>
+                </div>
+            </div>
+
+            <div class="theory-content">
+                <div class="theory-text" id="theoryText">
+                    <!-- Theory content will be loaded here -->
+                </div>
+            </div>
+
+            <div class="video-section">
+                <button class="btn btn-primary" id="watchVideoBtn">
+                    ▶ Watch Video
+                </button>
+                <div id="videoPlayer" style="display:none;">
+                    <iframe width="100%" height="300" id="videoFrame" frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="exercise-panel">
+            <div class="exercise-header">
+                <h2>Code Exercise</h2>
+                <button class="btn-secondary" id="saveBtn">⭐ Save Lesson</button>
+            </div>
+
+            <div class="exercise-description">
+                <p>Complete the code to match the requirements:</p>
+            </div>
+
+            <textarea id="codeEditor" class="code-editor" placeholder="Write your Java code here..."></textarea>
+
+            <div class="action-buttons">
+                <button class="btn btn-success" id="submitBtn">Submit Answer</button>
+                <button class="btn btn-secondary" id="resetBtn">Reset Code</button>
+            </div>
+
+            <div id="feedbackMessage" class="feedback-message" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- Modal for video -->
+    <div id="videoModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <iframe width="100%" height="400" id="fullVideoFrame" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/learning.js"></script>
+</body>
+</html>

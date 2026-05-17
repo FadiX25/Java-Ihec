@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IHEC-JLearn - Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <nav class="navbar navbar-admin">
+        <div class="navbar-container">
+            <div class="logo">IHEC-JLearn Admin</div>
+            <div class="nav-links">
+                <a href="#" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="menu-section">
+                <h4>Management</h4>
+                <ul>
+                    <li><a href="#" class="menu-link active" data-section="lessons">📚 Lessons</a></li>
+                    <li><a href="#" class="menu-link" data-section="students">👥 Students</a></li>
+                    <li><a href="#" class="menu-link" data-section="reports">📊 Reports</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <!-- Lessons Section -->
+            <section id="lessonsSection" class="admin-section active">
+                <div class="section-header">
+                    <h2>Manage Lessons</h2>
+                    <button class="btn btn-primary" id="addLessonBtn">+ Add Lesson</button>
+                </div>
+
+                <div class="lessons-table-container">
+                    <table class="data-table" id="lessonsTable">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Difficulty</th>
+                                <th>XP Reward</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lessonsList">
+                            <!-- Lessons will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Students Section -->
+            <section id="studentsSection" class="admin-section">
+                <div class="section-header">
+                    <h2>View Students</h2>
+                </div>
+
+                <div class="students-table-container">
+                    <table class="data-table" id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>XP Score</th>
+                                <th>Completed Lessons</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsList">
+                            <!-- Students will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reportsSection" class="admin-section">
+                <div class="section-header">
+                    <h2>Reports & Analytics</h2>
+                </div>
+
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <h3>Total Students</h3>
+                        <div class="report-value" id="totalStudents">0</div>
+                    </div>
+                    <div class="report-card">
+                        <h3>Total Lessons</h3>
+                        <div class="report-value" id="totalLessons">0</div>
+                    </div>
+                    <div class="report-card">
+                        <h3>Avg XP Score</h3>
+                        <div class="report-value" id="avgXP">0</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Lesson Modal -->
+    <div id="lessonModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add/Edit Lesson</h2>
+            <form id="lessonForm">
+                <input type="text" id="lessonTitle" placeholder="Lesson Title" required>
+                <input type="text" id="lessonCategory" placeholder="Category" required>
+                <input type="text" id="lessonYoutubeId" placeholder="YouTube ID" required>
+                <textarea id="lessonTheory" placeholder="Theory Text" required></textarea>
+                <input type="text" id="lessonCorrectAnswer" placeholder="Correct Answer Keyword" required>
+                <select id="lessonDifficulty">
+                    <option value="BEGINNER">Beginner</option>
+                    <option value="INTERMEDIATE">Intermediate</option>
+                    <option value="ADVANCED">Advanced</option>
+                </select>
+                <input type="number" id="lessonXP" placeholder="XP Reward" value="10" required>
+                <button type="submit" class="btn btn-primary">Save Lesson</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IHEC-JLearn - Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">IHEC-JLearn</div>
+            <div class="nav-links">
+                <a href="#" id="profileLink">Profile</a>
+                <a href="#" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="user-card">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <h3 id="userName">User Name</h3>
+                <p id="userEmail">user@example.com</p>
+            </div>
+            
+            <div class="xp-card">
+                <div class="xp-label">XP Score</div>
+                <div class="xp-value" id="xpScore">0</div>
+                <div class="xp-bar">
+                    <div class="xp-progress" id="xpProgress" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="menu">
+                <h4>Categories</h4>
+                <ul id="categoryList">
+                    <li class="active"><a href="#" data-category="all">All Lessons</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="header">
+                <h1>Available Lessons</h1>
+                <div class="filter">
+                    <input type="text" id="searchInput" placeholder="Search lessons...">
+                </div>
+            </div>
+
+            <div class="lessons-grid" id="lessonsGrid">
+                <!-- Lessons will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

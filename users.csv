@@ -1,4 +1,0 @@
-id,username,password,role,xp_score
-1,ahmed,12345,STUDENT,125
-2,sara,password123,STUDENT,120
-3,admin,admin123,ADMIN,0

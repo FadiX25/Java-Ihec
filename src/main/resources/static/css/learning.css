@@ -1,0 +1,332 @@
+/* Learning Page Styles */
+
+.learning-container {
+    display: flex;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 20px;
+    padding: 20px;
+    min-height: calc(100vh - 60px);
+}
+
+.theory-panel {
+    flex: 1;
+    background: var(--card-white);
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.lesson-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.lesson-header h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.lesson-meta {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.category,
+.difficulty {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.category {
+    background: var(--light-blue);
+    color: var(--primary-blue);
+}
+
+.difficulty {
+    background: var(--background-gray);
+    color: var(--text-light);
+}
+
+.theory-content {
+    margin-bottom: 30px;
+}
+
+.theory-text {
+    line-height: 1.8;
+    font-size: 15px;
+    color: var(--text-light);
+}
+
+.theory-text h2 {
+    font-size: 18px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.theory-text h3 {
+    font-size: 15px;
+    margin-top: 15px;
+    margin-bottom: 8px;
+}
+
+.theory-text ul,
+.theory-text ol {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.theory-text li {
+    margin-bottom: 8px;
+}
+
+.theory-text code {
+    background: var(--editor-dark);
+    color: var(--editor-text);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.video-section {
+    background: var(--background-gray);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+#watchVideoBtn {
+    width: 100%;
+    padding: 12px;
+    background: var(--success-green);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#watchVideoBtn:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+#videoPlayer {
+    margin-top: 15px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.exercise-panel {
+    width: 400px;
+    background: var(--card-white);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.exercise-header h2 {
+    font-size: 18px;
+    margin: 0;
+}
+
+#saveBtn {
+    padding: 8px 12px;
+    background: transparent;
+    color: var(--warning-orange);
+    border: 1px solid var(--warning-orange);
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#saveBtn:hover {
+    background: var(--warning-orange);
+    color: white;
+}
+
+#saveBtn.saved {
+    background: var(--warning-orange);
+    color: white;
+}
+
+.exercise-description {
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.code-editor {
+    width: 100%;
+    height: 300px;
+    background: var(--editor-dark);
+    color: var(--editor-text);
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    resize: vertical;
+    tab-size: 4;
+}
+
+.code-editor:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 86, 210, 0.2);
+}
+
+.code-editor::selection {
+    background: rgba(0, 86, 210, 0.3);
+    color: var(--editor-text);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.action-buttons button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#submitBtn {
+    background: var(--success-green);
+    color: white;
+}
+
+#submitBtn:hover {
+    background: #218838;
+}
+
+#resetBtn {
+    background: var(--background-gray);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+}
+
+#resetBtn:hover {
+    background: var(--border-color);
+}
+
+.feedback-message {
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.feedback-message.success {
+    background: #D4EDDA;
+    color: #155724;
+    border-left: 4px solid var(--success-green);
+}
+
+.feedback-message.error {
+    background: #F8D7DA;
+    color: #721C24;
+    border-left: 4px solid var(--error-red);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: var(--card-white);
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 800px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--text-light);
+}
+
+.close:hover {
+    color: var(--text-dark);
+}
+
+@media (max-width: 1200px) {
+    .learning-container {
+        flex-direction: column;
+    }
+
+    .exercise-panel {
+        width: 100%;
+    }
+
+    .code-editor {
+        height: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .learning-container {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .theory-panel,
+    .exercise-panel {
+        padding: 15px;
+    }
+
+    .lesson-header h1 {
+        font-size: 20px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .code-editor {
+        height: 200px;
+    }
+}
