@@ -31,8 +31,13 @@ public class FirebaseLessonService {
     public void saveLesson(Lesson lesson) {
         try {
             DatabaseReference lessonRef = firebaseDatabase.getReference("lessons/" + lesson.getId());
-            lessonRef.setValue(lesson);
-            log.info("Lesson saved: " + lesson.getId());
+            lessonRef.setValue(lesson, (error, ref) -> {
+                if (error != null) {
+                    log.error("Error saving lesson: " + error.getMessage());
+                } else {
+                    log.info("Lesson saved: " + lesson.getId());
+                }
+            });
         } catch (Exception e) {
             log.error("Error saving lesson: " + e.getMessage());
         }
@@ -138,8 +143,13 @@ public class FirebaseLessonService {
     public void updateLesson(String lessonId, Lesson lesson) {
         try {
             DatabaseReference lessonRef = firebaseDatabase.getReference("lessons/" + lessonId);
-            lessonRef.setValue(lesson);
-            log.info("Lesson updated: " + lessonId);
+            lessonRef.setValue(lesson, (error, ref) -> {
+                if (error != null) {
+                    log.error("Error updating lesson: " + error.getMessage());
+                } else {
+                    log.info("Lesson updated: " + lessonId);
+                }
+            });
         } catch (Exception e) {
             log.error("Error updating lesson: " + e.getMessage());
         }
@@ -148,8 +158,13 @@ public class FirebaseLessonService {
     public void deleteLesson(String lessonId) {
         try {
             DatabaseReference lessonRef = firebaseDatabase.getReference("lessons/" + lessonId);
-            lessonRef.removeValue();
-            log.info("Lesson deleted: " + lessonId);
+            lessonRef.removeValue((error, ref) -> {
+                if (error != null) {
+                    log.error("Error deleting lesson: " + error.getMessage());
+                } else {
+                    log.info("Lesson deleted: " + lessonId);
+                }
+            });
         } catch (Exception e) {
             log.error("Error deleting lesson: " + e.getMessage());
         }

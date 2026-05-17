@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDate;
 
 /**
  * Lesson class - Represents a single learning module
@@ -28,7 +27,7 @@ public class Lesson {
     private String youtubeId;
     
     @JsonProperty("dateCreated")
-    private LocalDate dateCreated;
+    private String dateCreated;
     
     @JsonProperty("correctAnswer")
     private String correctAnswer;
@@ -43,7 +42,7 @@ public class Lesson {
     private int xpReward = 10;
 
     public Lesson(String id, String category, String title, String youtubeId, 
-                  LocalDate dateCreated, String correctAnswer, String theoryText) {
+                  String dateCreated, String correctAnswer, String theoryText) {
         this.id = id;
         this.category = category;
         this.title = title;

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDate;
 
 /**
  * Certificate class - Represents a student's earned certificate
@@ -27,7 +26,7 @@ public class Certificate {
     private String certificateName;
     
     @JsonProperty("issueDate")
-    private LocalDate issueDate;
+    private String issueDate;
     
     @JsonProperty("lessonsCompleted")
     private int lessonsCompleted;
@@ -37,7 +36,7 @@ public class Certificate {
         this.userId = userId;
         this.category = category;
         this.certificateName = certificateName;
-        this.issueDate = LocalDate.now();
+        this.issueDate = java.time.LocalDate.now().toString();
         this.lessonsCompleted = 0;
     }
 }

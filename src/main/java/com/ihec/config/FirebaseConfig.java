@@ -7,10 +7,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * Firebase Configuration Class
@@ -22,13 +21,12 @@ public class FirebaseConfig {
     @Value("${firebase.database.url}")
     private String firebaseDatabaseUrl;
 
-    @Value("${firebase.config.path}")
-    private String firebaseConfigPath;
-
     @Bean
     public FirebaseDatabase firebaseDatabase() throws IOException {
         if (FirebaseApp.getApps().isEmpty()) {
-            InputStream serviceAccount = Files.newInputStream(Paths.get(firebaseConfigPath));
+            // Load credentials from classpath resources
+            ClassPathResource resource = new ClassPathResource("firebase-config.json");
+            InputStream serviceAccount = resource.getInputStream();
             
             GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
             FirebaseOptions options = FirebaseOptions.builder()

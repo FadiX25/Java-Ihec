@@ -37,8 +37,13 @@ public class FirebaseUserService {
     public void saveUser(User user) {
         try {
             DatabaseReference usersRef = firebaseDatabase.getReference("users/" + user.getId());
-            usersRef.setValue(user);
-            log.info("User saved: " + user.getId());
+            usersRef.setValue(user, (error, ref) -> {
+                if (error != null) {
+                    log.error("Error saving user: " + error.getMessage());
+                } else {
+                    log.info("User saved: " + user.getId());
+                }
+            });
         } catch (Exception e) {
             log.error("Error saving user: " + e.getMessage());
         }
@@ -96,6 +101,7 @@ public class FirebaseUserService {
                                 } else if ("ADMIN".equals(role)) {
                                     userHolder[0] = snapshot.getValue(Admin.class);
                                 }
+                                break; // Found the user, exit loop
                             }
                             latch.countDown();
                         }
@@ -128,8 +134,13 @@ public class FirebaseUserService {
     public void updateStudent(String userId, Student student) {
         try {
             DatabaseReference studentRef = firebaseDatabase.getReference("users/" + userId);
-            studentRef.setValue(student);
-            log.info("Student updated: " + userId);
+            studentRef.setValue(student, (error, ref) -> {
+                if (error != null) {
+                    log.error("Error updating student: " + error.getMessage());
+                } else {
+                    log.info("Student updated: " + userId);
+                }
+            });
         } catch (Exception e) {
             log.error("Error updating student: " + e.getMessage());
         }
@@ -151,8 +162,13 @@ public class FirebaseUserService {
     public void deleteUser(String userId) {
         try {
             DatabaseReference userRef = firebaseDatabase.getReference("users/" + userId);
-            userRef.removeValue();
-            log.info("User deleted: " + userId);
+            userRef.removeValue((error, ref) -> {
+                if (error != null) {
+                    log.error("Error deleting user: " + error.getMessage());
+                } else {
+                    log.info("User deleted: " + userId);
+                }
+            });
         } catch (Exception e) {
             log.error("Error deleting user: " + e.getMessage());
         }
