@@ -265,12 +265,38 @@ function openLessonModal() {
     if (form) {
         form.reset();
         form.onsubmit = createLesson;
+        form.dataset.lessonId = '';
+        form.dataset.dateCreated = '';
+        const title = document.getElementById('lessonModalTitle');
+        if (title) title.textContent = 'Add Lesson';
     }
 }
 
-function editLesson(lessonId) {
-    // Load lesson data and show modal
-    alert('Edit functionality would fetch lesson ' + lessonId);
+async function editLesson(lessonId) {
+    try {
+        const resp = await authenticatedFetch(`/api/lessons/${lessonId}`);
+        if (!resp.ok) {
+            const text = await resp.text();
+            alert('Failed to load lesson: ' + text);
+            return;
+        }
+
+        const lesson = await resp.json();
+        openLessonModal();
+        populateLessonForm(lesson);
+
+        const form = document.getElementById('lessonForm');
+        if (form) {
+            form.dataset.lessonId = lessonId;
+            form.dataset.dateCreated = lesson.dateCreated || '';
+            form.onsubmit = updateLesson;
+        }
+
+        const title = document.getElementById('lessonModalTitle');
+        if (title) title.textContent = 'Edit Lesson';
+    } catch (e) {
+        alert('Failed to load lesson: ' + e.message);
+    }
 }
 
 async function deleteLesson(lessonId) {
@@ -316,7 +342,7 @@ async function createLesson(e) {
     const lesson = {
         title: document.getElementById('lessonTitle').value,
         category: document.getElementById('lessonCategory').value,
-        youtubeId: document.getElementById('lessonYoutubeId').value,
+        youtubeId: normalizeYoutubeId(document.getElementById('lessonYoutubeId').value),
         theoryText: document.getElementById('lessonTheory').value,
         correctAnswer: document.getElementById('lessonCorrectAnswer').value,
         quizQuestion: quizQuestion,
@@ -346,6 +372,83 @@ async function createLesson(e) {
         console.error('Error creating lesson:', error);
         alert('Error creating lesson');
     }
+}
+
+async function updateLesson(e) {
+    e.preventDefault();
+
+    const form = document.getElementById('lessonForm');
+    if (!form || !form.dataset.lessonId) {
+        alert('Missing lesson ID for update.');
+        return;
+    }
+
+    const quizOptionsRaw = document.getElementById('lessonQuizOptions').value || '';
+    const quizOptions = quizOptionsRaw
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+    const quizQuestion = document.getElementById('lessonQuizQuestion').value.trim();
+    const correctOption = document.getElementById('lessonCorrectOption').value.trim().toUpperCase();
+
+    const quizValidationError = validateQuizFields(quizQuestion, quizOptions, correctOption);
+    if (quizValidationError) {
+        alert(quizValidationError);
+        return;
+    }
+
+    const lessonId = form.dataset.lessonId;
+    const lesson = {
+        id: lessonId,
+        title: document.getElementById('lessonTitle').value,
+        category: document.getElementById('lessonCategory').value,
+        youtubeId: normalizeYoutubeId(document.getElementById('lessonYoutubeId').value),
+        theoryText: document.getElementById('lessonTheory').value,
+        correctAnswer: document.getElementById('lessonCorrectAnswer').value,
+        quizQuestion: quizQuestion,
+        quizOptions: quizOptions,
+        correctOption: correctOption,
+        difficulty: document.getElementById('lessonDifficulty').value,
+        xpReward: parseInt(document.getElementById('lessonXP').value),
+        dateCreated: form.dataset.dateCreated || new Date().toISOString().split('T')[0]
+    };
+
+    try {
+        const response = await authenticatedFetch(`/api/lessons/${lessonId}`, {
+            method: 'PUT',
+            body: JSON.stringify(lesson)
+        });
+
+        if (response.ok) {
+            alert('Lesson updated successfully');
+            const modal = document.getElementById('lessonModal');
+            if (modal) modal.style.display = 'none';
+            await loadLessonsAdmin();
+        } else {
+            const text = await response.text();
+            alert('Failed to update lesson: ' + text);
+        }
+    } catch (error) {
+        console.error('Error updating lesson:', error);
+        alert('Error updating lesson');
+    }
+}
+
+function populateLessonForm(lesson) {
+    if (!lesson) return;
+    document.getElementById('lessonTitle').value = lesson.title || '';
+    document.getElementById('lessonCategory').value = lesson.category || '';
+    document.getElementById('lessonYoutubeId').value = lesson.youtubeId || '';
+    document.getElementById('lessonTheory').value = lesson.theoryText || '';
+    document.getElementById('lessonCorrectAnswer').value = lesson.correctAnswer || '';
+    document.getElementById('lessonQuizQuestion').value = lesson.quizQuestion || '';
+    document.getElementById('lessonQuizOptions').value = Array.isArray(lesson.quizOptions)
+        ? lesson.quizOptions.join('\n')
+        : '';
+    document.getElementById('lessonCorrectOption').value = lesson.correctOption || '';
+    document.getElementById('lessonDifficulty').value = lesson.difficulty || 'BEGINNER';
+    document.getElementById('lessonXP').value = lesson.xpReward != null ? lesson.xpReward : 10;
 }
 
 function validateQuizFields(question, options, correctOption) {
@@ -388,6 +491,27 @@ function extractOptionValue(optionText, index) {
         }
     }
     return String.fromCharCode(65 + index);
+}
+
+function normalizeYoutubeId(value) {
+    if (!value) return '';
+    const trimmed = value.trim();
+    if (!trimmed) return '';
+
+    if (!trimmed.includes('youtube') && !trimmed.includes('youtu.be')) {
+        return trimmed;
+    }
+
+    try {
+        const url = new URL(trimmed);
+        if (url.hostname.includes('youtu.be')) {
+            return url.pathname.replace('/', '');
+        }
+        const id = url.searchParams.get('v');
+        return id || trimmed;
+    } catch (e) {
+        return trimmed;
+    }
 }
 
 // Modal close handlers (safe attach)
