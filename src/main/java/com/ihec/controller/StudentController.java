@@ -7,9 +7,11 @@ import com.ihec.service.FirebaseUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -120,6 +122,18 @@ public class StudentController {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             log.error("Error removing saved lesson: " + e.getMessage());
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Student>> getAllStudents() {
+        try {
+            List<Student> students = userService.getAllStudents();
+            return ResponseEntity.ok(students);
+        } catch (Exception e) {
+            log.error("Error fetching students: " + e.getMessage());
             return ResponseEntity.status(500).build();
         }
     }

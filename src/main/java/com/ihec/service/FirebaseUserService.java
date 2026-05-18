@@ -173,4 +173,38 @@ public class FirebaseUserService {
             log.error("Error deleting user: " + e.getMessage());
         }
     }
+
+    public List<Student> getAllStudents() {
+        try {
+            CountDownLatch latch = new CountDownLatch(1);
+            List<Student> students = new ArrayList<>();
+
+            DatabaseReference usersRef = firebaseDatabase.getReference("users");
+            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String role = snapshot.child("role").getValue(String.class);
+                        if ("STUDENT".equals(role)) {
+                            Student s = snapshot.getValue(Student.class);
+                            if (s != null) students.add(s);
+                        }
+                    }
+                    latch.countDown();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    log.error("Error reading users: " + databaseError.getMessage());
+                    latch.countDown();
+                }
+            });
+
+            latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            return students;
+        } catch (Exception e) {
+            log.error("Error getting all students: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
 }

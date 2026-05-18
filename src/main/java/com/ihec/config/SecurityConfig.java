@@ -49,6 +49,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/", "/index.html", "/login.html", "/register.html", "/learning.html", "/dashboard.html", "/admin-dashboard.html", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                // Permit public dev init endpoint
+                .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/api/admin/**", "/api/migration/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
