@@ -197,4 +197,30 @@ public class FirebaseLessonService {
             return false;
         }
     }
+
+    public boolean updateLessonQuizzes(Map<String, Map<String, Object>> lessonQuizData) {
+        try {
+            if (lessonQuizData == null || lessonQuizData.isEmpty()) {
+                return false;
+            }
+
+            CountDownLatch latch = new CountDownLatch(lessonQuizData.size());
+            lessonQuizData.forEach((lessonId, quizFields) -> {
+                DatabaseReference lessonRef = firebaseDatabase
+                        .getReference("lessons")
+                        .child(lessonId);
+                lessonRef.updateChildren(quizFields, (error, ref) -> {
+                    if (error != null) {
+                        log.error("Error updating lesson quiz {}: {}", lessonId, error.getMessage());
+                    }
+                    latch.countDown();
+                });
+            });
+
+            return latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            log.error("Error updating lesson quizzes: " + e.getMessage());
+            return false;
+        }
+    }
 }

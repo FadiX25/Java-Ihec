@@ -47,6 +47,13 @@ function setupMenuListeners() {
     // Add lesson button
     const addBtn = document.getElementById('addLessonBtn');
     if (addBtn) addBtn.addEventListener('click', openLessonModal);
+
+    const updateQuizzesBtn = document.getElementById('updateQuizzesBtn');
+    if (updateQuizzesBtn) {
+        updateQuizzesBtn.addEventListener('click', async () => {
+            await updateQuizzesCall();
+        });
+    }
 }
 
 async function loadLessonsAdmin() {
@@ -127,6 +134,26 @@ async function seedDatabaseCall() {
     }
 }
 
+async function updateQuizzesCall() {
+    try {
+        const resp = await authenticatedFetch('/api/admin/init/lesson-quizzes', { method: 'POST' });
+        if (!resp.ok) {
+            const text = await resp.text();
+            const message = text && text.trim().length > 0 ? text : `${resp.status} ${resp.statusText}`;
+            alert('Quiz update failed: ' + message);
+            return false;
+        }
+
+        const text = await resp.text();
+        alert(text);
+        await loadLessonsAdmin();
+        return true;
+    } catch (e) {
+        alert('Quiz update failed: ' + e.message);
+        return false;
+    }
+}
+
 function displayLessonsAdmin(lessons) {
     const tbody = document.getElementById('lessonsList');
     if (!tbody) return;
@@ -152,22 +179,16 @@ function displayLessonsAdmin(lessons) {
 
 async function loadStudents() {
     try {
-        // If an API exists for all students, call it; otherwise display placeholders
-        // Attempt to call /api/students (may require admin endpoint); fallback to empty
-        try {
-            const resp = await authenticatedFetch('/api/students');
-            if (resp && resp.ok) {
-                const students = await resp.json();
-                displayStudents(students);
-                return;
-            }
-        } catch (e) {
-            // ignore and fall through to placeholder
+        const resp = await authenticatedFetch('/api/admin/students');
+        if (resp && resp.ok) {
+            const students = await resp.json();
+            displayStudents(students);
+            return;
         }
 
-        // Placeholder: show message
+        const text = resp ? await resp.text() : 'No response from server.';
         const tbody = document.getElementById('studentsList');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="5">Student listing not available via API.</td></tr>';
+        if (tbody) tbody.innerHTML = `<tr><td colspan="5">Could not load students. ${text}</td></tr>`;
     } catch (error) {
         console.error('Error loading students:', error);
     }
@@ -185,7 +206,12 @@ function displayStudents(students) {
             <td>${s.email || ''}</td>
             <td>${s.xpScore || 0}</td>
             <td>${(s.completedLessonIds || []).length}</td>
-            <td><button onclick="alert('Implement student actions')">Actions</button></td>
+            <td>
+                <div class="action-icons">
+                    <button class="edit-btn" onclick="viewStudent('${s.id}')">View</button>
+                    <button class="delete-btn" onclick="deleteStudent('${s.id}', '${s.firstName || ''} ${s.lastName || ''}')">Delete</button>
+                </div>
+            </td>
         `;
         tbody.appendChild(row);
     });
@@ -203,6 +229,31 @@ async function loadReports() {
         // For total students and average XP we'd need a students endpoint; placeholder values handled
     } catch (error) {
         console.error('Error loading reports:', error);
+    }
+}
+
+function viewStudent(studentId) {
+    alert('Student ID: ' + studentId);
+}
+
+async function deleteStudent(studentId, displayName) {
+    const label = displayName ? ` (${displayName})` : '';
+    if (!confirm(`Delete student${label}? This cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const resp = await authenticatedFetch(`/api/admin/students/${studentId}`, { method: 'DELETE' });
+        if (!resp.ok) {
+            const text = await resp.text();
+            alert('Delete failed: ' + text);
+            return;
+        }
+        alert('Student deleted.');
+        await loadStudents();
+        await loadReports();
+    } catch (e) {
+        alert('Delete failed: ' + e.message);
     }
 }
 

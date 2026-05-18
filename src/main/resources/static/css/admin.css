@@ -99,6 +99,13 @@
     box-shadow: var(--shadow-md);
 }
 
+.admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
 .section-header h2 {
     font-size: clamp(24px, 3vw, 36px);
     margin: 0;

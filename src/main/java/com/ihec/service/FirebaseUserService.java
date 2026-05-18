@@ -186,8 +186,10 @@ public class FirebaseUserService {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         String role = snapshot.child("role").getValue(String.class);
                         if ("STUDENT".equals(role)) {
-                            Student s = snapshot.getValue(Student.class);
-                            if (s != null) students.add(s);
+                            Student student = snapshot.getValue(Student.class);
+                            if (student != null) {
+                                students.add(student);
+                            }
                         }
                     }
                     latch.countDown();
@@ -203,7 +205,7 @@ public class FirebaseUserService {
             latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             return students;
         } catch (Exception e) {
-            log.error("Error getting all students: " + e.getMessage());
+            log.error("Error getting students: " + e.getMessage());
             return new ArrayList<>();
         }
     }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -96,6 +97,27 @@ public class DataInitializationController {
     }
 
     /**
+     * Update quiz data for existing lessons
+     * POST /api/admin/init/lesson-quizzes
+     */
+    @PostMapping("/lesson-quizzes")
+    public ResponseEntity<String> updateLessonQuizzes() {
+        try {
+            Map<String, Map<String, Object>> lessonQuizData = buildLessonQuizData();
+
+            boolean updated = lessonService.updateLessonQuizzes(lessonQuizData);
+            if (!updated) {
+                return ResponseEntity.status(500).body("❌ Failed to update lesson quizzes");
+            }
+
+            return ResponseEntity.ok("✅ Lesson quizzes updated successfully!");
+        } catch (Exception e) {
+            log.error("❌ Lesson quiz update failed: " + e.getMessage(), e);
+            return ResponseEntity.status(500).body("❌ Lesson quiz update failed: " + e.getMessage());
+        }
+    }
+
+    /**
      * Force re-seed lessons and update video IDs
      * POST /api/admin/init/lessons-reset
      */
@@ -117,10 +139,87 @@ public class DataInitializationController {
                 return ResponseEntity.status(500).body("❌ Lessons seeded but video update failed");
             }
 
+                boolean quizUpdated = lessonService.updateLessonQuizzes(buildLessonQuizData());
+                if (!quizUpdated) {
+                return ResponseEntity.status(500).body("❌ Lessons seeded but quiz update failed");
+                }
+
             return ResponseEntity.ok("✅ Lessons re-seeded and videos updated successfully!");
         } catch (Exception e) {
             log.error("❌ Lesson reset failed: " + e.getMessage(), e);
             return ResponseEntity.status(500).body("❌ Lesson reset failed: " + e.getMessage());
         }
     }
+
+            private Map<String, Map<String, Object>> buildLessonQuizData() {
+            Map<String, Map<String, Object>> quizData = new HashMap<>();
+
+            quizData.put("lesson1", Map.of(
+                "quizQuestion", "What does OOP stand for?",
+                "quizOptions", List.of(
+                    "A. Open Operating Program",
+                    "B. Object-Oriented Programming",
+                    "C. Object Operating Process",
+                    "D. Online Object Program"
+                ),
+                "correctOption", "B"
+            ));
+
+            quizData.put("lesson2", Map.of(
+                "quizQuestion", "What is the purpose of a class in Java?",
+                "quizOptions", List.of(
+                    "A. To store database tables",
+                    "B. To define object structure and behavior",
+                    "C. To create networks",
+                    "D. To execute SQL"
+                ),
+                "correctOption", "B"
+            ));
+
+            quizData.put("lesson3", Map.of(
+                "quizQuestion", "What is inheritance in Java?",
+                "quizOptions", List.of(
+                    "A. Copying files",
+                    "B. Reusing properties and methods from another class",
+                    "C. Creating arrays",
+                    "D. Using databases"
+                ),
+                "correctOption", "B"
+            ));
+
+            quizData.put("lesson4", Map.of(
+                "quizQuestion", "What is polymorphism in Java?",
+                "quizOptions", List.of(
+                    "A. Using many databases",
+                    "B. One method behaving differently in different situations",
+                    "C. Creating multiple classes",
+                    "D. Hiding variables"
+                ),
+                "correctOption", "B"
+            ));
+
+            quizData.put("lesson5", Map.of(
+                "quizQuestion", "What is encapsulation in Java?",
+                "quizOptions", List.of(
+                    "A. Combining data and methods into one unit",
+                    "B. Creating loops",
+                    "C. Writing comments",
+                    "D. Using databases"
+                ),
+                "correctOption", "A"
+            ));
+
+            quizData.put("lesson6", Map.of(
+                "quizQuestion", "What is abstraction in Java?",
+                "quizOptions", List.of(
+                    "A. Hiding implementation details and showing essentials",
+                    "B. Creating databases",
+                    "C. Writing loops",
+                    "D. Deleting methods"
+                ),
+                "correctOption", "A"
+            ));
+
+            return quizData;
+            }
 }
