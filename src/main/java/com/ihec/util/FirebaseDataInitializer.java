@@ -313,7 +313,7 @@ public class FirebaseDataInitializer {
         lesson1.setId("lesson1");
         lesson1.setCategory("OOP Fundamentals");
         lesson1.setTitle("Object-Oriented Programming Basics");
-        lesson1.setYoutubeId("dmlPiQSkQHQ");
+        lesson1.setYoutubeId("SiBw7os-_zI");
         lesson1.setDateCreated(LocalDate.now().minusDays(30).toString());
         lesson1.setTheoryText("Object-Oriented Programming (OOP) is a programming paradigm based on the concept of objects...");
         lesson1.setCorrectAnswer("Object");
@@ -334,7 +334,7 @@ public class FirebaseDataInitializer {
         lesson2.setId("lesson2");
         lesson2.setCategory("OOP Fundamentals");
         lesson2.setTitle("Classes and Objects in Java");
-        lesson2.setYoutubeId("yy3yLGkuXPk");
+        lesson2.setYoutubeId("IUqKuGNasdM");
         lesson2.setDateCreated(LocalDate.now().minusDays(25).toString());
         lesson2.setTheoryText("A class is a blueprint for creating objects. An object is an instance of a class...");
         lesson2.setCorrectAnswer("class");
@@ -376,7 +376,7 @@ public class FirebaseDataInitializer {
         lesson4.setId("lesson4");
         lesson4.setCategory("OOP Concepts");
         lesson4.setTitle("Polymorphism in Java");
-        lesson4.setYoutubeId("6xRd0j1anzc");
+        lesson4.setYoutubeId("i3aKOm76nDo");
         lesson4.setDateCreated(LocalDate.now().minusDays(15).toString());
         lesson4.setTheoryText("Polymorphism allows objects to take multiple forms...");
         lesson4.setCorrectAnswer("override");
@@ -397,7 +397,7 @@ public class FirebaseDataInitializer {
         lesson5.setId("lesson5");
         lesson5.setCategory("OOP Concepts");
         lesson5.setTitle("Encapsulation in Java");
-        lesson5.setYoutubeId("eboNNUADeIc");
+        lesson5.setYoutubeId("3qhoAYfk7cM");
         lesson5.setDateCreated(LocalDate.now().minusDays(10).toString());
         lesson5.setTheoryText("Encapsulation is a mechanism of wrapping data and methods together...");
         lesson5.setCorrectAnswer("private");
@@ -418,7 +418,7 @@ public class FirebaseDataInitializer {
         lesson6.setId("lesson6");
         lesson6.setCategory("OOP Concepts");
         lesson6.setTitle("Abstraction in Java");
-        lesson6.setYoutubeId("4B8XKEORJss");
+        lesson6.setYoutubeId("HvPlEJ3LHgE");
         lesson6.setDateCreated(LocalDate.now().minusDays(5).toString());
         lesson6.setTheoryText("Abstraction is a process of hiding the implementation details...");
         lesson6.setCorrectAnswer("abstract");

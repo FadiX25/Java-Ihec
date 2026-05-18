@@ -48,20 +48,13 @@ function displayLesson(lesson) {
     
     // Set up video button
     if (lesson.youtubeId) {
-        // enable JS API for iframe control
-        const videoUrl = `https://www.youtube-nocookie.com/embed/${lesson.youtubeId}?rel=0&enablejsapi=1`;
         const openUrl = `https://www.youtube.com/watch?v=${lesson.youtubeId}`;
-        const vf = document.getElementById('videoFrame');
-        const ff = document.getElementById('fullVideoFrame');
-        // store the canonical URL on a data attribute so other scripts can restore if needed
-        vf.dataset.videoUrl = videoUrl;
-        ff.dataset.videoUrl = videoUrl;
-        vf.src = videoUrl;
-        ff.src = videoUrl;
         const openLink = document.getElementById('openOnYoutube');
         openLink.href = openUrl;
         openLink.style.display = 'inline-block';
-        document.getElementById('watchVideoBtn').disabled = false;
+        const watchBtn = document.getElementById('watchVideoBtn');
+        watchBtn.disabled = false;
+        watchBtn.dataset.openUrl = openUrl;
         document.dispatchEvent(new CustomEvent('lesson-video-ready', { detail: { hasVideo: true } }));
     } else {
         document.getElementById('openOnYoutube').style.display = 'none';
@@ -134,9 +127,11 @@ function formatTheoryText(text) {
 
 function setupEventListeners() {
     // Watch video
-    document.getElementById('watchVideoBtn').addEventListener('click', () => {
-        document.getElementById('videoPlayer').style.display =
-            document.getElementById('videoPlayer').style.display === 'none' ? 'block' : 'none';
+    document.getElementById('watchVideoBtn').addEventListener('click', (e) => {
+        const url = e.currentTarget.dataset.openUrl;
+        if (url) {
+            window.open(url, '_blank', 'noopener');
+        }
     });
 
     // Submit answer
@@ -155,9 +150,12 @@ function setupEventListeners() {
     document.getElementById('saveBtn').addEventListener('click', saveLesson);
 
     // Modal close
-    document.querySelector('.close').addEventListener('click', () => {
-        document.getElementById('videoModal').style.display = 'none';
-    });
+    const closeBtn = document.querySelector('.close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            document.getElementById('videoModal').style.display = 'none';
+        });
+    }
 }
 
 async function checkAnswer() {

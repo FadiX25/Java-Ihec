@@ -77,12 +77,12 @@ public class DataInitializationController {
     public ResponseEntity<String> updateLessonVideos() {
         try {
             Map<String, String> lessonVideoIds = new HashMap<>();
-            lessonVideoIds.put("lesson1", "dmlPiQSkQHQ");
-            lessonVideoIds.put("lesson2", "yy3yLGkuXPk");
+            lessonVideoIds.put("lesson1", "SiBw7os-_zI");
+            lessonVideoIds.put("lesson2", "IUqKuGNasdM");
             lessonVideoIds.put("lesson3", "GTP5lVEKXaU");
-            lessonVideoIds.put("lesson4", "6xRd0j1anzc");
-            lessonVideoIds.put("lesson5", "eboNNUADeIc");
-            lessonVideoIds.put("lesson6", "4B8XKEORJss");
+            lessonVideoIds.put("lesson4", "i3aKOm76nDo");
+            lessonVideoIds.put("lesson5", "3qhoAYfk7cM");
+            lessonVideoIds.put("lesson6", "HvPlEJ3LHgE");
 
             boolean updated = lessonService.updateLessonYoutubeIds(lessonVideoIds);
             if (!updated) {
@@ -127,12 +127,12 @@ public class DataInitializationController {
             firebaseDataInitializer.seedLessons();
 
             Map<String, String> lessonVideoIds = new HashMap<>();
-            lessonVideoIds.put("lesson1", "dmlPiQSkQHQ");
-            lessonVideoIds.put("lesson2", "yy3yLGkuXPk");
+            lessonVideoIds.put("lesson1", "SiBw7os-_zI");
+            lessonVideoIds.put("lesson2", "IUqKuGNasdM");
             lessonVideoIds.put("lesson3", "GTP5lVEKXaU");
-            lessonVideoIds.put("lesson4", "6xRd0j1anzc");
-            lessonVideoIds.put("lesson5", "eboNNUADeIc");
-            lessonVideoIds.put("lesson6", "4B8XKEORJss");
+            lessonVideoIds.put("lesson4", "i3aKOm76nDo");
+            lessonVideoIds.put("lesson5", "3qhoAYfk7cM");
+            lessonVideoIds.put("lesson6", "HvPlEJ3LHgE");
 
             boolean updated = lessonService.updateLessonYoutubeIds(lessonVideoIds);
             if (!updated) {

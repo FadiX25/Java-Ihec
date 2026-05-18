@@ -53,19 +53,16 @@
     }
 
     function showFocusVideo() {
-        if (!isVideoVisible()) {
+        // Focus mode should not show the video.
+        if (isVideoVisible()) {
             videoWasHiddenBeforeFocus = true;
-            videoPlayerWrapper.style.display = 'block';
-        }
-
-        if (videoFrame.dataset.videoUrl && !videoFrame.getAttribute('src')) {
-            videoFrame.src = videoFrame.dataset.videoUrl;
+            videoPlayerWrapper.style.display = 'none';
         }
     }
 
     function restoreVideoAfterFocus() {
         if (videoWasHiddenBeforeFocus) {
-            videoPlayerWrapper.style.display = 'none';
+            videoPlayerWrapper.style.display = 'block';
             videoWasHiddenBeforeFocus = false;
         }
     }
@@ -83,6 +80,9 @@
         if (focusMode) {
             showFocusVideo();
             playFocusAudio();
+            if (isVideoVisible()) {
+                postYouTubeCommand('pauseVideo');
+            }
         } else {
             restoreVideoAfterFocus();
             pauseFocusAudio();
