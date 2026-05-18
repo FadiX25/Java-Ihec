@@ -256,6 +256,56 @@
     overflow-y: auto;
 }
 
+#studentModal .modal-content {
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.student-details {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.student-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: rgba(248, 250, 252, 0.9);
+    font-size: 14px;
+}
+
+.student-detail-row span {
+    color: var(--text-light);
+    font-weight: 650;
+}
+
+.student-detail-row strong {
+    color: var(--ink);
+    font-weight: 750;
+}
+
+.student-detail-list {
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: white;
+    font-size: 13px;
+    color: var(--text-dark);
+}
+
+.student-detail-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
 @media (max-width: 1024px) {
     .admin-container {
         grid-template-columns: 1fr;

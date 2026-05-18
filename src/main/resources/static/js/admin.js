@@ -136,7 +136,22 @@ async function seedDatabaseCall() {
 
 async function updateQuizzesCall() {
     try {
-        const resp = await authenticatedFetch('/api/admin/init/lesson-quizzes', { method: 'POST' });
+        let resp = null;
+        try {
+            resp = await authenticatedFetch('/api/admin/init/lesson-quizzes', { method: 'POST' });
+        } catch (e) {
+            console.warn('Authenticated quiz update failed, trying public endpoint', e);
+        }
+
+        if (!resp || !resp.ok) {
+            try {
+                resp = await fetch('/api/public/init/lesson-quizzes', { method: 'POST' });
+            } catch (e) {
+                alert('Quiz update failed: ' + e.message);
+                return false;
+            }
+        }
+
         if (!resp.ok) {
             const text = await resp.text();
             const message = text && text.trim().length > 0 ? text : `${resp.status} ${resp.statusText}`;
@@ -232,8 +247,53 @@ async function loadReports() {
     }
 }
 
-function viewStudent(studentId) {
-    alert('Student ID: ' + studentId);
+async function viewStudent(studentId) {
+    try {
+        const resp = await authenticatedFetch(`/api/students/${studentId}`);
+        if (!resp.ok) {
+            const text = await resp.text();
+            alert('Failed to load student: ' + text);
+            return;
+        }
+
+        const student = await resp.json();
+        showStudentModal(student);
+    } catch (e) {
+        alert('Failed to load student: ' + e.message);
+    }
+}
+
+function showStudentModal(student) {
+    const modal = document.getElementById('studentModal');
+    const details = document.getElementById('studentDetails');
+    if (!modal || !details || !student) return;
+
+    const completedLessons = Array.isArray(student.completedLessonIds)
+        ? student.completedLessonIds
+        : [];
+    const savedLessons = Array.isArray(student.savedLessonIds)
+        ? student.savedLessonIds
+        : [];
+
+    details.innerHTML = `
+        <div class="student-detail-row"><span>Name</span><strong>${student.firstName || ''} ${student.lastName || ''}</strong></div>
+        <div class="student-detail-row"><span>Username</span><strong>${student.username || ''}</strong></div>
+        <div class="student-detail-row"><span>Email</span><strong>${student.email || ''}</strong></div>
+        <div class="student-detail-row"><span>XP Score</span><strong>${student.xpScore || 0}</strong></div>
+        <div class="student-detail-row"><span>Bio</span><strong>${student.bio || '—'}</strong></div>
+        <div class="student-detail-row"><span>Completed Lessons</span><strong>${completedLessons.length}</strong></div>
+        <div class="student-detail-row"><span>Saved Lessons</span><strong>${savedLessons.length}</strong></div>
+        <div class="student-detail-list">
+            <div class="student-detail-label">Completed IDs</div>
+            <div>${completedLessons.length ? completedLessons.join(', ') : '—'}</div>
+        </div>
+        <div class="student-detail-list">
+            <div class="student-detail-label">Saved IDs</div>
+            <div>${savedLessons.length ? savedLessons.join(', ') : '—'}</div>
+        </div>
+    `;
+
+    modal.style.display = 'block';
 }
 
 async function deleteStudent(studentId, displayName) {
@@ -521,9 +581,19 @@ if (lessonModalClose) lessonModalClose.addEventListener('click', () => {
     if (modal) modal.style.display = 'none';
 });
 
+const studentModalClose = document.getElementById('studentModalClose');
+if (studentModalClose) studentModalClose.addEventListener('click', () => {
+    const modal = document.getElementById('studentModal');
+    if (modal) modal.style.display = 'none';
+});
+
 window.onclick = (event) => {
     const modal = document.getElementById('lessonModal');
     if (event.target === modal) {
         modal.style.display = 'none';
+    }
+    const studentModal = document.getElementById('studentModal');
+    if (event.target === studentModal) {
+        studentModal.style.display = 'none';
     }
 };
