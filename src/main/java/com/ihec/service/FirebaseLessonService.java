@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -167,6 +168,33 @@ public class FirebaseLessonService {
             });
         } catch (Exception e) {
             log.error("Error deleting lesson: " + e.getMessage());
+        }
+    }
+
+    public boolean updateLessonYoutubeIds(Map<String, String> lessonVideoIds) {
+        try {
+            if (lessonVideoIds == null || lessonVideoIds.isEmpty()) {
+                return false;
+            }
+
+            CountDownLatch latch = new CountDownLatch(lessonVideoIds.size());
+            lessonVideoIds.forEach((lessonId, youtubeId) -> {
+                DatabaseReference videoRef = firebaseDatabase
+                        .getReference("lessons")
+                        .child(lessonId)
+                        .child("youtubeId");
+                videoRef.setValue(youtubeId, (error, ref) -> {
+                    if (error != null) {
+                        log.error("Error updating lesson video {}: {}", lessonId, error.getMessage());
+                    }
+                    latch.countDown();
+                });
+            });
+
+            return latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            log.error("Error updating lesson videos: " + e.getMessage());
+            return false;
         }
     }
 }

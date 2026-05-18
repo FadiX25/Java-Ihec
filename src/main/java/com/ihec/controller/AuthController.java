@@ -4,13 +4,14 @@ import com.ihec.dto.AuthRequest;
 import com.ihec.dto.AuthResponse;
 import com.ihec.model.Student;
 import com.ihec.model.User;
+import com.ihec.security.JwtUtil;
 import com.ihec.service.FirebaseUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
+
 
 /**
  * Authentication Controller
@@ -25,14 +26,16 @@ public class AuthController {
     @Autowired
     private FirebaseUserService userService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {
         try {
             User user = userService.getUserByUsername(authRequest.getUsername());
             
             if (user != null && userService.authenticateUser(authRequest.getUsername(), authRequest.getPassword())) {
-                // Generate JWT token (simplified - use proper JWT library in production)
-                String token = UUID.randomUUID().toString();
+                String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
                 return ResponseEntity.ok(new AuthResponse(token, user));
             } else {
                 return ResponseEntity.status(401).body(new AuthResponse("Invalid credentials"));
@@ -57,7 +60,7 @@ public class AuthController {
             student.setRole("STUDENT");
             userService.createStudent(student);
 
-            String token = UUID.randomUUID().toString();
+            String token = jwtUtil.generateToken(student.getUsername(), student.getRole());
             return ResponseEntity.ok(new AuthResponse(token, student));
         } catch (Exception e) {
             log.error("Registration error: " + e.getMessage());

@@ -1,5 +1,6 @@
 package com.ihec.controller;
 
+import com.ihec.service.FirebaseLessonService;
 import com.ihec.util.FirebaseDataInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Data Initialization Controller
@@ -16,10 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/admin/init")
 @Slf4j
+@PreAuthorize("hasRole('ADMIN')")
 public class DataInitializationController {
 
     @Autowired
     private FirebaseDataInitializer firebaseDataInitializer;
+
+    @Autowired
+    private FirebaseLessonService lessonService;
 
     /**
      * Initialize Firebase database with tables and sample data
@@ -57,6 +65,62 @@ public class DataInitializationController {
                     "Use POST /api/admin/init/database to initialize with sample data.");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("❌ Firebase connection error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Update YouTube video IDs for existing lessons
+     * POST /api/admin/init/lesson-videos
+     */
+    @PostMapping("/lesson-videos")
+    public ResponseEntity<String> updateLessonVideos() {
+        try {
+            Map<String, String> lessonVideoIds = new HashMap<>();
+            lessonVideoIds.put("lesson1", "SiBw7os-_zI");
+            lessonVideoIds.put("lesson2", "IUqKuGNasdM");
+            lessonVideoIds.put("lesson3", "GTP5lVEKXaU");
+            lessonVideoIds.put("lesson4", "i3aKOm76nDo");
+            lessonVideoIds.put("lesson5", "3qhoAYfk7cM");
+            lessonVideoIds.put("lesson6", "HvPlEJ3LHgE");
+
+            boolean updated = lessonService.updateLessonYoutubeIds(lessonVideoIds);
+            if (!updated) {
+                return ResponseEntity.status(500).body("❌ Failed to update lesson videos");
+            }
+
+            return ResponseEntity.ok("✅ Lesson videos updated successfully!");
+        } catch (Exception e) {
+            log.error("❌ Lesson video update failed: " + e.getMessage(), e);
+            return ResponseEntity.status(500).body("❌ Lesson video update failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Force re-seed lessons and update video IDs
+     * POST /api/admin/init/lessons-reset
+     */
+    @PostMapping("/lessons-reset")
+    public ResponseEntity<String> resetLessons() {
+        try {
+            firebaseDataInitializer.seedLessons();
+
+            Map<String, String> lessonVideoIds = new HashMap<>();
+            lessonVideoIds.put("lesson1", "SiBw7os-_zI");
+            lessonVideoIds.put("lesson2", "IUqKuGNasdM");
+            lessonVideoIds.put("lesson3", "GTP5lVEKXaU");
+            lessonVideoIds.put("lesson4", "i3aKOm76nDo");
+            lessonVideoIds.put("lesson5", "3qhoAYfk7cM");
+            lessonVideoIds.put("lesson6", "HvPlEJ3LHgE");
+
+            boolean updated = lessonService.updateLessonYoutubeIds(lessonVideoIds);
+            if (!updated) {
+                return ResponseEntity.status(500).body("❌ Lessons seeded but video update failed");
+            }
+
+            return ResponseEntity.ok("✅ Lessons re-seeded and videos updated successfully!");
+        } catch (Exception e) {
+            log.error("❌ Lesson reset failed: " + e.getMessage(), e);
+            return ResponseEntity.status(500).body("❌ Lesson reset failed: " + e.getMessage());
         }
     }
 }

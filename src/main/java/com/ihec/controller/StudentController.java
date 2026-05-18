@@ -1,6 +1,8 @@
 package com.ihec.controller;
 
 import com.ihec.model.Student;
+import com.ihec.model.Lesson;
+import com.ihec.service.FirebaseLessonService;
 import com.ihec.service.FirebaseUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class StudentController {
 
     @Autowired
     private FirebaseUserService userService;
+
+    @Autowired
+    private FirebaseLessonService lessonService;
 
     @GetMapping("/{studentId}")
     public ResponseEntity<Student> getStudentProfile(@PathVariable String studentId) {
@@ -56,8 +61,13 @@ public class StudentController {
         try {
             var user = userService.getUserById(studentId);
             if (user instanceof Student) {
+                Lesson lesson = lessonService.getLessonById(lessonId);
+                if (lesson == null) {
+                    return ResponseEntity.notFound().build();
+                }
+
                 Student student = (Student) user;
-                int xpReward = body.getOrDefault("xpReward", 10);
+                int xpReward = lesson.getXpReward();
                 student.addXP(xpReward);
                 student.completeLesson(lessonId);
                 userService.updateStudent(studentId, student);

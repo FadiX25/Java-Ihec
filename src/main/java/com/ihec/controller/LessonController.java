@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.HashMap;
@@ -61,6 +62,7 @@ public class LessonController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, String>> createLesson(@RequestBody Lesson lesson) {
         try {
             lessonService.saveLesson(lesson);
@@ -74,6 +76,7 @@ public class LessonController {
     }
 
     @PutMapping("/{lessonId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, String>> updateLesson(@PathVariable String lessonId, @RequestBody Lesson lesson) {
         try {
             lesson.setId(lessonId);
@@ -88,6 +91,7 @@ public class LessonController {
     }
 
     @DeleteMapping("/{lessonId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, String>> deleteLesson(@PathVariable String lessonId) {
         try {
             lessonService.deleteLesson(lessonId);

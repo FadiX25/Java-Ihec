@@ -6,6 +6,12 @@ echo IHEC-JLearn Spring Boot Build and Run
 echo ======================================
 echo.
 
+REM Ensure Maven is available for this session
+set "MAVEN_BIN=C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.15\bin"
+if exist "%MAVEN_BIN%\mvn.cmd" (
+    set "PATH=%PATH%;%MAVEN_BIN%"
+)
+
 REM Check Java version
 echo Checking Java version...
 java -version

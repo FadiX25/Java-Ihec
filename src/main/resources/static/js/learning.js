@@ -26,7 +26,7 @@ async function initLearning() {
 
 async function loadLesson(lessonId) {
     try {
-        const response = await fetch(`/api/lessons/${lessonId}`);
+        const response = await authenticatedFetch(`/api/lessons/${lessonId}`);
         if (!response.ok) throw new Error('Failed to load lesson');
         
         currentLesson = await response.json();
@@ -46,9 +46,17 @@ function displayLesson(lesson) {
     
     // Set up video button
     if (lesson.youtubeId) {
-        const videoUrl = `https://www.youtube.com/embed/${lesson.youtubeId}`;
+        const videoUrl = `https://www.youtube-nocookie.com/embed/${lesson.youtubeId}?rel=0`;
+        const openUrl = `https://www.youtube.com/watch?v=${lesson.youtubeId}`;
         document.getElementById('videoFrame').src = videoUrl;
         document.getElementById('fullVideoFrame').src = videoUrl;
+        const openLink = document.getElementById('openOnYoutube');
+        openLink.href = openUrl;
+        openLink.style.display = 'inline-block';
+        document.getElementById('watchVideoBtn').disabled = false;
+    } else {
+        document.getElementById('openOnYoutube').style.display = 'none';
+        document.getElementById('watchVideoBtn').disabled = true;
     }
 }
 
@@ -97,11 +105,8 @@ async function checkAnswer() {
     }
 
     try {
-        const response = await fetch(`/api/lessons/${currentLesson.id}/check-answer`, {
+        const response = await authenticatedFetch(`/api/lessons/${currentLesson.id}/check-answer`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify({ answer: userAnswer })
         });
 

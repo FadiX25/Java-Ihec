@@ -2,6 +2,9 @@ package com.ihec.util;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.ihec.model.Admin;
 import com.ihec.model.Certificate;
 import com.ihec.model.Lesson;
@@ -20,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Firebase Data Initialization
@@ -35,6 +40,8 @@ public class FirebaseDataInitializer {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    private static final long TIMEOUT_SECONDS = 10;
 
     /**
      * Initialize Firebase data on application startup
@@ -64,13 +71,42 @@ public class FirebaseDataInitializer {
     }
 
     /**
+     * Force re-seed lesson data only.
+     */
+    public void seedLessons() {
+        try {
+            log.info("📚 Forcing lesson data seeding...");
+            createLessonTable();
+        } catch (Exception e) {
+            log.error("❌ Error seeding lessons: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Check if database is empty
      */
     private boolean isDatabaseEmpty() {
         try {
-            DatabaseReference rootRef = firebaseDatabase.getReference();
-            // Simple check - if users collection doesn't exist, database is empty
-            return !rootRef.getKey().isEmpty(); // This is a basic check
+            CountDownLatch latch = new CountDownLatch(1);
+            boolean[] emptyHolder = new boolean[] { true };
+
+            DatabaseReference usersRef = firebaseDatabase.getReference("users");
+            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    emptyHolder[0] = !(dataSnapshot.exists() && dataSnapshot.hasChildren());
+                    latch.countDown();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    log.error("Error checking database state: " + databaseError.getMessage());
+                    latch.countDown();
+                }
+            });
+
+            latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            return emptyHolder[0];
         } catch (Exception e) {
             return true;
         }
@@ -277,7 +313,7 @@ public class FirebaseDataInitializer {
         lesson1.setId("lesson1");
         lesson1.setCategory("OOP Fundamentals");
         lesson1.setTitle("Object-Oriented Programming Basics");
-        lesson1.setYoutubeId("dQw4w9WgXcQ");
+        lesson1.setYoutubeId("qgRsUzAv-XI");
         lesson1.setDateCreated(LocalDate.now().minusDays(30).toString());
         lesson1.setTheoryText("Object-Oriented Programming (OOP) is a programming paradigm based on the concept of objects...");
         lesson1.setCorrectAnswer("Object");
@@ -290,7 +326,7 @@ public class FirebaseDataInitializer {
         lesson2.setId("lesson2");
         lesson2.setCategory("OOP Fundamentals");
         lesson2.setTitle("Classes and Objects in Java");
-        lesson2.setYoutubeId("dQw4w9WgXcQ");
+        lesson2.setYoutubeId("MeP1CztNMdo");
         lesson2.setDateCreated(LocalDate.now().minusDays(25).toString());
         lesson2.setTheoryText("A class is a blueprint for creating objects. An object is an instance of a class...");
         lesson2.setCorrectAnswer("class");
@@ -303,7 +339,7 @@ public class FirebaseDataInitializer {
         lesson3.setId("lesson3");
         lesson3.setCategory("OOP Concepts");
         lesson3.setTitle("Inheritance in Java");
-        lesson3.setYoutubeId("dQw4w9WgXcQ");
+        lesson3.setYoutubeId("mzVEwEnH_eI");
         lesson3.setDateCreated(LocalDate.now().minusDays(20).toString());
         lesson3.setTheoryText("Inheritance is a mechanism where a new class is derived from an existing class...");
         lesson3.setCorrectAnswer("extends");
@@ -316,7 +352,7 @@ public class FirebaseDataInitializer {
         lesson4.setId("lesson4");
         lesson4.setCategory("OOP Concepts");
         lesson4.setTitle("Polymorphism in Java");
-        lesson4.setYoutubeId("dQw4w9WgXcQ");
+        lesson4.setYoutubeId("iAg3HIUHYx4");
         lesson4.setDateCreated(LocalDate.now().minusDays(15).toString());
         lesson4.setTheoryText("Polymorphism allows objects to take multiple forms...");
         lesson4.setCorrectAnswer("override");
@@ -329,7 +365,7 @@ public class FirebaseDataInitializer {
         lesson5.setId("lesson5");
         lesson5.setCategory("OOP Concepts");
         lesson5.setTitle("Encapsulation in Java");
-        lesson5.setYoutubeId("dQw4w9WgXcQ");
+        lesson5.setYoutubeId("ifJ0eCrEC44");
         lesson5.setDateCreated(LocalDate.now().minusDays(10).toString());
         lesson5.setTheoryText("Encapsulation is a mechanism of wrapping data and methods together...");
         lesson5.setCorrectAnswer("private");
@@ -342,7 +378,7 @@ public class FirebaseDataInitializer {
         lesson6.setId("lesson6");
         lesson6.setCategory("OOP Concepts");
         lesson6.setTitle("Abstraction in Java");
-        lesson6.setYoutubeId("dQw4w9WgXcQ");
+        lesson6.setYoutubeId("f8QtvPaAWyc");
         lesson6.setDateCreated(LocalDate.now().minusDays(5).toString());
         lesson6.setTheoryText("Abstraction is a process of hiding the implementation details...");
         lesson6.setCorrectAnswer("abstract");
