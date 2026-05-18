@@ -390,32 +390,6 @@ function extractOptionValue(optionText, index) {
     return String.fromCharCode(65 + index);
 }
 
-// After initAdmin is defined, attach admin action buttons
-document.addEventListener('DOMContentLoaded', () => {
-    // safe attach for admin actions
-    const checkBtn = document.getElementById('checkFirebaseBtn');
-    const seedBtn = document.getElementById('seedDbBtn');
-
-    if (checkBtn) {
-        checkBtn.addEventListener('click', async () => {
-            try {
-                const resp = await authenticatedFetch('/api/admin/init/status', { method: 'POST' });
-                const text = await resp.text();
-                alert(text);
-            } catch (e) {
-                alert('Could not contact server: ' + e.message);
-            }
-        });
-    }
-
-    if (seedBtn) {
-        seedBtn.addEventListener('click', async () => {
-            if (!confirm('Seed the database with sample data? This will create sample users and lessons.')) return;
-            await seedDatabaseCall();
-        });
-    }
-});
-
 // Modal close handlers (safe attach)
 const lessonModalClose = document.querySelector('#lessonModal .close');
 if (lessonModalClose) lessonModalClose.addEventListener('click', () => {
