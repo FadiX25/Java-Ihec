@@ -247,12 +247,30 @@ async function deleteLesson(lessonId) {
 async function createLesson(e) {
     e.preventDefault();
 
+    const quizOptionsRaw = document.getElementById('lessonQuizOptions').value || '';
+    const quizOptions = quizOptionsRaw
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+    const quizQuestion = document.getElementById('lessonQuizQuestion').value.trim();
+    const correctOption = document.getElementById('lessonCorrectOption').value.trim().toUpperCase();
+
+    const quizValidationError = validateQuizFields(quizQuestion, quizOptions, correctOption);
+    if (quizValidationError) {
+        alert(quizValidationError);
+        return;
+    }
+
     const lesson = {
         title: document.getElementById('lessonTitle').value,
         category: document.getElementById('lessonCategory').value,
         youtubeId: document.getElementById('lessonYoutubeId').value,
         theoryText: document.getElementById('lessonTheory').value,
         correctAnswer: document.getElementById('lessonCorrectAnswer').value,
+        quizQuestion: quizQuestion,
+        quizOptions: quizOptions,
+        correctOption: correctOption,
         difficulty: document.getElementById('lessonDifficulty').value,
         xpReward: parseInt(document.getElementById('lessonXP').value),
         dateCreated: new Date().toISOString().split('T')[0],
@@ -277,6 +295,48 @@ async function createLesson(e) {
         console.error('Error creating lesson:', error);
         alert('Error creating lesson');
     }
+}
+
+function validateQuizFields(question, options, correctOption) {
+    if (!question) {
+        return 'Quiz question is required.';
+    }
+
+    if (!Array.isArray(options) || options.length !== 4) {
+        return 'Quiz options must include exactly 4 lines.';
+    }
+
+    const normalized = options.map((optionText, index) => ({
+        text: optionText,
+        value: extractOptionValue(optionText, index)
+    }));
+
+    const hasEmptyOption = normalized.some(entry => !entry.text || entry.text.trim().length === 0);
+    if (hasEmptyOption) {
+        return 'Quiz options cannot be empty.';
+    }
+
+    if (!correctOption) {
+        return 'Correct option is required (A, B, C, or D).';
+    }
+
+    const validValues = normalized.map(entry => entry.value);
+    if (!validValues.includes(correctOption)) {
+        return 'Correct option must match one of the option letters (A, B, C, or D).';
+    }
+
+    return '';
+}
+
+function extractOptionValue(optionText, index) {
+    if (typeof optionText === 'string') {
+        const trimmed = optionText.trim();
+        const firstChar = trimmed.charAt(0).toUpperCase();
+        if (firstChar >= 'A' && firstChar <= 'Z' && trimmed.charAt(1) === '.') {
+            return firstChar;
+        }
+    }
+    return String.fromCharCode(65 + index);
 }
 
 // After initAdmin is defined, attach admin action buttons

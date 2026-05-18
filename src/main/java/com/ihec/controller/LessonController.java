@@ -112,8 +112,11 @@ public class LessonController {
                 return ResponseEntity.notFound().build();
             }
 
-            String userAnswer = body.get("answer");
-            boolean isCorrect = lesson.checkAnswer(userAnswer);
+            String userAnswer = body.get("option");
+            if (userAnswer == null || userAnswer.isBlank()) {
+                userAnswer = body.get("answer");
+            }
+            boolean isCorrect = lesson.checkAnswerOption(userAnswer);
             
             Map<String, Object> response = new HashMap<>();
             response.put("correct", isCorrect);

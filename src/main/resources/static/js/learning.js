@@ -43,6 +43,8 @@ function displayLesson(lesson) {
     document.getElementById('lessonCategory').textContent = lesson.category;
     document.getElementById('lessonDifficulty').textContent = lesson.difficulty || 'Beginner';
     document.getElementById('theoryText').innerHTML = formatTheoryText(lesson.theoryText);
+
+    renderQuiz(lesson);
     
     // Set up video button
     if (lesson.youtubeId) {
@@ -68,6 +70,56 @@ function displayLesson(lesson) {
     }
 }
 
+function renderQuiz(lesson) {
+    const questionEl = document.getElementById('quizQuestion');
+    const optionsEl = document.getElementById('quizOptions');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (!lesson.quizQuestion || !Array.isArray(lesson.quizOptions) || lesson.quizOptions.length === 0) {
+        questionEl.textContent = 'Quiz not available for this lesson yet.';
+        optionsEl.innerHTML = '';
+        submitBtn.disabled = true;
+        return;
+    }
+
+    submitBtn.disabled = false;
+    questionEl.textContent = lesson.quizQuestion;
+    optionsEl.innerHTML = '';
+
+    lesson.quizOptions.forEach((optionText, index) => {
+        const optionValue = extractOptionValue(optionText, index);
+        const optionId = `quizOption-${index}`;
+
+        const label = document.createElement('label');
+        label.className = 'quiz-option';
+        label.setAttribute('for', optionId);
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'quizOption';
+        input.value = optionValue;
+        input.id = optionId;
+
+        const text = document.createElement('span');
+        text.textContent = optionText;
+
+        label.appendChild(input);
+        label.appendChild(text);
+        optionsEl.appendChild(label);
+    });
+}
+
+function extractOptionValue(optionText, index) {
+    if (typeof optionText === 'string') {
+        const trimmed = optionText.trim();
+        const firstChar = trimmed.charAt(0).toUpperCase();
+        if (firstChar >= 'A' && firstChar <= 'Z' && trimmed.charAt(1) === '.') {
+            return firstChar;
+        }
+    }
+    return String.fromCharCode(65 + index);
+}
+
 function formatTheoryText(text) {
     // Simple markdown-like formatting
     return text
@@ -90,9 +142,13 @@ function setupEventListeners() {
     // Submit answer
     document.getElementById('submitBtn').addEventListener('click', checkAnswer);
 
-    // Reset code
+    // Clear selection
     document.getElementById('resetBtn').addEventListener('click', () => {
-        document.getElementById('codeEditor').value = '';
+        document.querySelectorAll('input[name="quizOption"]').forEach(input => {
+            input.checked = false;
+        });
+        const feedbackDiv = document.getElementById('feedbackMessage');
+        feedbackDiv.style.display = 'none';
     });
 
     // Save lesson
@@ -105,17 +161,17 @@ function setupEventListeners() {
 }
 
 async function checkAnswer() {
-    const userAnswer = document.getElementById('codeEditor').value;
-    
-    if (!userAnswer.trim()) {
-        showFeedback('Please write some code first!', false);
+    const selected = document.querySelector('input[name="quizOption"]:checked');
+
+    if (!selected) {
+        showFeedback('Please select an answer first!', false);
         return;
     }
 
     try {
         const response = await authenticatedFetch(`/api/lessons/${currentLesson.id}/check-answer`, {
             method: 'POST',
-            body: JSON.stringify({ answer: userAnswer })
+            body: JSON.stringify({ option: selected.value })
         });
 
         const result = await response.json();
@@ -130,12 +186,26 @@ async function checkAnswer() {
                 window.location.href = '/dashboard.html';
             }, 2000);
         } else {
-            showFeedback('Try again! Your code must contain: ' + currentLesson.correctAnswer, false);
+            const correctText = getOptionTextByValue(currentLesson);
+            const suffix = correctText ? `Correct answer: ${correctText}` : 'Try again!';
+            showFeedback(suffix, false);
         }
     } catch (error) {
         console.error('Error checking answer:', error);
         showFeedback('Error checking your answer', false);
     }
+}
+
+function getOptionTextByValue(lesson) {
+    if (!lesson || !lesson.correctOption || !Array.isArray(lesson.quizOptions)) {
+        return '';
+    }
+    const target = lesson.correctOption.trim().toUpperCase();
+    const match = lesson.quizOptions.find(optionText => {
+        const value = extractOptionValue(optionText, lesson.quizOptions.indexOf(optionText));
+        return value === target;
+    });
+    return match || '';
 }
 
 async function completeLesson(xpReward) {

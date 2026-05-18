@@ -31,6 +31,15 @@ public class Lesson {
     
     @JsonProperty("correctAnswer")
     private String correctAnswer;
+
+    @JsonProperty("quizQuestion")
+    private String quizQuestion;
+
+    @JsonProperty("quizOptions")
+    private java.util.List<String> quizOptions;
+
+    @JsonProperty("correctOption")
+    private String correctOption;
     
     @JsonProperty("theoryText")
     private String theoryText;
@@ -59,6 +68,13 @@ public class Lesson {
             return false;
         }
         return userAnswer.toLowerCase().contains(correctAnswer.toLowerCase());
+    }
+
+    public boolean checkAnswerOption(String option) {
+        if (option == null || correctOption == null) {
+            return false;
+        }
+        return option.trim().equalsIgnoreCase(correctOption.trim());
     }
 
     public String getVideoUrl() {

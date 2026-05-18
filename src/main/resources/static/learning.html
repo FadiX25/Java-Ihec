@@ -64,24 +64,22 @@
             </div>
 
             <div class="exercise-description">
-                <p>Complete the code to match the requirements:</p>
+                <p>Pick the correct answer to complete this quiz:</p>
             </div>
 
-            <div class="editor-shell">
-                <div class="editor-toolbar">
-                    <div class="editor-dots" aria-hidden="true">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                    <span>Main.java</span>
+            <div class="quiz-shell">
+                <div class="quiz-header">
+                    <div class="quiz-label">Question</div>
+                    <div id="quizQuestion" class="quiz-question">Loading question...</div>
                 </div>
-                <textarea id="codeEditor" class="code-editor" placeholder="Write your Java code here..."></textarea>
+                <div id="quizOptions" class="quiz-options" role="radiogroup" aria-label="Quiz options">
+                    <!-- Options injected here -->
+                </div>
             </div>
 
             <div class="action-buttons">
                 <button class="btn btn-success" id="submitBtn">Submit Answer</button>
-                <button class="btn btn-secondary" id="resetBtn">Reset Code</button>
+                <button class="btn btn-secondary" id="resetBtn">Clear Selection</button>
             </div>
 
             <div id="feedbackMessage" class="feedback-message" style="display:none;"></div>

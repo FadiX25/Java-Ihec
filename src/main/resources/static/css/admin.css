@@ -215,8 +215,29 @@
     gap: 13px;
 }
 
+.quiz-fields {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: rgba(248, 250, 252, 0.92);
+}
+
+.quiz-fields-header {
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+}
+
 #lessonForm textarea {
     min-height: 150px;
+}
+
+#lessonQuizOptions {
+    min-height: 120px;
 }
 
 #lessonForm button[type="submit"] {

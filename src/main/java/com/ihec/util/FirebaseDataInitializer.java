@@ -313,12 +313,20 @@ public class FirebaseDataInitializer {
         lesson1.setId("lesson1");
         lesson1.setCategory("OOP Fundamentals");
         lesson1.setTitle("Object-Oriented Programming Basics");
-        lesson1.setYoutubeId("qgRsUzAv-XI");
+        lesson1.setYoutubeId("dmlPiQSkQHQ");
         lesson1.setDateCreated(LocalDate.now().minusDays(30).toString());
         lesson1.setTheoryText("Object-Oriented Programming (OOP) is a programming paradigm based on the concept of objects...");
         lesson1.setCorrectAnswer("Object");
         lesson1.setDifficulty("BEGINNER");
         lesson1.setXpReward(10);
+        lesson1.setQuizQuestion("What does OOP stand for?");
+        lesson1.setQuizOptions(List.of(
+            "A. Open Operating Program",
+            "B. Object-Oriented Programming",
+            "C. Object Operating Process",
+            "D. Online Object Program"
+        ));
+        lesson1.setCorrectOption("B");
         lessons.add(lesson1);
         
         // Lesson 2: Classes and Objects
@@ -326,12 +334,20 @@ public class FirebaseDataInitializer {
         lesson2.setId("lesson2");
         lesson2.setCategory("OOP Fundamentals");
         lesson2.setTitle("Classes and Objects in Java");
-        lesson2.setYoutubeId("MeP1CztNMdo");
+        lesson2.setYoutubeId("yy3yLGkuXPk");
         lesson2.setDateCreated(LocalDate.now().minusDays(25).toString());
         lesson2.setTheoryText("A class is a blueprint for creating objects. An object is an instance of a class...");
         lesson2.setCorrectAnswer("class");
         lesson2.setDifficulty("BEGINNER");
         lesson2.setXpReward(15);
+        lesson2.setQuizQuestion("What is the purpose of a class in Java?");
+        lesson2.setQuizOptions(List.of(
+            "A. To store database tables",
+            "B. To define object structure and behavior",
+            "C. To create networks",
+            "D. To execute SQL"
+        ));
+        lesson2.setCorrectOption("B");
         lessons.add(lesson2);
         
         // Lesson 3: Inheritance
@@ -339,12 +355,20 @@ public class FirebaseDataInitializer {
         lesson3.setId("lesson3");
         lesson3.setCategory("OOP Concepts");
         lesson3.setTitle("Inheritance in Java");
-        lesson3.setYoutubeId("mzVEwEnH_eI");
+        lesson3.setYoutubeId("GTP5lVEKXaU");
         lesson3.setDateCreated(LocalDate.now().minusDays(20).toString());
         lesson3.setTheoryText("Inheritance is a mechanism where a new class is derived from an existing class...");
         lesson3.setCorrectAnswer("extends");
         lesson3.setDifficulty("INTERMEDIATE");
         lesson3.setXpReward(20);
+        lesson3.setQuizQuestion("What is inheritance in Java?");
+        lesson3.setQuizOptions(List.of(
+            "A. Copying files",
+            "B. Reusing properties and methods from another class",
+            "C. Creating arrays",
+            "D. Using databases"
+        ));
+        lesson3.setCorrectOption("B");
         lessons.add(lesson3);
         
         // Lesson 4: Polymorphism
@@ -352,12 +376,20 @@ public class FirebaseDataInitializer {
         lesson4.setId("lesson4");
         lesson4.setCategory("OOP Concepts");
         lesson4.setTitle("Polymorphism in Java");
-        lesson4.setYoutubeId("iAg3HIUHYx4");
+        lesson4.setYoutubeId("6xRd0j1anzc");
         lesson4.setDateCreated(LocalDate.now().minusDays(15).toString());
         lesson4.setTheoryText("Polymorphism allows objects to take multiple forms...");
         lesson4.setCorrectAnswer("override");
         lesson4.setDifficulty("INTERMEDIATE");
         lesson4.setXpReward(25);
+        lesson4.setQuizQuestion("What is polymorphism in Java?");
+        lesson4.setQuizOptions(List.of(
+            "A. Using many databases",
+            "B. One method behaving differently in different situations",
+            "C. Creating multiple classes",
+            "D. Hiding variables"
+        ));
+        lesson4.setCorrectOption("B");
         lessons.add(lesson4);
         
         // Lesson 5: Encapsulation
@@ -365,12 +397,20 @@ public class FirebaseDataInitializer {
         lesson5.setId("lesson5");
         lesson5.setCategory("OOP Concepts");
         lesson5.setTitle("Encapsulation in Java");
-        lesson5.setYoutubeId("ifJ0eCrEC44");
+        lesson5.setYoutubeId("eboNNUADeIc");
         lesson5.setDateCreated(LocalDate.now().minusDays(10).toString());
         lesson5.setTheoryText("Encapsulation is a mechanism of wrapping data and methods together...");
         lesson5.setCorrectAnswer("private");
         lesson5.setDifficulty("BEGINNER");
         lesson5.setXpReward(15);
+        lesson5.setQuizQuestion("What is encapsulation in Java?");
+        lesson5.setQuizOptions(List.of(
+            "A. Combining data and methods into one unit",
+            "B. Creating loops",
+            "C. Writing comments",
+            "D. Using databases"
+        ));
+        lesson5.setCorrectOption("A");
         lessons.add(lesson5);
         
         // Lesson 6: Abstraction
@@ -378,12 +418,20 @@ public class FirebaseDataInitializer {
         lesson6.setId("lesson6");
         lesson6.setCategory("OOP Concepts");
         lesson6.setTitle("Abstraction in Java");
-        lesson6.setYoutubeId("f8QtvPaAWyc");
+        lesson6.setYoutubeId("4B8XKEORJss");
         lesson6.setDateCreated(LocalDate.now().minusDays(5).toString());
         lesson6.setTheoryText("Abstraction is a process of hiding the implementation details...");
         lesson6.setCorrectAnswer("abstract");
         lesson6.setDifficulty("INTERMEDIATE");
         lesson6.setXpReward(20);
+        lesson6.setQuizQuestion("What is abstraction in Java?");
+        lesson6.setQuizOptions(List.of(
+            "A. Hiding implementation details and showing essentials",
+            "B. Creating databases",
+            "C. Writing loops",
+            "D. Deleting methods"
+        ));
+        lesson6.setCorrectOption("A");
         lessons.add(lesson6);
         
         return lessons;

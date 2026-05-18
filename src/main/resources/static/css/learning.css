@@ -228,6 +228,66 @@
     font-size: 14px;
 }
 
+.quiz-shell {
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    background: white;
+    box-shadow: var(--shadow-md);
+    padding: 16px;
+    margin-bottom: 14px;
+}
+
+.quiz-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 12px;
+}
+
+.quiz-label {
+    font-size: 12px;
+    font-weight: 750;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+}
+
+.quiz-question {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.quiz-options {
+    display: grid;
+    gap: 10px;
+}
+
+.quiz-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: rgba(248, 250, 252, 0.9);
+    cursor: pointer;
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.quiz-option:hover,
+.quiz-option:focus-within {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.quiz-option input {
+    accent-color: var(--primary-blue);
+}
+
 .editor-shell {
     overflow: hidden;
     border-radius: var(--radius-md);
