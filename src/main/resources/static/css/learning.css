@@ -96,6 +96,7 @@
 }
 
 .video-section {
+    position: relative;
     background: var(--background-gray);
     padding: 20px;
     border-radius: 8px;
@@ -301,6 +302,128 @@
     color: var(--text-dark);
 }
 
+/* Idle modal (simple centered card) */
+.idle-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.55);
+}
+
+.idle-modal-content {
+    background: var(--card-white);
+    padding: 28px;
+    border-radius: 12px;
+    width: 420px;
+    max-width: calc(100% - 40px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    text-align: center;
+}
+
+.idle-modal-content h2 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+}
+
+.idle-modal-content p { color: var(--text-light); margin-bottom: 16px; }
+
+.idle-actions { display: flex; gap: 10px; justify-content: center; }
+
+/* Focus mode: darken the page while keeping the video and toggle above it */
+body.focus-mode::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(5, 10, 18, 0.78);
+    pointer-events: auto;
+}
+
+body.focus-mode .video-section {
+    z-index: 2100;
+    background: var(--card-white);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+}
+
+body.focus-mode #watchVideoBtn,
+body.focus-mode .video-fallback {
+    display: none !important;
+}
+
+body.focus-mode #videoPlayer {
+    display: block !important;
+    margin-top: 0;
+    transform-origin: center;
+}
+
+/* Slightly larger default video when opened */
+#videoPlayer iframe {
+    width: 100%;
+    height: 420px;
+    transition: transform 240ms ease, box-shadow 240ms ease;
+}
+
+body.focus-mode #videoPlayer iframe {
+    transform: scale(1.02);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+}
+
+/* Floating focus toggle button */
+#focusToggle {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 2300;
+    min-width: 104px;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--primary-blue);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(0, 86, 210, 0.22);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+#focusToggle:hover,
+#focusToggle:focus-visible,
+body.focus-mode #focusToggle {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+}
+
+#focusToggle:focus-visible {
+    outline: 3px solid rgba(0, 86, 210, 0.24);
+    outline-offset: 3px;
+}
+
+#focusToggle[aria-pressed="true"] {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+}
+
+/* ensure it stays on small screens */
+@media (max-width: 480px) {
+    #focusToggle {
+        right: 12px;
+        bottom: 12px;
+        min-width: 92px;
+        height: 40px;
+        padding: 0 14px;
+        font-size: 13px;
+    }
+}
+
 @media (max-width: 1200px) {
     .learning-container {
         flex-direction: column;
@@ -337,4 +460,7 @@
     .code-editor {
         height: 200px;
     }
+
+    /* smaller adjustments for mobile */
+    #videoPlayer iframe { height: 260px; }
 }

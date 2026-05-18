@@ -35,9 +35,17 @@
             </div>
 
             <div class="video-section">
-                <button class="btn btn-primary" id="watchVideoBtn">
-                    ▶ Watch Video
-                </button>
+                <div class="video-controls-row">
+                    <button class="btn btn-primary" id="watchVideoBtn">
+                        ▶ Watch Video
+                    </button>
+
+                    <!-- Focus Mode toggle placed next to the watch button -->
+                    <button id="focusToggle" class="btn btn-outline" title="Focus Mode">
+                        🔍 Focus Mode
+                    </button>
+                </div>
+
                 <a class="video-fallback" id="openOnYoutube" href="#" target="_blank" rel="noopener noreferrer">
                     Open on YouTube
                 </a>
@@ -70,6 +78,18 @@
         </div>
     </div>
 
+    <!-- Idle (inactivity) Modal -->
+    <div id="idleModal" class="idle-modal" style="display:none;">
+        <div class="idle-modal-content" role="dialog" aria-modal="true" aria-labelledby="idleTitle">
+            <h2 id="idleTitle">Are you still watching?</h2>
+            <p>We've paused the video to make sure you're still here. Click OK to continue watching.</p>
+            <div class="idle-actions">
+                <button id="idleOkBtn" class="btn btn-primary">OK</button>
+                <button id="idleExitBtn" class="btn btn-secondary">Exit Lesson</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal for video -->
     <div id="videoModal" class="modal" style="display:none;">
         <div class="modal-content">
@@ -82,5 +102,6 @@
 
     <script src="/js/auth.js"></script>
     <script src="/js/learning.js"></script>
+    <script src="/js/activity-focus.js"></script>
 </body>
 </html>

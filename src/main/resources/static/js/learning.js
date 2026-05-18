@@ -46,17 +46,25 @@ function displayLesson(lesson) {
     
     // Set up video button
     if (lesson.youtubeId) {
-        const videoUrl = `https://www.youtube-nocookie.com/embed/${lesson.youtubeId}?rel=0`;
+        // enable JS API for iframe control
+        const videoUrl = `https://www.youtube-nocookie.com/embed/${lesson.youtubeId}?rel=0&enablejsapi=1`;
         const openUrl = `https://www.youtube.com/watch?v=${lesson.youtubeId}`;
-        document.getElementById('videoFrame').src = videoUrl;
-        document.getElementById('fullVideoFrame').src = videoUrl;
+        const vf = document.getElementById('videoFrame');
+        const ff = document.getElementById('fullVideoFrame');
+        // store the canonical URL on a data attribute so other scripts can restore if needed
+        vf.dataset.videoUrl = videoUrl;
+        ff.dataset.videoUrl = videoUrl;
+        vf.src = videoUrl;
+        ff.src = videoUrl;
         const openLink = document.getElementById('openOnYoutube');
         openLink.href = openUrl;
         openLink.style.display = 'inline-block';
         document.getElementById('watchVideoBtn').disabled = false;
+        document.dispatchEvent(new CustomEvent('lesson-video-ready', { detail: { hasVideo: true } }));
     } else {
         document.getElementById('openOnYoutube').style.display = 'none';
         document.getElementById('watchVideoBtn').disabled = true;
+        document.dispatchEvent(new CustomEvent('lesson-video-ready', { detail: { hasVideo: false } }));
     }
 }
 

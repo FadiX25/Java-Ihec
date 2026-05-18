@@ -8,8 +8,21 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initDashboard() {
     try {
         // Load user data
-        const user = getCurrentUser();
+        let user = getCurrentUser();
         if (user) {
+            // Refresh user profile from server to make sure savedLessonIds and XP are up-to-date
+            try {
+                const resp = await authenticatedFetch(`/api/students/${user.id}`);
+                if (resp.ok) {
+                    const fresh = await resp.json();
+                    // merge into local user and persist
+                    localStorage.setItem('user', JSON.stringify(fresh));
+                    user = fresh;
+                }
+            } catch (e) {
+                console.warn('Could not refresh user profile', e);
+            }
+
             loadUserProfile(user);
         }
 
@@ -97,16 +110,61 @@ async function toggleSaveLesson(lessonId, button) {
             });
             button.classList.remove('saved');
             button.textContent = '☆';
+
+            // update local user
+            try {
+                if (user && Array.isArray(user.savedLessonIds)) {
+                    user.savedLessonIds = user.savedLessonIds.filter(id => id !== lessonId);
+                    localStorage.setItem('user', JSON.stringify(user));
+                }
+            } catch (e) { console.warn('Could not update local saved list', e); }
         } else {
             await authenticatedFetch(`/api/students/${user.id}/save-lesson/${lessonId}`, {
                 method: 'POST'
             });
             button.classList.add('saved');
             button.textContent = '⭐';
+
+            // update local user
+            try {
+                user.savedLessonIds = user.savedLessonIds || [];
+                if (!user.savedLessonIds.includes(lessonId)) user.savedLessonIds.push(lessonId);
+                localStorage.setItem('user', JSON.stringify(user));
+            } catch (e) { console.warn('Could not update local saved list', e); }
         }
     } catch (error) {
         console.error('Error saving lesson:', error);
     }
+}
+
+// Hook profile link to open a basic profile modal
+const profileLink = document.getElementById('profileLink');
+if (profileLink) {
+    profileLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        showProfileModal();
+    });
+}
+
+function showProfileModal() {
+    // Create modal dynamically if not present
+    let modal = document.getElementById('profileModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'profileModal';
+        modal.className = 'modal';
+        modal.innerHTML = `\n            <div class="modal-content">\n                <span class="close">&times;</span>\n                <h2>Profile</h2>\n                <div id="profileDetails"></div>\n            </div>\n        `;
+        document.body.appendChild(modal);
+        modal.querySelector('.close').addEventListener('click', () => modal.style.display = 'none');
+    }
+
+    const user = getCurrentUser();
+    const details = modal.querySelector('#profileDetails');
+    if (details) {
+        details.innerHTML = `<p><strong>Name:</strong> ${user.firstName} ${user.lastName}</p>\n            <p><strong>Email:</strong> ${user.email}</p>\n            <p><strong>XP:</strong> ${user.xpScore || 0}</p>`;
+    }
+
+    modal.style.display = 'block';
 }
 
 function goToLesson(lessonId) {
