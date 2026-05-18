@@ -13,6 +13,7 @@
     const idleOkBtn = document.getElementById('idleOkBtn');
     const idleExitBtn = document.getElementById('idleExitBtn');
     const focusToggle = document.getElementById('focusToggle');
+    const focusAudio = document.getElementById('focusAudio');
 
     if (!videoPlayerWrapper || !videoFrame) return; // not on lesson page
 
@@ -81,13 +82,38 @@
 
         if (focusMode) {
             showFocusVideo();
+            playFocusAudio();
         } else {
             restoreVideoAfterFocus();
+            pauseFocusAudio();
         }
 
         document.body.classList.toggle('focus-mode', focusMode);
         updateFocusToggle();
         try { localStorage.setItem('focusMode', focusMode ? '1' : '0'); } catch (e) {}
+    }
+
+    function playFocusAudio() {
+        if (!focusAudio) return;
+        try {
+            focusAudio.volume = 0.5;
+            const playResult = focusAudio.play();
+            if (playResult && typeof playResult.catch === 'function') {
+                playResult.catch(() => {});
+            }
+        } catch (e) {
+            // ignore
+        }
+    }
+
+    function pauseFocusAudio() {
+        if (!focusAudio) return;
+        try {
+            focusAudio.pause();
+            focusAudio.currentTime = 0;
+        } catch (e) {
+            // ignore
+        }
     }
 
     focusToggle && focusToggle.addEventListener('click', () => setFocusMode(!focusMode));
@@ -127,6 +153,9 @@
         if (isVideoVisible()) {
             postYouTubeCommand('pauseVideo');
         }
+        if (focusMode) {
+            pauseFocusAudio();
+        }
         // Show modal
         if (idleModal) {
             idleModal.style.display = 'flex';
@@ -138,6 +167,9 @@
         // Resume video via postMessage
         if (isVideoVisible()) {
             postYouTubeCommand('playVideo');
+        }
+        if (focusMode) {
+            playFocusAudio();
         }
         if (idleModal) {
             idleModal.style.display = 'none';
@@ -195,9 +227,14 @@
     // If user hides page, consider it inactive but do not immediately show modal until they return.
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden') {
-            // No immediate action
+            if (focusMode) {
+                pauseFocusAudio();
+            }
         } else {
             recordActivity('visibility');
+            if (focusMode) {
+                playFocusAudio();
+            }
         }
     });
 
