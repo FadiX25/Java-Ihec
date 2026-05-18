@@ -1,80 +1,85 @@
 /* Admin Dashboard Styles */
 
 .navbar-admin {
-    background: linear-gradient(135deg, #003D8F 0%, #0056D2 100%);
+    background:
+        linear-gradient(90deg, rgba(17, 24, 39, 0.96), rgba(124, 45, 18, 0.92), rgba(30, 64, 175, 0.94));
 }
 
 .admin-container {
-    display: flex;
-    max-width: 1400px;
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    max-width: var(--max-page);
     margin: 0 auto;
-    gap: 0;
-    min-height: calc(100vh - 60px);
+    gap: 24px;
+    min-height: calc(100vh - 68px);
+    padding: 24px;
 }
 
 .admin-sidebar {
-    width: 250px;
-    background: #1A1A1A;
-    padding: 20px 0;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     position: sticky;
-    top: 60px;
+    top: 92px;
     height: fit-content;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--ink);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: var(--shadow-md);
 }
 
 .menu-section {
-    padding: 20px 0;
-    border-bottom: 1px solid #333;
+    padding: 20px;
 }
 
 .menu-section h4 {
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.52);
     font-size: 12px;
     text-transform: uppercase;
-    padding: 0 20px;
-    margin-bottom: 15px;
-    font-weight: 600;
+    margin-bottom: 14px;
+    font-weight: 850;
 }
 
 .menu-section ul {
     list-style: none;
-}
-
-.menu-section li {
-    margin: 0;
+    display: grid;
+    gap: 8px;
 }
 
 .menu-link {
-    display: block;
-    padding: 12px 20px;
-    color: #999;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 11px 13px;
+    color: rgba(255, 255, 255, 0.72);
     text-decoration: none;
-    transition: all 0.3s ease;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    transition: background 180ms ease, color 180ms ease, transform 180ms ease, border-color 180ms ease;
     font-size: 14px;
-    border-left: 4px solid transparent;
+    font-weight: 760;
 }
 
-.menu-link:hover {
-    background: #2D2D2D;
+.menu-link:hover,
+.menu-link:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
     color: white;
-    padding-left: 24px;
+    transform: translateX(3px);
+    outline: none;
 }
 
 .menu-link.active {
-    background: var(--light-blue);
-    color: var(--primary-blue);
-    border-left-color: var(--primary-blue);
-    font-weight: 600;
+    background: white;
+    color: var(--ink);
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
 }
 
 .admin-main {
-    flex: 1;
-    padding: 30px;
+    min-width: 0;
 }
 
 .admin-section {
     display: none;
-    animation: fadeIn 0.3s ease;
+    animation: liftIn 240ms ease;
 }
 
 .admin-section.active {
@@ -85,231 +90,215 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid var(--border-color);
+    gap: 16px;
+    margin-bottom: 20px;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(219, 227, 239, 0.88);
+    box-shadow: var(--shadow-md);
 }
 
 .section-header h2 {
-    font-size: 24px;
+    font-size: clamp(24px, 3vw, 36px);
     margin: 0;
 }
 
 .lessons-table-container,
 .students-table-container {
-    background: var(--card-white);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    border-radius: var(--radius-lg);
+    background: white;
+    border: 1px solid rgba(219, 227, 239, 0.88);
+    box-shadow: var(--shadow-md);
 }
 
 .data-table {
-    width: 100%;
-    border-collapse: collapse;
+    min-width: 760px;
+    box-shadow: none;
 }
 
 .data-table th {
-    background: var(--light-blue);
-    color: var(--primary-blue);
-    padding: 15px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 13px;
-    text-transform: uppercase;
-    border-bottom: 2px solid var(--border-color);
-}
-
-.data-table td {
-    padding: 15px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.data-table tbody tr {
-    transition: background 0.2s ease;
-}
-
-.data-table tbody tr:hover {
-    background: var(--background-gray);
-}
-
-.data-table tbody tr:last-child td {
-    border-bottom: none;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #f8fbff;
 }
 
 .action-icons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    align-items: center;
 }
 
 .action-icons button {
-    padding: 6px 10px;
-    border: none;
-    border-radius: 4px;
+    min-height: 34px;
+    padding: 7px 11px;
+    border-radius: 999px;
     font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    font-weight: 800;
 }
 
 .edit-btn {
-    background: #E8F0FE;
+    background: var(--light-blue);
     color: var(--primary-blue);
 }
 
-.edit-btn:hover {
-    background: var(--light-blue);
+.edit-btn:hover,
+.edit-btn:focus-visible {
+    background: var(--primary-blue);
+    color: white;
+    outline: none;
 }
 
 .delete-btn {
-    background: #F8D7DA;
-    color: #721C24;
+    background: var(--rose-soft);
+    color: #991b1b;
 }
 
-.delete-btn:hover {
-    background: #F5C6CB;
+.delete-btn:hover,
+.delete-btn:focus-visible {
+    background: var(--error-red);
+    color: white;
+    outline: none;
 }
 
 .reports-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 18px;
     margin-bottom: 30px;
 }
 
 .report-card {
-    background: var(--card-white);
-    border-radius: 8px;
-    padding: 25px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border-left: 4px solid var(--primary-blue);
-    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(219, 227, 239, 0.88);
+    box-shadow: var(--shadow-md);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.report-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary-blue), var(--teal), var(--amber));
 }
 
 .report-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--shadow-lg);
 }
 
 .report-card h3 {
-    font-size: 14px;
     color: var(--text-light);
+    font-size: 13px;
     text-transform: uppercase;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+    font-weight: 850;
 }
 
 .report-value {
-    font-size: 36px;
-    font-weight: 700;
-    color: var(--primary-blue);
+    color: var(--ink);
+    font-size: 42px;
+    line-height: 1;
+    font-weight: 880;
 }
 
 /* Modal Form */
 #lessonForm {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-#lessonForm input,
-#lessonForm textarea,
-#lessonForm select {
-    padding: 10px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 14px;
-    font-family: inherit;
-    transition: border-color 0.3s ease;
-}
-
-#lessonForm input:focus,
-#lessonForm textarea:focus,
-#lessonForm select:focus {
-    outline: none;
-    border-color: var(--primary-blue);
-    box-shadow: 0 0 0 3px rgba(0, 86, 210, 0.1);
+    display: grid;
+    gap: 13px;
 }
 
 #lessonForm textarea {
-    resize: vertical;
-    min-height: 120px;
+    min-height: 150px;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+#lessonForm button[type="submit"] {
+    min-height: 48px;
 }
 
 @media (max-width: 1024px) {
     .admin-container {
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
 
     .admin-sidebar {
-        width: 100%;
         position: relative;
         top: auto;
-        display: flex;
-        border-bottom: 1px solid #333;
     }
 
     .menu-section {
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 0 20px;
-        border: none;
+        gap: 16px;
+        overflow: auto;
     }
 
     .menu-section h4 {
-        padding: 0;
         margin: 0;
+        flex: 0 0 auto;
     }
 
     .menu-section ul {
         display: flex;
-        gap: 0;
+        min-width: max-content;
     }
 
-    .menu-section li {
-        margin: 0;
-    }
-
-    .menu-link {
-        padding: 10px 12px;
-        border: none;
-        border-bottom: 2px solid transparent;
-    }
-
-    .menu-link.active {
-        border-bottom-color: var(--primary-blue);
-        background: transparent;
+    .menu-link:hover,
+    .menu-link:focus-visible {
+        transform: translateY(-1px);
     }
 }
 
 @media (max-width: 768px) {
-    .admin-main {
-        padding: 15px;
+    .admin-container {
+        padding: 14px;
+        gap: 14px;
     }
 
     .section-header {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
+        align-items: stretch;
+        padding: 20px;
     }
 
     .reports-grid {
         grid-template-columns: 1fr;
     }
+}
 
-    .data-table {
-        font-size: 12px;
+@media (max-width: 560px) {
+    .menu-section {
+        padding: 14px;
     }
 
-    .data-table th,
-    .data-table td {
-        padding: 10px;
+    .menu-link {
+        min-height: 38px;
+        padding: 8px 11px;
+        white-space: nowrap;
+    }
+
+    .report-card {
+        padding: 20px;
+    }
+
+    .report-value {
+        font-size: 34px;
+    }
+}
+
+@media (max-height: 760px) and (min-width: 1025px) {
+    .admin-sidebar {
+        top: 82px;
+    }
+
+    .section-header {
+        padding: 18px 20px;
     }
 }
